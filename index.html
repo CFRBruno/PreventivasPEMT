@@ -1353,12 +1353,33 @@ async function main(){
       else if(fromCache) setSync("busy", "Atualizando…");
       else setSync("ok", "Sincronizado");
       if(changed && window.__appReload) window.__appReload();
-    }, err => { console.error(err); setSync("err", "Sem permissão"); });
+    }, err => {
+      console.error(err);
+      if(err && err.code === "permission-denied") denied();
+      else setSync("err", "Erro de sincronização");
+    });
+  }
+
+  function wipeLocal(){
+    KEYS.forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
+    if(window.__appReload) window.__appReload();
+  }
+  async function denied(){
+    if(unsub){ unsub(); unsub = null; }
+    try{ await A.signOut(auth); }catch(e){}
+    try{ localStorage.removeItem("prev_uid"); }catch(e){}
+    wipeLocal();
+    $("authErr").textContent = "Esta conta Google não tem acesso a este site.";
   }
 
   A.onAuthStateChanged(auth, u => {
     if(unsub){ unsub(); unsub = null; }
     user = u;
+    if(u){
+      let last = null;
+      try{ last = localStorage.getItem("prev_uid"); localStorage.setItem("prev_uid", u.uid); }catch(e){}
+      if(last && last !== u.uid) wipeLocal();
+    }
     $("auth").hidden = !!u;
     $("btnLogout").hidden = !u;
     if(u){ setSync("busy", "Conectando…"); start(); }
@@ -1391,8 +1412,8 @@ async function main(){
 
   $("btnLogout").addEventListener("click", async () => {
     await A.signOut(auth);
-    KEYS.forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
-    if(window.__appReload) window.__appReload();
+    try{ localStorage.removeItem("prev_uid"); }catch(e){}
+    wipeLocal();
   });
 
   window.addEventListener("online", () => user && setSync("ok", "Sincronizado"));
