@@ -532,6 +532,24 @@ select option{background:var(--surface);color:var(--ink)}
 .meta-card.none{display:flex;align-items:center;justify-content:space-between;gap:10px;border-style:dashed;border-left-width:1px;padding:10px 14px}
 .meta-card.none small{color:var(--muted);font-size:12.5px;display:block}
 @media (min-width:820px){.mc-pct{font-size:58px}.mc-main{gap:24px}}
+
+/* seletor de data */
+.dp{position:relative;display:flex;align-items:center;width:100%}
+.dp>input[data-dp]{flex:1;min-width:0;padding-right:48px}
+.dp-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:10px;border:0;background:transparent;color:var(--ft);display:grid;place-items:center;cursor:pointer;padding:0}
+.dp-btn:hover{background:var(--soft)}
+.dp-btn svg{width:20px;height:20px}
+.dp-native{position:absolute;left:0;right:0;bottom:0;height:1px;opacity:0;pointer-events:none;border:0;padding:0;margin:0}
+.dp.dp-solo{width:auto;display:block}
+.dp-solo .dp-btn{position:static;transform:none;width:44px;height:44px;border:1px solid var(--line);background:var(--surface)}
+.bk-row .dp{width:118px;flex:none}
+.bk-row .dp>.bk-d{width:100%;padding:0 34px 0 8px;text-align:left}
+.bk-row .dp-btn{width:32px;height:32px;right:3px}
+.bk-row .dp-btn svg{width:18px;height:18px}
+.wk-hint{display:block;margin:-4px 0 12px;font-size:13px;font-weight:600;color:var(--ft)}
+@keyframes flashSel{0%{box-shadow:0 0 0 0 var(--f)}100%{box-shadow:0 0 0 12px rgba(0,0,0,0)}}
+.fld select.flash{animation:flashSel .9s var(--ease)}
+@media (prefers-reduced-motion: reduce){.fld select.flash{animation:none}}
 </style>
 </head>
 <body>
@@ -615,7 +633,8 @@ select option{background:var(--surface);color:var(--ink)}
     <label class="fld"><span>Previsão semanal</span><select id="edPrev"></select></label>
     <label class="fld"><span>Técnico</span><input id="edTec" list="tecList" autocomplete="off"></label>
     <datalist id="tecList"></datalist>
-    <label class="fld"><span>Data agendada</span><input id="edAg" placeholder="dd/mm ou RETORNO" autocomplete="off"></label>
+    <label class="fld"><span>Data agendada</span><input id="edAg" data-dp="1" placeholder="dd/mm ou RETORNO" autocomplete="off"></label>
+    <small class="wk-hint" id="edWk" hidden></small>
     <label class="fld"><span>Realizado</span><select id="edReal"><option value="">Não informado</option><option value="Sim">Sim</option><option value="Não">Não</option></select></label>
     <label class="fld"><span>Observações</span><textarea id="edObs" rows="3"></textarea></label>
     <div class="sheet-actions"><button class="btn" id="edCancel" type="button">Cancelar</button><button class="btn primary" id="edSave" type="button">Salvar</button></div>
@@ -629,7 +648,7 @@ select option{background:var(--surface);color:var(--ink)}
     <label class="fld"><span>Equipamentos com planos a executar</span><input id="mtP" inputmode="numeric" autocomplete="off"></label>
     <label class="fld"><span>A vencer no mês (já incluídos nos a executar)</span><input id="mtV" inputmode="numeric" autocomplete="off"></label>
     <label class="fld"><span>Meta (%)</span><input id="mtM" inputmode="decimal" autocomplete="off"></label>
-    <label class="fld"><span>Prazo da meta (dd/mm)</span><input id="mtD" placeholder="dd/mm" autocomplete="off"></label>
+    <label class="fld"><span>Prazo da meta (dd/mm)</span><input id="mtD" data-dp="1" placeholder="dd/mm" autocomplete="off"></label>
     <div class="sheet-actions"><button class="btn" id="mtDel" type="button">Remover</button><button class="btn" id="mtCancel" type="button">Cancelar</button><button class="btn primary" id="mtSave" type="button">Salvar</button></div>
   </div>
 </div>
@@ -639,10 +658,10 @@ select option{background:var(--surface);color:var(--ink)}
     <p class="ed-sub" id="bkSub"></p>
     <label class="fld"><span>Previsão semanal</span><select id="bkPrev"></select></label>
     <label class="fld"><span>Técnico</span><input id="bkTec" list="tecList" autocomplete="off" placeholder="Deixe vazio para não alterar"></label>
-    <label class="fld"><span>Data agendada (para todas)</span><input id="bkAg" placeholder="dd/mm" autocomplete="off"></label>
+    <label class="fld"><span>Data agendada (para todas)</span><input id="bkAg" data-dp="1" placeholder="dd/mm" autocomplete="off"></label>
     <div class="bk-head"><span>Máquinas e datas (você pode ajustar cada uma)</span><button class="btn sm" id="bkAll" type="button">Marcar/desmarcar todas</button></div>
     <div class="bk-list" id="bkList"></div>
-    <p class="bk-hint">Só os campos preenchidos são aplicados às máquinas marcadas. Depois você ainda pode editar cada uma.</p>
+    <p class="bk-hint">Só os campos preenchidos são aplicados às máquinas marcadas. Se a previsão semanal ficar em "Pela data de cada máquina", a semana é preenchida automaticamente a partir da data. Depois você ainda pode editar cada uma.</p>
     <div class="sheet-actions"><button class="btn" id="bkCancel" type="button">Cancelar</button><button class="btn primary" id="bkSave" type="button">Aplicar</button></div>
   </div>
 </div>
@@ -1287,6 +1306,7 @@ function openEdit(pat){
   $("tecList").innerHTML=tecList().map(function(t){return '<option value="'+esc(t)+'"></option>';}).join("");
   $("edTec").value=it.tecnico||"";
   $("edAg").value=it.dataAgendada||"";
+  $("edWk").hidden=true;
   $("edReal").value=it.realizado||"";
   $("edObs").value=it.observacoes||"";
   $("editModal").hidden=false;
@@ -1529,7 +1549,8 @@ function renderAgenda(){
   h+='<div class="ag-nav"><button class="btn ico" type="button" data-wk="-1" aria-label="Semana anterior">&#8249;</button>'+
      '<div class="ag-title"><b>'+fmtDM(ws)+' a '+fmtDM(we)+'</b><small>'+sub+'</small></div>'+
      '<button class="btn ico" type="button" data-wk="1" aria-label="Próxima semana">&#8250;</button>'+
-     '<button class="btn" type="button" data-wk="0">Hoje</button></div>';
+     '<button class="btn" type="button" data-wk="0">Hoje</button>'+
+     '<div class="dp dp-solo"><button class="btn ico dp-btn" type="button" aria-label="Ir para uma data" title="Ir para uma data">'+ICON_CAL+'</button><input type="date" class="dp-native" data-wkpick="1" tabindex="-1" aria-hidden="true"></div></div>';
   h+='<div class="ag-tiles"><div class="tile"><div class="l">Agendadas</div><div class="v">'+total+'</div></div>'+
      '<div class="tile"><div class="l">Realizadas</div><div class="v">'+done+'</div></div>'+
      '<div class="tile"><div class="l">Técnicos</div><div class="v">'+nTech+'</div></div></div>';
@@ -1780,15 +1801,16 @@ function openBulk(cli){
   BK={cli:cli,items:items};
   $("bulkModal").setAttribute("data-filial",curCode());
   $("bkSub").innerHTML='<b>'+esc(cli)+'</b> · '+items.length+(items.length===1?" máquina":" máquinas");
-  $("bkPrev").innerHTML=[["","Não alterar"]].concat(PREV_OPTS.map(function(p){return [p,p];})).map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>';}).join("");
+  $("bkPrev").innerHTML=[["","Pela data de cada máquina"]].concat(PREV_OPTS.map(function(p){return [p,p];})).map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>';}).join("");
   $("bkTec").value="";$("bkAg").value="";
   $("tecList").innerHTML=tecList().map(function(t){return '<option value="'+esc(t)+'"></option>';}).join("");
   $("bkList").innerHTML=items.map(function(it,i){
     var dn=it.realizado==="Sim";
     return '<div class="bk-row'+(dn?" off":"")+'"><label class="bk-ck"><input type="checkbox" data-bk="'+i+'"'+(dn?"":" checked")+'>'+
       '<span class="bk-t"><b>'+esc(it.patrimonio)+'</b><small>'+esc(fmtCidade(it.cidadeEstado))+(dn?" · já realizada":"")+'</small></span></label>'+
-      '<input class="bk-d" data-bkd="'+i+'" data-orig="'+esc(it.dataAgendada||"")+'" placeholder="dd/mm" value="'+esc(it.dataAgendada||"")+'" autocomplete="off" aria-label="Data de '+esc(it.patrimonio)+'"></div>';
+      '<input class="bk-d" data-bkd="'+i+'" data-orig="'+esc(it.dataAgendada||"")+'" placeholder="dd/mm" value="'+esc(it.dataAgendada||"")+'" data-dp="1" autocomplete="off" aria-label="Data de '+esc(it.patrimonio)+'"></div>';
   }).join("");
+  initDP($("bkList"));
   $("bulkModal").hidden=false;document.body.style.overflow="hidden";
   setTimeout(function(){$("bkAg").focus();},30);
 }
@@ -1801,7 +1823,11 @@ function applyBulk(){
     var d=toAg(document.querySelector('[data-bkd="'+i+'"]').value.trim()),ch=false;
     if(prev){it.previsaoSemanal=prev;ch=true;}
     if(tec){it.tecnico=tec;ch=true;}
-    if(d!==(it.dataAgendada||"")){it.dataAgendada=d;ch=true;}
+    if(d!==(it.dataAgendada||"")){
+      it.dataAgendada=d;ch=true;
+      var pd=parseAg(d);
+      if(!prev&&pd&&it.previsaoSemanal!=="NÃO REALIZAR") it.previsaoSemanal=weekLabel(pd);
+    }
     if(ch){fin(it);n++;}
   });
   var cli=BK.cli;
@@ -2052,6 +2078,7 @@ if(window.MutationObserver) new MutationObserver(function(){if(ui.section==="map
 /* ---------- cliques das novas funções ---------- */
 function extraClick(e){
   var t=e.target,b;
+  if((b=t.closest(".dp-btn"))){openDP(b.closest(".dp"));return true;}
   if((b=t.closest("[data-wk]"))){
     var v=+b.getAttribute("data-wk");
     ui.wk=v===0?mondayOf(new Date()):addDays(ui.wk,7*v);ui.rpage=0;renderAgenda();return true;
@@ -2088,7 +2115,19 @@ function extraClick(e){
   return false;
 }
 document.addEventListener("change",function(e){
-  if(e.target&&e.target.id==="rWeek"){ui.rweek=e.target.value;ui.rpage=0;drawPreview();}
+  var t=e.target;if(!t||!t.classList) return;
+  if(t.id==="rWeek"){ui.rweek=t.value;ui.rpage=0;drawPreview();return;}
+  if(t.classList.contains("dp-native")){
+    if(!t.value) return;
+    var q=t.value.split("-"),d=new Date(+q[0],+q[1]-1,+q[2]),inp=t.closest(".dp").querySelector("input[data-dp]");
+    if(inp){
+      inp.value=p2(d.getDate())+"/"+p2(d.getMonth()+1);
+      inp.dispatchEvent(new Event("input",{bubbles:true}));
+      inp.dispatchEvent(new Event("change",{bubbles:true}));
+    }else if(t.hasAttribute("data-wkpick")){ui.wk=mondayOf(d);ui.rpage=0;renderAgenda();}
+    return;
+  }
+  if(t.hasAttribute&&t.hasAttribute("data-dp")) dateChosen(t);
 });
 document.addEventListener("input",function(e){
   var t=e.target;if(!t||!t.classList) return;
@@ -2173,6 +2212,45 @@ function saveMetaForm(){
 }
 function removeMeta(){
   delete META[curCode()];saveMeta();closeMeta();renderAll();toast("Meta removida desta filial.");
+}
+
+/* ---------- seletor de data e semana do mês ---------- */
+function isoDate(d){return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());}
+function weekOfMonth(d){
+  var first=new Date(d.getFullYear(),d.getMonth(),1);
+  while(first.getDay()===0||first.getDay()===6) first=addDays(first,1);
+  var n=Math.round((mondayOf(d)-mondayOf(first))/(7*864e5))+1;
+  return Math.max(1,Math.min(5,n));
+}
+function weekLabel(d){return weekOfMonth(d)+"ª semana";}
+function initDP(root){
+  Array.prototype.forEach.call((root||document).querySelectorAll("input[data-dp]"),function(inp){
+    if(inp.dataset.dpd) return;inp.dataset.dpd="1";
+    var w=document.createElement("div");w.className="dp";
+    inp.parentNode.insertBefore(w,inp);w.appendChild(inp);
+    var b=document.createElement("button");b.type="button";b.className="dp-btn";
+    b.setAttribute("aria-label","Escolher a data no calendário");b.title="Escolher a data";b.innerHTML=ICON_CAL;
+    var n=document.createElement("input");n.type="date";n.className="dp-native";n.tabIndex=-1;n.setAttribute("aria-hidden","true");
+    w.appendChild(b);w.appendChild(n);
+  });
+}
+function openDP(w){
+  var inp=w.querySelector("input[data-dp]"),n=w.querySelector(".dp-native");
+  var d=inp?parseAg(toAg(inp.value.trim())):null;
+  n.value=isoDate(d||(inp?new Date():ui.wk));
+  try{if(n.showPicker){n.showPicker();return;}}catch(e){}
+  n.focus();n.click();
+}
+function dateChosen(inp){
+  var v=toAg(inp.value.trim()),d=parseAg(v);
+  if(d&&inp.value!==v) inp.value=v;
+  if(inp.id!=="edAg") return;
+  var h=$("edWk");
+  if(!d){h.hidden=true;return;}
+  var lab=weekLabel(d),sel=$("edPrev");
+  if(sel.value==="NÃO REALIZAR"){h.hidden=false;h.textContent="Esta data cai na "+lab+", mas a previsão está em NÃO REALIZAR.";return;}
+  if(sel.value!==lab){sel.value=lab;sel.classList.remove("flash");void sel.offsetWidth;sel.classList.add("flash");}
+  h.hidden=false;h.textContent="Semana identificada pela data: "+lab+".";
 }
 
 /* ---------- eventos ---------- */
@@ -2334,6 +2412,7 @@ if(ly==="lista"||ly==="grade") ui.layout=ly;
 loadRefs();
 DB=loadDB();
 loadMeta();
+initDP();
 renderAll();
 window.__appReload=function(){loadRefs();DB=loadDB();loadMeta();renderAll();};
 })();
