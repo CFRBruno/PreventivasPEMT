@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Preventivas da semana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#EEF3FB; --surface:#FFFFFF; --ink:#14233B; --muted:#5B6B83; --line:rgba(0,31,67,.13);
+  --navy:#001F43; --soft:#EAF1FF; --gray:#7F7F7F; --rem-bg:#ECECEC;
+  --c-sim:#C6E0B4; --c-nao:#FFC7CE; --c-ag:#FFEB9C; --c-neu:#FFFFFF;
+  --ok-bg:#D7EEC8; --ok-ink:#1D5410;
+  --bad-bg:#FFD3D8; --bad-ink:#9B1C2E;
+  --warn-bg:#FFE58A; --warn-ink:#5E4700;
+  --info-bg:#D9E6F8; --info-ink:#18467E;
+  --idle-bg:#E9E4F2; --idle-ink:#4B2A73;
+  --tint:16%;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1322; --surface:#111D32; --ink:#E7EEF9; --muted:#9DABC1; --line:rgba(255,255,255,.13);
+    --soft:#14233D; --gray:#8F9AAD; --rem-bg:#182033;
+    --c-sim:#1F3D2B; --c-nao:#4B2229; --c-ag:#4B4219; --c-neu:#111D32;
+    --ok-bg:#24502F; --ok-ink:#B4EBAA; --bad-bg:#5A2530; --bad-ink:#FFB4BE;
+    --warn-bg:#5C4D12; --warn-ink:#FFE590; --info-bg:#1C3A63; --info-ink:#B8D4F6;
+    --idle-bg:#3A2A55; --idle-ink:#D9C4F5;
+    color-scheme:dark;
+  }
+  :root:not([data-theme="light"]) [data-filial="SSF"]{--ft:#8DBBEA;--fl:color-mix(in srgb,#2E74B5 28%,var(--surface))}
+  :root:not([data-theme="light"]) [data-filial="LDM"]{--ft:#E8C34D;--fl:color-mix(in srgb,#BF8F00 28%,var(--surface))}
+  :root:not([data-theme="light"]) [data-filial="NSS"]{--ft:#C79BEA;--fl:color-mix(in srgb,#7030A0 34%,var(--surface))}
+}
+:root[data-theme="dark"]{
+  --bg:#0A1322; --surface:#111D32; --ink:#E7EEF9; --muted:#9DABC1; --line:rgba(255,255,255,.13);
+  --soft:#14233D; --gray:#8F9AAD; --rem-bg:#182033;
+  --c-sim:#1F3D2B; --c-nao:#4B2229; --c-ag:#4B4219; --c-neu:#111D32;
+  --ok-bg:#24502F; --ok-ink:#B4EBAA; --bad-bg:#5A2530; --bad-ink:#FFB4BE;
+  --warn-bg:#5C4D12; --warn-ink:#FFE590; --info-bg:#1C3A63; --info-ink:#B8D4F6;
+  --idle-bg:#3A2A55; --idle-ink:#D9C4F5;
+  color-scheme:dark;
+}
+:root[data-theme="dark"] [data-filial="SSF"]{--ft:#8DBBEA;--fl:color-mix(in srgb,#2E74B5 28%,var(--surface))}
+:root[data-theme="dark"] [data-filial="LDM"]{--ft:#E8C34D;--fl:color-mix(in srgb,#BF8F00 28%,var(--surface))}
+:root[data-theme="dark"] [data-filial="NSS"]{--ft:#C79BEA;--fl:color-mix(in srgb,#7030A0 34%,var(--surface))}
+
+[data-filial="SSF"]{--f:#2E74B5;--fl:#D9E2F3;--fon:#FFFFFF;--ft:#1F5C99}
+[data-filial="LDM"]{--f:#BF8F00;--fl:#FFF2CC;--fon:#1D1500;--ft:#7A5C00}
+[data-filial="NSS"]{--f:#7030A0;--fl:#E4DFEC;--fon:#FFFFFF;--ft:#7030A0}
+
+*,*::before,*::after{box-sizing:inherit}
+html{-webkit-text-size-adjust:100%;height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:400 15px/1.45 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--navy)}
+[hidden]{display:none!important}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ft,#2E74B5);outline-offset:2px}
+.top :focus-visible{outline-color:#fff}
+
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:#fff;padding:12px 14px 12px}
+.top-in{max-width:560px;margin:0 auto}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.top h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.per{font-size:13.5px;opacity:.82}
+.icon-btn{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);color:#fff;display:grid;place-items:center}
+.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.tab{
+  min-height:54px;border-radius:14px;border:1px solid rgba(255,255,255,.18);border-bottom:4px solid var(--f);
+  background:rgba(255,255,255,.07);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:6px 4px;
+}
+.tab b{font-weight:700;font-size:14.5px}
+.tab small{font-size:12px;opacity:.8}
+.tab[aria-selected="true"]{background:var(--f);border-color:var(--f);color:var(--fon)}
+.tab[aria-selected="true"] small{opacity:.92}
+
+main{max-width:560px;margin:0 auto;padding:14px 14px 80px}
+.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px 10px 14px}
+.banner p{margin:0;font-size:13.5px;color:var(--muted);flex:1 1 200px}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.no-data #metrics,.no-data .search,.no-data .tb-row,.no-data .filters{display:none}
+.banner p strong{color:var(--ink);font-weight:600}
+.btn{min-height:44px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:var(--f);color:var(--fon);border-color:transparent}
+.cnt{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--f);color:var(--fon);font-size:12px;font-weight:700}
+
+.notice{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--f);border-radius:16px;padding:12px 14px;font-size:14px}
+.notice ul{margin:8px 0 10px;padding-left:18px}
+.notice li{margin:4px 0}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;min-height:80px}
+.tile .l{font-size:13px;color:var(--muted);line-height:1.25}
+.tile .v{font-size:30px;font-weight:700;line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums;color:var(--ft)}
+.tile.alert .v{color:var(--bad-ink)}
+.bar{height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--f);border-radius:inherit}
+
+.search{position:relative}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search input{width:100%;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:0 14px 0 42px;font-size:16px}
+.tb-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{min-height:38px;padding:0 12px;border:0;border-radius:9px;background:transparent;font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--f);color:var(--fon)}
+.filters{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.filters label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.filters select{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:0 10px;font-size:16px;color:var(--ink);width:100%}
+.filters .btn{grid-column:1/-1;justify-content:center}
+
+#list,#removed{margin-top:14px}
+.region{margin-bottom:12px}
+.rh{
+  width:100%;min-height:48px;display:flex;align-items:center;gap:10px;text-align:left;
+  background:var(--fl);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--f);border-radius:14px;padding:8px 12px 8px 14px;
+}
+.rh .rn{flex:1;font-weight:700;font-size:15.5px;line-height:1.2}
+.rh .rc{font-weight:700;font-size:13px;min-width:28px;text-align:center;padding:3px 9px;border-radius:99px;background:var(--surface);color:var(--ft);border:1px solid var(--line)}
+.chev{flex:none;color:var(--ft);transition:transform .18s ease}
+.rh[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.rb{padding-top:10px}
+.rem .rh{background:var(--rem-bg);border-left-color:var(--gray);color:var(--gray)}
+.rem .rh .rc{color:var(--gray)}
+.rem .chev{color:var(--gray)}
+
+.card{background:var(--c-neu);border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 10px}
+.card.t-sim{background:var(--c-sim)}
+.card.t-nao{background:var(--c-nao)}
+.card.t-ag{background:var(--c-ag)}
+.card.t-rem{background:var(--rem-bg);color:var(--gray)}
+.card.t-rem .strike{text-decoration:line-through}
+.c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pat{font-size:21px;font-weight:700;letter-spacing:-.01em;line-height:1.15;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.mod{font-size:13.5px;color:var(--muted);margin-top:1px}
+.t-rem .mod{color:var(--gray)}
+.cli{font-weight:600;font-size:14px;margin-top:10px;overflow-wrap:anywhere}
+.cid{display:flex;align-items:center;gap:5px;font-size:14px;color:var(--muted);margin-top:2px}
+.t-rem .cid{color:var(--gray)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:99px;background:var(--fl);color:var(--ink);font-weight:700;font-size:12.5px}
+.chip.dt{background:transparent;border:1px solid var(--line);font-weight:600;color:var(--ink)}
+.t-rem .chip{background:transparent;border:1px solid var(--line);color:var(--gray)}
+.badge{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:99px;font-weight:700;font-size:12.5px;white-space:nowrap}
+.b-bad{background:var(--bad-bg);color:var(--bad-ink)}
+.b-ok{background:var(--ok-bg);color:var(--ok-ink)}
+.b-warn{background:var(--warn-bg);color:var(--warn-ink)}
+.b-info{background:var(--info-bg);color:var(--info-ink)}
+.b-idle{background:var(--idle-bg);color:var(--idle-ink)}
+.b-rem{background:transparent;border:1px solid var(--gray);color:var(--gray)}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--line)}
+.info dt{font-size:12.5px;color:var(--muted)}
+.info dd{margin:1px 0 0;font-weight:600;font-size:14.5px;overflow-wrap:anywhere}
+.info dd.nil{color:var(--muted);font-weight:400}
+.t-rem .info dt,.t-rem .info dd,.t-rem .info dd.nil{color:var(--gray)}
+.obs{margin:10px 0 0;font-size:14px;background:rgba(127,127,127,.12);border-radius:10px;padding:8px 10px;overflow-wrap:anywhere}
+.act{margin-top:12px}
+
+.empty{padding:24px 16px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:16px}
+.empty .btn{margin-top:12px}
+.city{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:8px}
+.city-top{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.city-top span:last-child{color:var(--ft);font-variant-numeric:tabular-nums;font-weight:700}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;max-width:min(92vw,520px);background:var(--navy);color:#fff;padding:12px 16px;border-radius:14px;font-size:14px;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+@media (prefers-reduced-motion: reduce){.chev{transition:none}}
+
+/* ---------- telas largas (desktop e tablet): espaços e botões maiores ---------- */
+@media (min-width:820px){
+  body{font-size:16px}
+  .top{padding:18px 28px 16px}
+  .top-in{max-width:1224px}
+  .top h1{font-size:26px}
+  .per{font-size:15px}
+  .icon-btn{width:50px;height:50px;border-radius:16px}
+  .tabs{max-width:560px;gap:12px;margin-top:16px}
+  .tab{min-height:68px;border-radius:16px}
+  .tab b{font-size:17px}
+  .tab small{font-size:13.5px}
+  main{max-width:1280px;padding:24px 28px 96px}
+  .banner{padding:14px 18px 14px 20px;border-radius:18px}
+  .banner p{font-size:15px}
+  .btn{min-height:50px;padding:0 22px;font-size:15.5px;border-radius:14px}
+  .metrics{grid-template-columns:repeat(4,1fr);gap:16px;margin:22px 0}
+  .tile{padding:18px 20px;min-height:112px;border-radius:18px}
+  .tile .l{font-size:14.5px}
+  .tile .v{font-size:40px;margin-top:6px}
+  .bar{height:8px;margin-top:12px}
+  .search input{height:56px;font-size:17px;padding-left:50px;border-radius:16px}
+  .search svg{left:18px}
+  .tb-row{margin-top:14px}
+  .seg button{min-height:44px;padding:0 20px;font-size:15.5px}
+  .filters{grid-template-columns:repeat(4,1fr);gap:14px 16px;padding:18px;border-radius:18px}
+  .filters label{font-size:14px}
+  .filters select{height:50px;border-radius:14px}
+  .filters .btn{justify-self:start}
+  #list,#removed{margin-top:22px}
+  .region{margin-bottom:18px}
+  .rh{min-height:58px;padding:10px 18px 10px 20px;border-radius:16px;border-left-width:6px}
+  .rh .rn{font-size:18px}
+  .rh .rc{font-size:14.5px;padding:4px 12px}
+  .rb{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding-top:16px}
+  .card{margin:0;padding:20px;border-radius:18px}
+  .pat{font-size:24px}
+  .mod{font-size:15px}
+  .cli{font-size:15.5px}
+  .cid{font-size:15px}
+  .chip,.badge{min-height:30px;font-size:13.5px;padding:0 12px}
+  .info dt{font-size:13.5px}
+  .info dd{font-size:15.5px}
+  .obs{font-size:15px}
+  .empty{padding:36px 24px;font-size:16px}
+  #list:has(.city){display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+  .city{margin:0;padding:14px 18px;font-size:16px}
+  .notice{padding:16px 20px;font-size:15.5px;border-radius:18px}
+  .toast{font-size:15.5px;padding:14px 20px}
+}
+@media (hover:hover){.btn:hover,.tab:hover,.rh:hover,.seg button:hover,.icon-btn:hover{filter:brightness(1.07)}}
+
+/* ---------- login e sincronização ---------- */
+.top-actions{display:flex;align-items:center;gap:8px}
+.sync{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 12px;border-radius:14px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap}
+.sync i{width:9px;height:9px;border-radius:50%;background:#9AA7BD;flex:none}
+.sync[data-s="ok"] i{background:#5BD38A}
+.sync[data-s="busy"] i{background:#FFD25E}
+.sync[data-s="off"] i{background:#FFB14E}
+.sync[data-s="err"] i{background:#FF6B7C}
+@media (max-width:420px){.sync span{display:none}.sync{padding:0 14px}}
+.auth{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:var(--navy);overflow:auto}
+.auth-card{width:100%;max-width:380px;background:var(--surface);color:var(--ink);border-radius:22px;padding:26px 22px 22px;box-shadow:0 18px 60px rgba(0,0,0,.4)}
+.auth-card h2{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}
+.auth-card p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.auth-card label{display:block;font-size:13px;font-weight:600;margin:12px 0 6px}
+.auth-card input{width:100%;min-height:46px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:16px}
+.auth-card .btn{width:100%;justify-content:center;margin-top:18px;background:var(--navy);color:#fff;border-color:transparent}
+.auth-card .btn[disabled]{opacity:.6}
+.auth-err{min-height:20px;margin-top:12px;color:var(--bad-ink);font-size:13.5px}
+@media (min-width:820px){.top-actions{gap:12px}.sync{height:50px;border-radius:16px;font-size:14px;padding:0 16px}.auth-card{max-width:420px;padding:34px 30px 28px}.auth-card h2{font-size:26px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="top-row">
+      <div>
+        <h1>Preventivas da semana</h1>
+        <div class="per" id="periodo">&nbsp;</div>
+      </div>
+      <div class="top-actions">
+        <span class="sync" id="sync" data-s="local" title="Somente neste aparelho"><i></i><span>Local</span></span>
+        <button class="icon-btn" id="btnLogout" type="button" aria-label="Sair" hidden>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+        <button class="icon-btn" id="btnTheme" type="button" aria-label="Alternar modo claro e escuro">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="tabs" id="tabs" role="tablist" aria-label="Filial"></div>
+  </div>
+</header>
+
+<main id="app" data-filial="SSF">
+  <div class="banner" id="banner"></div>
+  <div class="notice" id="notice" hidden></div>
+  <input type="file" id="file" accept=".xlsx,.xlsm,.xls" hidden>
+  <input type="file" id="fileRefs" accept=".xlsx,.xlsm,.xls" hidden>
+
+  <section class="metrics" id="metrics" aria-label="Indicadores da filial"></section>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="Buscar patrimônio, cliente, cidade ou modelo" autocomplete="off" aria-label="Buscar equipamentos">
+  </div>
+  <div class="tb-row">
+    <button class="btn" id="btnF" type="button" aria-expanded="false" aria-controls="filters">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+      Filtros <span class="cnt" id="fBadge" hidden>0</span>
+    </button>
+    <div class="seg" id="viewSeg" role="group" aria-label="Tipo de visão">
+      <button type="button" data-v="regioes" aria-pressed="true">Regiões</button>
+      <button type="button" data-v="cidade" aria-pressed="false">Por cidade</button>
+    </div>
+  </div>
+  <div class="filters" id="filters" hidden>
+    <label>Status<select id="fStatus"></select></label>
+    <label>Previsão semanal<select id="fPrev"></select></label>
+    <label>Técnico<select id="fTec"></select></label>
+    <label>Ação recomendada<select id="fAcao"></select></label>
+    <button class="btn" id="btnClear" type="button">Limpar filtros e busca</button>
+  </div>
+
+  <div id="list"></div>
+  <div id="removed"></div>
+</main>
+<div class="auth" id="auth" hidden>
+  <form class="auth-card" id="authForm" autocomplete="on">
+    <h2>Preventivas da semana</h2>
+    <p>Acesso privado. Entre para ver e sincronizar seus dados.</p>
+    <label for="authEmail">E-mail</label>
+    <input id="authEmail" name="email" type="email" autocomplete="username" required>
+    <label for="authPass">Senha</label>
+    <input id="authPass" name="password" type="password" autocomplete="current-password" required>
+    <div class="auth-err" id="authErr" role="alert"></div>
+    <button class="btn" id="authBtn" type="submit">Entrar</button>
+  </form>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ---------- constantes ---------- */
+var FILIAIS=[
+  {key:"BA - SSF",code:"SSF",sheet:"Plano_SSF"},
+  {key:"BA - LDM",code:"LDM",sheet:"Plano_LDM"}
+];
+var TECS=["Anderson Santos","Gercelino Mascarenhas","Jairo Alves","Rafael Torres","Marivaldo Pimentel"];
+var PREV_OPTS=["1ª semana","2ª semana","3ª semana","4ª semana","5ª semana","NÃO REALIZAR"];
+var ACOES=["Realizado","Agendado","Definir semana","Programado"];
+var MSG_VAZIO="Nenhum equipamento previsto para esta filial nesta semana.";
+var KEYS={filial:"filial",cliente:"cliente",patrimonio:"patrimonio",planos:"planos",modelo:"modelo",cidade:"cidade - estado",dp:"data prevista",status:"status",prev:"previsao semanal",tec:"tecnico",ag:"data agendada",real:"realizado?",obs:"observacoes",acao:"acao recomendada"};
+var KEY_ORDER=["filial","cliente","patrimonio","planos","modelo","cidade","dp","status","prev","tec","ag","real","obs","acao"];
+
+/* ---------- utilidades ---------- */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function norm(s){return String(s==null?"":s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
+function p2(n){return (n<10?"0":"")+n;}
+function titulo(s){
+  var small=["de","do","da","dos","das","e"];
+  return String(s||"").toLowerCase().split(/\s+/).map(function(w,i){
+    return (i>0&&small.indexOf(w)>=0)?w:w.replace(/(^|-)(\p{L})/gu,function(m,a,b){return a+b.toUpperCase();});
+  }).join(" ");
+}
+function fmtCidade(s){
+  s=String(s||"").trim(); if(!s) return "";
+  var m=s.split(/\s+-\s+/); var uf=m.length>1?m.pop().toUpperCase():"";
+  var city=titulo(m.join(" - "));
+  return uf?city+" - "+uf:city;
+}
+function fmtISO(iso){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||"");return m?m[3]+"/"+m[2]+"/"+m[1]:"";}
+function isBlank(r){return !r||r.every(function(c){return c===""||c==null||(typeof c==="string"&&!c.trim());});}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){return false;}
+  if((k==="prev_db_v1"||k==="prev_refs_v1")&&window.__cloudPush) window.__cloudPush(k,v);
+  return true;}
+
+/* ---------- datas vindas do Excel ---------- */
+function toISO(v){
+  var d;
+  if(v instanceof Date&&!isNaN(v)){d=new Date(v.getTime()+12*36e5);}
+  else if(typeof v==="number"&&v>20000){d=new Date(Math.round((v-25569)*864e5)+12*36e5);}
+  else if(typeof v==="string"){
+    var s=v.trim(),m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(m) return m[1]+"-"+m[2]+"-"+m[3];
+    m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if(m) return m[3]+"-"+p2(+m[2])+"-"+p2(+m[1]);
+    return "";
+  } else return "";
+  return d.getUTCFullYear()+"-"+p2(d.getUTCMonth()+1)+"-"+p2(d.getUTCDate());
+}
+function toAg(v){
+  if(v==null||v==="") return "";
+  if(typeof v==="string"){
+    var s=v.trim(); if(!s) return "";
+    var m=s.match(/^(\d{1,2})\/(\d{1,2})$/);
+    if(m) return p2(+m[1])+"/"+p2(+m[2]);
+    var iso=toISO(s);
+    if(iso){var q=iso.split("-");return q[2]+"/"+q[1];}
+    return s;
+  }
+  var iso2=toISO(v);
+  if(iso2){var z=iso2.split("-");return z[2]+"/"+z[1];}
+  return String(v);
+}
+
+/* ---------- regras de negócio ---------- */
+function fin(it){
+  it.acaoRecomendada=it.removido?"Removido do sistema":
+    it.realizado==="Sim"?"Realizado":
+    it.dataAgendada?"Agendado":
+    !it.previsaoSemanal?"Definir semana":
+    "Programado para "+it.previsaoSemanal;
+  it.tom=it.removido?"rem":it.realizado==="Sim"?"sim":it.realizado==="Não"?"nao":it.dataAgendada?"ag":"neu";
+  return it;
+}
+function metrics(items){
+  var t=items.length;
+  var com=items.filter(function(i){return i.previsaoSemanal;}).length;
+  var bl=items.filter(function(i){return i.status==="Backlog";}).length;
+  var ag=items.filter(function(i){return i.dataAgendada;}).length;
+  var re=items.filter(function(i){return i.realizado==="Sim";}).length;
+  var pc=function(x){return t?Math.round(x/t*100):0;};
+  return {total:t,com:com,sem:t-com,backlog:bl,ag:ag,pAg:pc(ag),re:re,pRe:pc(re)};
+}
+
+/* ---------- leitura do Excel ---------- */
+function parseSheet(ws){
+  var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:"",blankrows:true});
+  var periodo="";
+  if(rows[1]){for(var c=0;c<rows[1].length;c++){var v=rows[1][c];if(typeof v==="string"&&v.trim()){periodo=v.trim();break;}}}
+  var items=[],removed=[];
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    if(!r||norm(r[0])!=="filial") continue;
+    var title="";
+    var tr=rows[i-1]||[];
+    for(var k=0;k<tr.length;k++){if(typeof tr[k]==="string"&&tr[k].trim()){title=tr[k].trim();break;}}
+    var isRem=norm(title).indexOf("removidos do sistema")>=0;
+    var idx={};
+    KEY_ORDER.forEach(function(key,pos){
+      var f=r.findIndex(function(h){return norm(h)===KEYS[key];});
+      idx[key]=f>=0?f:pos;
+    });
+    var j=i+1;
+    while(j<rows.length&&!isBlank(rows[j])&&norm(rows[j][0])!=="filial"){
+      var row=rows[j];
+      var g=function(key){return row[idx[key]];};
+      var pat=String(g("patrimonio")==null?"":g("patrimonio")).trim();
+      if(pat){
+        var st=norm(g("status"));
+        var prev=String(g("prev")==null?"":g("prev")).trim();
+        if(norm(prev)==="nao realizar") prev="NÃO REALIZAR";
+        var re=norm(g("real"));
+        var it=fin({
+          regiao:isRem?"":(title||"Não classificado"),
+          cliente:String(g("cliente")||"").trim(),
+          patrimonio:pat,
+          planos:String(g("planos")||"").toLowerCase().split(/\s+/).filter(Boolean),
+          modelo:String(g("modelo")||"").trim(),
+          cidadeEstado:String(g("cidade")||"").trim(),
+          dataPrevista:toISO(g("dp")),
+          status:st==="backlog"?"Backlog":st==="em dia"?"Em dia":String(g("status")||"").trim(),
+          previsaoSemanal:prev,
+          tecnico:String(g("tec")||"").trim(),
+          dataAgendada:toAg(g("ag")),
+          realizado:re==="sim"?"Sim":re==="nao"?"Não":"",
+          observacoes:String(g("obs")||"").trim(),
+          removido:isRem
+        });
+        if(isRem) removed.push(it); else items.push(it);
+      }
+      j++;
+    }
+    i=j;
+  }
+  return {periodo:periodo,items:items,removed:removed};
+}
+function parseWorkbook(wb){
+  var out={periodo:"",filiais:{}},missing=[],found=0;
+  FILIAIS.forEach(function(f){
+    var name=wb.SheetNames.find(function(n){return norm(n)===norm(f.sheet);});
+    if(!name){missing.push(f.sheet);out.filiais[f.key]={items:[],removed:[]};return;}
+    var res=parseSheet(wb.Sheets[name]);
+    found++;
+    if(!out.periodo&&res.periodo) out.periodo=res.periodo;
+    out.filiais[f.key]={items:res.items,removed:res.removed};
+  });
+  if(!found) throw new Error("Não encontrei as abas Plano_SSF, Plano_LDM e Plano_NSS neste arquivo.");
+  out.missing=missing;
+  return out;
+}
+
+/* ---------- exportação crua do sistema ---------- */
+var REFS_PADRAO={"modelos":{"AJUSTENF8336":"ZS1212AC-Li","AJUSTENF8337":"ZS1212AC-Li","DL NF 48652":"ZA14JE-Li","DL. NF 48652":"ZA14JE-Li","TOPE00002":"BA28ERT-Li","TOPE00003":"JCPT0607A-Pb","TOPE00004":"JCPT0607A-Pb","TPTA00001":"JCPT0607A-Pb","TPTA00002":"JCPT0607A-Pb","TPTA00003":"JCPT1212HA-Pb","TPTA00004":"JCPT1008AC-Pb","TPTA00005":"JCPT0607A-Pb","TPTA00006":"JCPT0607DCM-Pb","TPTA00007":"JCPT0607DCM-Pb","TPTA00008":"JCPT0607DCM-Pb","TPTA00009":"JCPT0807AC-Pb","TPTA00010":"JCPT0807AC-Pb","TPTA00011":"JCPT0807AC-Pb","TPTA00012":"JCPT0807AC-Pb","TPTA00013":"JCPT0807AC-Pb","TPTA00014":"JCPT0807AC-Pb","TPTA00015":"JCPT0807AC-Pb","TPTA00016":"JCPT0807AC-Pb","TPTA00017":"JCPT0807AC-Pb","TPTA00018":"JCPT1212AC-Li","TPTA00019":"JCPT1212AC-Li","TPTA00020":"JCPT1412AC-Li","TPTA00021":"JCPT1412AC-Li","TPTA00022":"JCPT1412AC-Li","TPTA00023":"JCPT1412AC-Li","TPTA00024":"JCPT1612AC-Li","TPTA00025":"JCPT1612AC-Li","TPTA00026":"ZA14JE-Li","TPTA00027":"JCPT1212AC-Li","TPTA00028":"JCPT1212HA-Pb","TPTA00029":"JCPT1212HA-Pb","TPTA00030":"JCPT1212HA-Pb","TPTA00031":"JCPT1212HA-Pb","TPTA00032":"JCPT0807AC-Pb","TPTA00033":"JCPT0807AC-Pb","TPTA000337":"BA28HRT-Hi","TPTA00034":"JCPT1212AC-Li","TPTA00035":"JCPT1212AC-Li","TPTA00036":"JCPT1008AC-Pb","TPTA00037":"JCPT1008AC-Pb","TPTA00038":"JCPT1412AC-Li","TPTA00039":"JCPT1212AC-Li","TPTA00040":"JCPT1212AC-Li","TPTA00041":"JCPT1412AC-Li","TPTA00042":"JCPT1412AC-Li","TPTA00043":"JCPT1412AC-Li","TPTA00044":"JCPT1612AC-Li","TPTA00045":"JCPT1612AC-Li","TPTA00046":"JCPT1412AC-Li","TPTA00047":"JCPT1412AC-Li","TPTA00048":"JCPT1412AC-Li","TPTA00049":"JCPT1412AC-Li","TPTA00050":"JCPT1212AC-Li","TPTA00051":"JCPT1212AC-Li","TPTA00052":"JCPT1212AC-Li","TPTA00053":"JCPT1212AC-Li","TPTA00054":"JCPT1212AC-Li","TPTA00055":"JCPT1212AC-Li","TPTA00056":"JCPT1212AC-Li","TPTA00057":"JCPT1212AC-Li","TPTA00058":"JCPT1212AC-Li","TPTA00059":"JCPT1212AC-Li","TPTA00060":"JCPT0607DCM-Pb","TPTA00061":"JCPT0607DCM-Pb","TPTA00062":"JCPT1212AC-Li","TPTA00063":"JCPT1212AC-Li","TPTA00064":"JCPT1212AC-Li","TPTA00065":"BA20ERT-Li","TPTA00066":"JCPT0807AC-Pb","TPTA00067":"JCPT1612AC-Li","TPTA00068":"JCPT1612AC-Li","TPTA00069":"JCPT1412AC-Li","TPTA00070":"JCPT1412AC-Li","TPTA00071":"JCPT1412AC-Li","TPTA00072":"JCPT1412AC-Li","TPTA00073":"JCPT0807AC-Pb","TPTA00074":"JCPT0807AC-Pb","TPTA00075":"JCPT0607DCM-Pb","TPTA00076":"JCPT0607DCM-Pb","TPTA00077":"JCPT0607DCM-Pb","TPTA00078":"JCPT0807AC-Pb","TPTA00079":"JCPT0807AC-Pb","TPTA00080":"JCPT0807AC-Pb","TPTA00081":"JCPT0807AC-Pb","TPTA00082":"JCPT0807AC-Pb","TPTA00083":"JCPT0807AC-Pb","TPTA00084":"JCPT0807AC-Pb","TPTA00085":"JCPT0807AC-Pb","TPTA00086":"JCPT0807AC-Pb","TPTA00087":"JCPT1212AC-Li","TPTA00088":"JCPT1212AC-Li","TPTA00089":"JCPT1412AC-Li","TPTA00090":"JCPT1412AC-Li","TPTA00091":"JCPT1212AC-Li","TPTA00092":"JCPT1212AC-Li","TPTA00093":"JCPT0607DCM-Pb","TPTA00094":"JCPT0607DCM-Pb","TPTA00095":"JCPT0607DCM-Pb","TPTA00096":"JCPT0607DCM-Pb","TPTA00097":"JCPT0607DCM-Pb","TPTA00098":"ZA14JE-Li","TPTA00099":"ZA14JE-Li","TPTA00100":"ZA14JE-Li","TPTA00101":"ZA14JE-Li","TPTA00102":"ZA14JE-Li","TPTA00103":"ZA14JE-Li","TPTA00104":"ZA14JE-Li","TPTA00105":"ZA14JE-Li","TPTA00106":"ZA14JE-Li","TPTA00107":"ZA14JE-Li","TPTA00108":"ZA14JE-Li","TPTA00109":"ZA14JE-Li","TPTA00110":"ZA14JE-Li","TPTA00111":"ZA14JE-Li","TPTA00112":"ZA14JE-Li","TPTA00113":"ZA14JE-Li","TPTA00114":"ZA14JE-Li","TPTA00115":"ZA14JE-Li","TPTA00116":"ZA14JE-Li","TPTA00117":"ZA14JE-Li","TPTA00118":"ZS0808AC-Li","TPTA00119":"ZS0808AC-Li","TPTA00120":"ZS0808AC-Li","TPTA00121":"ZS0808AC-Li","TPTA00122":"ZS0808AC-Li","TPTA00123":"ZS0808AC-Li","TPTA00124":"ZS0808AC-Li","TPTA00125":"ZS0808AC-Li","TPTA00126":"ZS0808AC-Li","TPTA00127":"ZS0808AC-Li","TPTA00128":"ZS0808AC-Li","TPTA00129":"ZS0808AC-Li","TPTA00130":"ZS0808AC-Li","TPTA00131":"ZS0808AC-Li","TPTA00132":"ZS0808AC-Li","TPTA00133":"ZS0808AC-Li","TPTA00134":"ZS0808AC-Li","TPTA00135":"ZS0808AC-Li","TPTA00136":"ZS0808AC-Li","TPTA00137":"ZS0808AC-Li","TPTA00138":"ZS0808AC-Li","TPTA00139":"ZS0808AC-Li","TPTA00140":"ZS0808AC-Li","TPTA00141":"ZS0808AC-Li","TPTA00142":"ZS0808AC-Li","TPTA00143":"ZS0808AC-Li","TPTA00144":"ZS0808AC-Li","TPTA00145":"ZS0808AC-Li","TPTA00146":"ZS0808AC-Li","TPTA00147":"ZS0808AC-Li","TPTA00148":"ZS0407DC-Li","TPTA00149":"BA22ERT-Li","TPTA00150":"JCPT1412AC-Li","TPTA00151":"JCPT1412AC-Li","TPTA00152":"JCPT1412AC-Li","TPTA00153":"JCPT1412AC-Li","TPTA00154":"JCPT1412AC-Li","TPTA00155":"JCPT0807AC-Pb","TPTA00156":"JCPT0807AC-Pb","TPTA00157":"JCPT0807AC-Pb","TPTA00158":"JCPT0807AC-Pb","TPTA00159":"JCPT0807AC-Pb","TPTA00160":"JCPT0807AC-Pb","TPTA00161":"JCPT1212AC-Li","TPTA00162":"JCPT1212AC-Li","TPTA00163":"JCPT1212AC-Li","TPTA00164":"JCPT1212AC-Li","TPTA00165":"JCPT1212AC-Li","TPTA00166":"JCPT1412AC-Li","TPTA00167":"JCPT1412AC-Li","TPTA00168":"JCPT1212AC-Li","TPTA00169":"JCPT1212AC-Li","TPTA00170":"JCPT1212AC-Li","TPTA00171":"JCPT1212AC-Li","TPTA00172":"BA20ERT-Li","TPTA00173":"JCPT1612AC-Li","TPTA00174":"JCPT1612AC-Li","TPTA00175":"JCPT1612AC-Li","TPTA00176":"JCPT1412AC-Li","TPTA00177":"JCPT1412AC-Li","TPTA00178":"JCPT1412AC-Li","TPTA00179":"JCPT1412AC-Li","TPTA00180":"JCPT1412AC-Li","TPTA00181":"JCPT1212AC-Li","TPTA00182":"JCPT1212AC-Li","TPTA00183":"JCPT1212AC-Li","TPTA00184":"JCPT1212AC-Li","TPTA00185":"JCPT0807AC-Pb","TPTA00186":"JCPT0807AC-Pb","TPTA00187":"JCPT0807AC-Pb","TPTA00188":"JCPT0807AC-Pb","TPTA00189":"JCPT0807AC-Pb","TPTA00190":"BA16NE-Li","TPTA00191":"BA16NE-Li","TPTA00192":"BA16NE-Li","TPTA00193":"BA16NE-Li","TPTA00194":"BA16NE-Li","TPTA00195":"BA16NE-Li","TPTA00196":"BA16NE-Li","TPTA00197":"BA16NE-Li","TPTA00198":"BA16NE-Li","TPTA00199":"BA16NE-Li","TPTA00200":"BA16NE-Li","TPTA00201":"JCPT1612AC-Li","TPTA00202":"JCPT1612AC-Li","TPTA00203":"JCPT1612AC-Li","TPTA00204":"BA16NE-Li","TPTA00205":"JCPT1412AC-Li","TPTA00206":"JCPT1412AC-Li","TPTA00207":"BA16NE-Li","TPTA00208":"BA16NE-Li","TPTA00209":"BA16NE-Li","TPTA00210":"BA16NE-Li","TPTA00211":"JCPT0607DCM-Pb","TPTA00212":"JCPT0607DCM-Pb","TPTA00213":"JCPT0607DCM-Pb","TPTA00214":"JCPT0607DCM-Pb","TPTA00215":"JCPT0607DCM-Pb","TPTA00216":"JCPT0607DCM-Pb","TPTA00217":"JCPT0607DCM-Pb","TPTA00218":"JCPT0607DCM-Pb","TPTA00219":"JCPT0607DCM-Pb","TPTA00220":"JCPT0607DCM-Pb","TPTA00221":"JCPT0607DCM-Pb","TPTA00222":"JCPT0607DCM-Pb","TPTA00223":"JCPT0607DCM-Pb","TPTA00224":"JCPT0607DCM-Pb","TPTA00225":"JCPT0607DCM-Pb","TPTA00226":"JCPT0607DCM-Pb","TPTA00227":"JCPT0607DCM-Pb","TPTA00228":"JCPT0607DCM-Pb","TPTA00229":"JCPT0607DCM-Pb","TPTA00230":"JCPT0607DCM-Pb","TPTA00231":"JCPT0807AC-Pb","TPTA00232":"JCPT0807AC-Pb","TPTA00233":"JCPT0807AC-Pb","TPTA00234":"JCPT0807AC-Pb","TPTA00235":"JCPT0807AC-Pb","TPTA00236":"JCPT0807AC-Pb","TPTA00237":"JCPT0807AC-Pb","TPTA00238":"JCPT0807AC-Pb","TPTA00239":"JCPT0807AC-Pb","TPTA00240":"JCPT0807AC-Pb","TPTA00241":"BA16NE-Li","TPTA00242":"BA16NE-Li","TPTA00243":"BA16NE-Li","TPTA00244":"JCPT0807AC-Pb","TPTA00245":"BA28ERT-Li","TPTA00246":"BA28ERT-Li","TPTA00247":"ZA14JE-Li","TPTA00248":"ZA14JE-Li","TPTA00249":"ZA14JE-Li","TPTA00250":"ZA14JE-Li","TPTA00251":"BA20ERT-Li","TPTA00252":"JCPT1008AC-Li","TPTA00253":"JCPT1008AC-Li","TPTA00254":"JCPT1008AC-Li","TPTA00255":"JCPT1008AC-Li","TPTA00256":"JCPT1008AC-Li","TPTA00257":"JCPT1008AC-Li","TPTA00258":"JCPT0807AC-Pb","TPTA00259":"BA20ERT-Li","TPTA00260":"BA16NE-Li","TPTA00261":"BA16NE-Li","TPTA00262":"JCPT1008AC-Li","TPTA00263":"JCPT1008AC-Li","TPTA00264":"JCPT1008AC-Li","TPTA00265":"JCPT1008AC-Li","TPTA00266":"BA20ERT-Li","TPTA00267":"BA20ERT-Li","TPTA00268":"BA20ERT-Li","TPTA00269":"JCPT1008AC-Li","TPTA00270":"JCPT1008AC-Li","TPTA00271":"JCPT1008AC-Li","TPTA00272":"JCPT1008AC-Li","TPTA00273":"JCPT1008AC-Li","TPTA00274":"JCPT1008AC-Li","TPTA00275":"JCPT1008AC-Li","TPTA00276":"JCPT1008AC-Li","TPTA00277":"JCPT1008AC-Li","TPTA00278":"JCPT1008AC-Li","TPTA00279":"JCPT1008AC-Li","TPTA00280":"JCPT1008AC-Li","TPTA00281":"JCPT1008AC-Li","TPTA00282":"JCPT1008AC-Li","TPTA00283":"JCPT1008AC-Li","TPTA00284":"JCPT1008AC-Li","TPTA00285":"JCPT1008AC-Li","TPTA00286":"JCPT1008AC-Li","TPTA00287":"JCPT1008AC-Li","TPTA00288":"JCPT1008AC-Li","TPTA00289":"JCPT1612AC-Li","TPTA00290":"JCPT1612AC-Li","TPTA00291":"JCPT1612AC-Li","TPTA00292":"JCPT1612AC-Li","TPTA00293":"JCPT1612AC-Li","TPTA00294":"JCPT1612AC-Li","TPTA00295":"JCPT1612AC-Li","TPTA00296":"JCPT1612AC-Li","TPTA00297":"JCPT1612AC-Li","TPTA00298":"JCPT1612AC-Li","TPTA00299":"JCPT1612AC-Li","TPTA00300":"JCPT1212AC-Li","TPTA00301":"JCPT1412AC-Li","TPTA00302":"JCPT1412AC-Li","TPTA00303":"JCPT1412AC-Li","TPTA00304":"JCPT1412AC-Li","TPTA00305":"JCPT1412AC-Li","TPTA00306":"JCPT1412AC-Li","TPTA00307":"JCPT1412AC-Li","TPTA00308":"JCPT1412AC-Li","TPTA00309":"JCPT1412AC-Li","TPTA00310":"JCPT1412AC-Li","TPTA00311":"JCPT1412AC-Li","TPTA00312":"JCPT1412AC-Li","TPTA00313":"JCPT1412AC-Li","TPTA00314":"JCPT1412AC-Li","TPTA00315":"JCPT1412AC-Li","TPTA00316":"JCPT1412AC-Li","TPTA00317":"JCPT1412AC-Li","TPTA00318":"BA16NE-Li","TPTA00319":"BA16NE-Li","TPTA00320":"BA16NE-Li","TPTA00321":"BA16NE-Li","TPTA00322":"BA16NE-Li","TPTA00323":"BA16NE-Li","TPTA00324":"JCPT1212AC-Li","TPTA00325":"JCPT1212AC-Li","TPTA00326":"JCPT1212AC-Li","TPTA00327":"JCPT1212AC-Li","TPTA00328":"JCPT1412AC-Li","TPTA00329":"JCPT1412AC-Li","TPTA00330":"JCPT1412AC-Li","TPTA00331":"JCPT1412AC-Li","TPTA00332":"JCPT1412AC-Li","TPTA00333":"JCPT1412AC-Li","TPTA00334":"BA16NE-Li","TPTA00335":"BA16NE-Li","TPTA00336":"BA16NE-Li","TPTA00337":"BA28HRT-Hi","TPTA00338":"ZS1012AC-Li","TPTA00339":"ZS1012AC-Li","TPTA00340":"ZS1012AC-Li","TPTA00341":"ZS1012AC-Li","TPTA00342":"ZS1212AC-Li","TPTA00343":"ZS1212AC-Li","TPTA00344":"ZS1212AC-Li","TPTA00345":"ZS1212AC-Li","TPTA00346":"BA20ERT-Li","TPTA00347":"BA20ERT-Li","TPTA00348":"BA20ERT-Li","TPTA00349":"BA20ERT-Li","TPTA00350":"BA20ERT-Li","TPTA00351":"BA20ERT-Li","TPTA00352":"JCPT1212AC-Li","TPTA00353":"JCPT1212AC-Li","TPTA00354":"JCPT1212AC-Li","TPTA00355":"JCPT1212AC-Li","TPTA00356":"JCPT1212AC-Li","TPTA00357":"JCPT1212AC-Li","TPTA00358":"JCPT1212AC-Li","TPTA00359":"JCPT1212AC-Li","TPTA00360":"JCPT1212AC-Li","TPTA00361":"JCPT1212AC-Li","TPTA00362":"JCPT1212AC-Li","TPTA00363":"JCPT1212AC-Li","TPTA00364":"JCPT1212AC-Li","TPTA00365":"JCPT1212AC-Li","TPTA00366":"JCPT1212AC-Li","TPTA00367":"JCPT1212AC-Li","TPTA00368":"JCPT1212AC-Li","TPTA00369":"JCPT1212AC-Li","TPTA00370":"ZS1012AC-Li","TPTA00371":"ZS1012AC-Li","TPTA00372":"ZS1012AC-Li","TPTA00373":"ZS1012AC-Li","TPTA00374":"ZS1212AC-Li","TPTA00375":"ZS1212AC-Li","TPTA00376":"ZS1212AC-Li","TPTA00377":"ZS1212AC-Li","TPTA00378":"BA20ERT-Li","TPTA00379":"BA20ERT-Li","TPTA00380":"BA20ERT-Li","TPTA00381":"BA20ERT-Li","TPTA00382":"BA16NE-Li","TPTA00383":"BA16NE-Li","TPTA00384":"BA16NE-Li","TPTA00385":"BA16NE-Li","TPTA00386":"BA16NE-Li","TPTA00387":"BA16NE-Li","TPTA00388":"BA16NE-Li","TPTA00389":"JCPT0807AC-Pb","TPTA00390":"BA16NE-Li","TPTA00391":"JCPT1212AC-Li","TPTA00392":"JCPT1212AC-Li","TPTA00393":"JCPT1212AC-Li","TPTA00394":"JCPT1212AC-Li","TPTA00395":"JCPT1212AC-Li","TPTA00396":"JCPT1212AC-Li","TPTA00397":"JCPT1212AC-Li","TPTA00398":"JCPT1212AC-Li","TPTA00399":"JCPT1212AC-Li","TPTA00400":"JCPT1212AC-Li","TPTA00401":"JCPT1212AC-Li","TPTA00402":"JCPT1212AC-Li","TPTA00403":"BA20ERT-Li","TPTA00404":"BA20ERT-Li","TPTA00405":"BA20ERT-Li","TPTA00406":"BA20ERT-Li","TPTA00407":"BA20ERT-Li","TPTA00408":"JCPT0807AC-Pb","TPTA00409":"JCPT0807AC-Pb","TPTA00410":"JCPT0807AC-Pb","TPTA00411":"JCPT0807AC-Pb","TPTA00412":"JCPT0807AC-Pb","TPTA00413":"JCPT0807AC-Pb","TPTA00414":"JCPT0807AC-Pb","TPTA00415":"JCPT0807AC-Pb","TPTA00416":"JCPT0807AC-Pb","TPTA00417":"JCPT0807AC-Pb","TPTA00418":"JCPT1612AC-Li","TPTA00419":"JCPT1612AC-Li","TPTA00420":"JCPT1612AC-Li","TPTA00421":"JCPT1612AC-Li","TPTA00422":"JCPT1612AC-Li","TPTA00423":"JCPT1612AC-Li","TPTA00424":"JCPT1612AC-Li","TPTA00425":"JCPT1612AC-Li","TPTA00426":"JCPT1612AC-Li","TPTA00427":"JCPT0807AC-Pb","TPTA00428":"JCPT0807AC-Pb","TPTA00429":"JCPT0807AC-Pb","TPTA00430":"JCPT0807AC-Pb","TPTA00431":"JCPT0807AC-Pb","TPTA00432":"BA28ERT-Li","TPTA00433":"BA28ERT-Li","TPTA00434":"BA28ERT-Li","TPTA00435":"BA28ERT-Li","TPTA00436":"JCPT0607DCM-Pb","TPTA00437":"JCPT0607DCM-Pb","TPTA00438":"JCPT0607DCM-Pb","TPTA00439":"JCPT0607DCM-Pb","TPTA00440":"JCPT0607DCM-Pb","TPTA00441":"JCPT0607DCM-Pb","TPTA00442":"JCPT0607DCM-Pb","TPTA00443":"JCPT0607DCM-Pb","TPTA00444":"JCPT0607DCM-Pb","TPTA00445":"JCPT0607DCM-Pb","TPTA00446":"JCPT0607DCM-Pb","TPTA00447":"JCPT0607DCM-Pb","TPTA00448":"JCPT0607DCM-Pb","TPTA00449":"JCPT0607DCM-Pb","TPTA00450":"JCPT0607DCM-Pb","TPTA00451":"JCPT0607DCM-Pb","TPTA00452":"JCPT0607DCM-Pb","TPTA00453":"JCPT0607DCM-Pb","TPTA00454":"JCPT0607DCM-Pb","TPTA00455":"JCPT0607DCM-Pb","TPTA00456":"JCPT0607DCM-Pb","TPTA00457":"JCPT0607DCM-Pb","TPTA00458":"JCPT0607DCM-Pb","TPTA00459":"JCPT0607DCM-Pb","TPTA00460":"JCPT0607DCM-Pb","TPTA00461":"JCPT0607DCM-Pb","TPTA00462":"JCPT0607DCM-Pb","TPTA00463":"JCPT0607DCM-Pb","TPTA00464":"JCPT0607DCM-Pb","TPTA00465":"JCPT0607DCM-Pb","TPTA00466":"JCPT0607DCM-Pb","TPTA00467":"JCPT0607DCM-Pb","TPTA00468":"JCPT0607DCM-Pb","TPTA00469":"JCPT0607DCM-Pb","TPTA00470":"JCPT0607DCM-Pb","TPTA00471":"JCPT0607DCM-Pb","TPTA00472":"JCPT0607DCM-Pb","TPTA00473":"JCPT0607DCM-Pb","TPTA00474":"JCPT0607DCM-Pb","TPTA00475":"JCPT0607DCM-Pb","TPTA00476":"JCPT0607DCM-Pb","TPTA00477":"JCPT0607DCM-Pb","TPTA00478":"JCPT0607DCM-Pb","TPTA00479":"JCPT0607DCM-Pb","TPTA00480":"JCPT0607DCM-Pb","TPTA00481":"JCPT0607DCM-Pb","TPTA00482":"JCPT0607DCM-Pb","TPTA00483":"JCPT0607DCM-Pb","TPTA00484":"JCPT0607DCM-Pb","TPTA00485":"JCPT0607DCM-Pb","TPTA00486":"BA16NE-Li","TPTA00487":"BA16NE-Li","TPTA00488":"BA16NE-Li","TPTA00489":"BA16NE-Li","TPTA00490":"BA16NE-Li","TPTA00491":"BA16NE-Li","TPTA00492":"BA16NE-Li","TPTA00493":"BA16NE-Li","TPTA00494":"BA16NE-Li","TPTA00495":"BA16NE-Li","TPTA00496":"BA16NE-Li","TPTA00497":"BA16NE-Li","TPTA00498":"BA16NE-Li","TPTA00499":"BA16NE-Li","TPTA00500":"BA16NE-Li","TPTA00501":"BA16NE-Li","TPTA00502":"BA16NE-Li","TPTA00503":"BA16NE-Li","TPTA00504":"JCPT0807AC-Pb","TPTA00505":"JCPT0807AC-Pb","TPTA00506":"JCPT0807AC-Pb","TPTA00507":"JCPT0807AC-Pb","TPTA00508":"JCPT0807AC-Pb","TPTA00509":"JCPT0807AC-Pb","TPTA00510":"JCPT0807AC-Pb","TPTA00511":"JCPT0807AC-Pb","TPTA00512":"JCPT0807AC-Pb","TPTA00513":"JCPT0807AC-Pb","TPTA00514":"JCPT0607A-Pb","TPTA00515":"JCPT0807AC-Pb","TPTA00516":"JCPT0807AC-Pb","TPTA00517":"JCPT0807AC-Pb","TPTA00518":"ZA14JE-Li","TPTA00519":"ZA14JE-Li","TPTA00520":"ZA14JE-Li","TPTA00521":"ZA14JE-Li","TPTA00522":"ZA14JE-Li","TPTA00523":"ZA14JE-Li","TPTA00524":"ZA14JE-Li","TPTA00525":"ZA14JE-Li","TPTA00526":"ZA14JE-Li","TPTA00527":"ZA14JE-Li","TPTA00528":"ZA14JE-Li","TPTA00529":"ZA14JE-Li","TPTA00530":"ZA14JE-Li","TPTA00531":"ZA14JE-Li","TPTA00532":"BA16NE-Li","TPTA00533":"ZA16JERT-Li","TPTA00534":"ZA16JERT-Li","TPTA00535":"ZA16JERT-Li","TPTA00536":"ZA16JERT-Li","TPTA00537":"ZA16JERT-Li","TPTA00538":"ZA16JERT-Li","TPTA00539":"ZA16JERT-Li","TPTA00540":"ZA16JERT-Li","TPTA00541":"ZA16JERT-Li","TPTA00542":"ZA16JERT-Li","TPTA00543":"ZA16JERT-Li","TPTA00544":"ZA16JERT-Li","TPTA00545":"ZA16JERT-Li","TPTA00546":"ZA16JERT-Li","TPTA00547":"ZA16JERT-Li","TPTA00548":"ZA16JERT-Li","TPTA00549":"ZA16JERT-Li","TPTA00550":"ZA16JERT-Li","TPTA00551":"ZA16JERT-Li","TPTA00552":"ZA16JERT-Li","TPTA00553":"JCPT0607DCM-Pb","TPTA00554":"JCPT0607DCM-Pb","TPTA00555":"JCPT0607DCM-Pb","TPTA00556":"JCPT0607DCM-Pb","TPTA00557":"JCPT0607DCM-Pb","TPTA00558":"JCPT0607DCM-Pb","TPTA00559":"JCPT0607DCM-Pb","TPTA00560":"JCPT0607DCM-Pb","TPTA00561":"JCPT0607DCM-Pb","TPTA00562":"JCPT0607DCM-Pb","TPTA00563":"JCPT0607DCM-Pb","TPTA00564":"JCPT0607DCM-Pb","TPTA00565":"JCPT0607DCM-Pb","TPTA00566":"JCPT0607DCM-Pb","TPTA00567":"JCPT0607DCM-Pb","TPTA00568":"JCPT0607DCM-Pb","TPTA00569":"JCPT0607DCM-Pb","TPTA00570":"JCPT0607DCM-Pb","TPTA00571":"JCPT0607DCM-Pb","TPTA00572":"JCPT0607DCM-Pb","TPTA00573":"JCPT0607DCM-Pb","TPTA00574":"JCPT0607DCM-Pb","TPTA00575":"JCPT0607DCM-Pb","TPTA00576":"JCPT0607DCM-Pb","TPTA00577":"BA16NE-Li","TPTA00578":"BA16NE-Li","TPTA00579":"BA16NE-Li","TPTA00580":"BA16NE-Li","TPTA00581":"ZA14JE-Li","TPTA00582":"ZA14JE-Li","TPTA00583":"ZA14JE-Li","TPTA00584":"ZA14JE-Li","TPTA00585":"ZA14JE-Li","TPTA00586":"ZA14JE-Li","TPTA00587":"ZA14JE-Li","TPTA00588":"ZA14JE-Li","TPTA00589":"ZA14JE-Li","TPTA00590":"ZA14JE-Li","TPTA00591":"ZA14JE-Li","TPTA00592":"ZA14JE-Li","TPTA00593":"ZA14JE-Li","TPTA00594":"ZA14JE-Li","TPTA00595":"ZA14JE-Li","TPTA00596":"ZA14JE-Li","TPTA00597":"ZA14JE-Li","TPTA00598":"BA16NE-Li","TPTA00599":"BA16NE-Li","TPTA00600":"BA16NE-Li","TPTA00601":"BA16NE-Li","TPTA00602":"BA16NE-Li","TPTA00603":"BA16NE-Li","TPTA00604":"BA16NE-Li","TPTA00605":"BA16NE-Li","TPTA00606":"BA16NE-Li","TPTA00607":"BA16NE-Li","TPTA00608":"BA16NE-Li","TPTA00609":"BA16NE-Li","TPTA00610":"BA16NE-Li","TPTA00611":"BA16NE-Li","TPTA00612":"BA16NE-Li","TPTA00613":"JCPT1612AC-Li","TPTA00614":"JCPT1412AC-Li","TPTA00615":"JCPT1412AC-Li","TPTA00616":"JCPT0607DCM-Pb","TPTA00617":"JCPT0607DCM-Pb","TPTA00618":"JCPT0607DCM-Pb","TPTA00619":"JCPT0607DCM-Pb","TPTA00620":"JCPT0607DCM-Pb","TPTA00621":"JCPT0607DCM-Pb","TPTA00622":"JCPT0607DCM-Pb","TPTA00623":"JCPT0607DCM-Pb","TPTA00624":"JCPT0607DCM-Pb","TPTA00625":"JCPT0607DCM-Pb","TPTA00626":"JCPT0607DCM-Pb","TPTA00627":"BA20ERT-Li","TPTA00628":"BA20ERT-Li","TPTA00629":"BA20ERT-Li","TPTA00630":"BA20ERT-Li","TPTA00631":"BA20ERT-Li","TPTA00632":"JCPT1212AC-Li","TPTA00633":"JCPT1212AC-Li","TPTA00634":"JCPT1212AC-Li","TPTA00635":"JCPT1212AC-Li","TPTA00636":"JCPT1212AC-Li","TPTA00637":"JCPT1212AC-Li","TPTA00638":"JCPT1212AC-Li","TPTA00639":"JCPT1212AC-Li","TPTA00640":"JCPT1212AC-Li","TPTA00641":"JCPT1212AC-Li","TPTA00642":"BA24ERT-Li","TPTA00643":"BA24ERT-Li","TPTA00644":"JCPT1008AC-Li","TPTA00645":"JCPT1008AC-Li","TPTA00646":"JCPT1412AC-Li","TPTA00647":"JCPT1412AC-Li","TPTA00648":"JCPT1412AC-Li","TPTA00649":"JCPT1412AC-Li","TPTA00650":"JCPT1412AC-Li","TPTA00651":"JCPT1412AC-Li","TPTA00652":"BA28ERT-Li","TPTA00653":"BA28ERT-Li","TPTA00654":"BA28ERT-Li","TPTA00655":"BA28ERT-Li","TPTA00656":"BA28ERT-Li","TPTA00657":"JCPT0807AC-Pb","TPTA00658":"JCPT0807AC-Pb","TPTA00659":"JCPT0807AC-Pb","TPTA00660":"JCPT0807AC-Pb","TPTA00661":"JCPT0807AC-Pb","TPTA00662":"JCPT0807AC-Pb","TPTA00663":"JCPT0807AC-Pb","TPTA00664":"JCPT0807AC-Pb","TPTA00665":"JCPT0807AC-Pb","TPTA00666":"JCPT0807AC-Pb","TPTA00667":"JCPT0807AC-Pb","TPTA00668":"JCPT0807AC-Pb","TPTA00669":"JCPT0807AC-Pb","TPTA00670":"JCPT0807AC-Pb","TPTA00671":"JCPT0807AC-Pb","TPTA00672":"JCPT0807AC-Pb","TPTA00673":"JCPT0807AC-Pb","TPTA00674":"JCPT0807AC-Pb","TPTA00675":"JCPT0807AC-Pb","TPTA00676":"JCPT0807AC-Pb","TPTA00677":"JCPT0807AC-Pb","TPTA00678":"BA16NE-Li","TPTA00679":"BA16NE-Li","TPTA00680":"BA16NE-Li","TPTA00681":"BA16NE-Li","TPTA00682":"BA16NE-Li","TPTA00683":"BA16NE-Li","TPTA00684":"BA16NE-Li","TPTA00685":"BA16NE-Li","TPTA00686":"BA16NE-Li","TPTA00687":"BA16NE-Li","TPTA00688":"JCPT1823DCB-Pb","TPTA00689":"JCPT1612AC-Li","TPTA00690":"JCPT1612AC-Li","TPTA00691":"JCPT1612AC-Li","TPTA00692":"JCPT1612AC-Li","TPTA00693":"BA16NE-Li","TPTA00694":"BA16NE-Li","TPTA00695":"BA16NE-Li","TPTA00696":"BA16NE-Li","TPTA00697":"BA16NE-Li","TPTA00698":"BA16NE-Li","TPTA00699":"BA16NE-Li","TPTA00700":"BA16NE-Li","TPTA00701":"JCPT0807AC-Pb","TPTA00702":"JCPT0807AC-Pb","TPTA00703":"JCPT0807AC-Pb","TPTA00704":"JCPT0807AC-Pb","TPTA00705":"JCPT0807AC-Pb","TPTA00706":"JCPT0807AC-Pb","TPTA00707":"BA20ERT-Li","TPTA00708":"ZS0808AC-LI","TPTA00709":"ZS0808AC-LI","TPTA00710":"ZS0808AC-LI","TPTA00711":"ZS0808AC-LI","TPTA00712":"ZS0808AC-LI","TPTA00713":"ZS1012AC-LI","TPTA00714":"ZS1012AC-LI","TPTA00715":"ZS1012AC-LI","TPTA00716":"ZS1012AC-LI","TPTA00717":"ZS1414AC-Li","TPTA00718":"ZS1414AC-Li","TPTA00719":"ZS1414AC-Li","TPTA00720":"ZS1414AC-Li","TPTA00721":"ZS1414AC-Li","TPTA00722":"ZS1414AC-Li","TPTA00723":"ZS1414AC-Li","TPTA00724":"ZS1414AC-Li","TPTA00725":"JCPT1612AC-Li","TPTA00726":"JCPT1612AC-Li","TPTA00727":"JCPT1612AC-Li","TPTA00728":"JCPT1612AC-Li","TPTA00729":"JCPT1612AC-Li","TPTA00730":"JCPT1612AC-Li","TPTA00731":"JCPT1612AC-Li","TPTA00732":"JCPT1612AC-Li","TPTA00733":"JCPT1612AC-Li","TPTA00734":"JCPT1612AC-Li","TPTA00735":"JCPT1612AC-Li","TPTA00736":"JCPT1612AC-Li","TPTA00737":"JCPT1612AC-Li","TPTA00738":"JCPT1612AC-Li","TPTA00739":"JCPT1612AC-Li","TPTA00740":"JCPT1612AC-Li","TPTA00741":"JCPT1612AC-Li","TPTA00742":"BA20ERT-Li","TPTA00743":"BA20ERT-Li","TPTA00744":"JCPT1412AC-Li","TPTA00745":"JCPT1412AC-Li","TPTA00746":"JCPT1412AC-Li","TPTA00747":"JCPT1212AC-Li","TPTA00748":"JCPT1212AC-Li","TPTA00749":"JCPT0807AC-Pb","TPTA00750":"JCPT0807AC-Pb","TPTA00751":"JCPT0807AC-Pb","TPTA00752":"JCPT0807AC-Pb","TPTA00753":"JCPT0807AC-Pb","TPTA00754":"BA20ERT-Li","TPTA00755":"BA20ERT-Li","TPTA00756":"BA20ERT-Li","TPTA00757":"BA20ERT-Li","TPTA00758":"BA28ERT-Li","TPTA00759":"JCPT1212AC-Li","TPTA00760":"JCPT1212AC-Li","TPTA00761":"JCPT1212AC-Li","TPTA00762":"JCPT1212AC-Li","TPTA00763":"JCPT1212AC-Li","TPTA00764":"JCPT1212AC-Li","TPTA00765":"JCPT1212AC-Li","TPTA00766":"JCPT1212AC-Li","TPTA00767":"JCPT1212AC-Li","TPTA00768":"JCPT1212AC-Li","TPTA00769":"JCPT1212AC-Li","TPTA00770":"JCPT1212AC-Li","TPTA00771":"JCPT1412AC-Li","TPTA00772":"JCPT1412AC-Li","TPTA00773":"JCPT1412AC-Li","TPTA00774":"JCPT1412AC-Li","TPTA00775":"JCPT1412AC-Li","TPTA00776":"JCPT1412AC-Li","TPTA00777":"ZS0407DC-Pb","TPTA00778":"ZS0407DC-Pb","TPTA00779":"ZS0407DC-Pb","TPTA00780":"ZS0407DC-Pb","TPTA00781":"ZS0407DC-Pb","TPTA00782":"ZS0407DC-Pb","TPTA00783":"ZS0407DC-Pb","TPTA00784":"ZS0407DC-Pb","TPTA00785":"ZS0407DC-Pb","TPTA00786":"ZS0407DC-Pb","TPTA00787":"ZS0407DC-Pb","TPTA00788":"ZS0407DC-Pb","TPTA00789":"ZS0407DC-Pb","TPTA00790":"ZS0407DC-Pb","TPTA00791":"ZS0407DC-Pb","TPTA00792":"ZS0407DC-Pb","TPTA00793":"ZS0407DC-Pb","TPTA00794":"ZS0407DC-Pb","TPTA00795":"ZS0407DC-Pb","TPTA00796":"ZS0407DC-Pb","TPTA00797":"ZS0407DC-Pb","TPTA00798":"ZS0407DC-Pb","TPTA00799":"JCPT0607DCM-Pb","TPTA00800":"JCPT0607DCM-Pb","TPTA00801":"JCPT0607DCM-Pb","TPTA00802":"JCPT0607DCM-Pb","TPTA00803":"JCPT0607DCM-Pb","TPTA00804":"JCPT0607DCM-Pb","TPTA00805":"JCPT0607DCM-Pb","TPTA00806":"JCPT0607DCM-Pb","TPTA00807":"JCPT0607DCM-Pb","TPTA00808":"JCPT0607DCM-Pb","TPTA00809":"JCPT0607DCM-Pb","TPTA00810":"JCPT0607DCM-Pb","TPTA00811":"JCPT0607DCM-Pb","TPTA00812":"JCPT0607DCM-Pb","TPTA00813":"JCPT0607DCM-Pb","TPTA00814":"BA28ERT-Li","TPTA00815":"BA28ERT-Li","TPTA00816":"BA28ERT-Li","TPTA00817":"BA28ERT-Li","TPTA00818":"JCPT0807AC-Pb","TPTA00819":"JCPT0807AC-Pb","TPTA00820":"JCPT0807AC-Pb","TPTA00821":"JCPT0807AC-Pb","TPTA00822":"JCPT0807AC-Pb","TPTA00823":"JCPT0807AC-Pb","TPTA00824":"JCPT0807AC-Pb","TPTA00825":"JCPT0807AC-Pb","TPTA00826":"JCPT0807AC-Pb","TPTA00827":"JCPT0807AC-Pb","TPTA00828":"JCPT0807AC-Pb","TPTA00829":"JCPT0807AC-Pb","TPTA00830":"JCPT0807AC-Pb","TPTA00831":"JCPT0807AC-Pb","TPTA00832":"JCPT0807AC-Pb","TPTA00833":"BA20ERT-Li","TPTA00834":"BA20ERT-Li","TPTA00835":"BA20ERT-Li","TPTA00836":"BA20ERT-Li","TPTA00837":"ZS0808AC-Li","TPTA00838":"ZS0808AC-Li","TPTA00839":"ZS0607AC-Li","TPTA00840":"ZS0607AC-Li","TPTA00841":"ZS0607AC-Li","TPTA00842":"ZS0607AC-Li","TPTA00843":"ZS0607AC-Li","TPTA00844":"ZS0607AC-Li","TPTA00845":"ZS0607AC-Li","TPTA00846":"ZS0607AC-Li","TPTA00847":"ZS0607AC-Li","TPTA00848":"ZS0607AC-Li","TPTA00849":"ZS0607AC-Li","TPTA00850":"JCPT1008AC-Li","TPTA00851":"JCPT1008AC-Li","TPTA00852":"JCPT1008AC-Li","TPTA00853":"JCPT1008AC-Li","TPTA00854":"JCPT1008AC-Li","TPTA00855":"JCPT1008AC-Li","TPTA00856":"JCPT1008AC-Li","TPTA00857":"JCPT1008AC-Li","TPTA00858":"JCPT1008AC-Li","TPTA00859":"JCPT1008AC-Li","TPTA00860":"JCPT1008AC-Li","TPTA00861":"JCPT1008AC-Li","TPTA00862":"JCPT1008AC-Li","TPTA00863":"JCPT1008AC-Li","TPTA00864":"JCPT1008AC-Li","TPTA00865":"JCPT1008AC-Li","TPTA00866":"ZA20JERT-Li","TPTA00867":"ZA20JERT-Li","TPTA00868":"ZA20JERT-Li","TPTA00869":"ZA20JERT-Li","TPTA00870":"ZA20JERT-Li","TPTA00871":"ZA20JERT-Li","TPTA00872":"ZA20JERT-Li","TPTA00873":"ZA20JERT-Li","TPTA00874":"ZA20JERT-Li","TPTA00875":"ZA20JERT-Li","TPTA00876":"ZA20JERT-Li","TPTA00877":"ZA20JERT-Li","TPTA00878":"ZA20JERT-Li","TPTA00879":"ZA20JERT-Li","TPTA00880":"ZA20JERT-Li","TPTA00881":"ZA20JERT-Li","TPTA00882":"ZA20JERT-Li","TPTA00883":"ZA20JERT-Li","TPTA00884":"ZA20JERT-Li","TPTA00885":"ZS0407DC-Pb","TPTA00886":"JCPT1008AC-Li","TPTA00887":"JCPT1008AC-Li","TPTA00888":"JCPT1008AC-Li","TPTA00889":"JCPT1008AC-Li","TPTA00890":"JCPT1008AC-Li","TPTA00891":"JCPT1008AC-Li","TPTA00892":"JCPT1008AC-Li","TPTA00893":"JCPT1008AC-Li","TPTA00894":"JCPT1008AC-Li","TPTA00895":"JCPT1008AC-Li","TPTA00896":"JCPT1008AC-Li","TPTA00897":"JCPT1008AC-Li","TPTA00898":"JCPT1008AC-Li","TPTA00899":"JCPT1008AC-Li","TPTA00900":"JCPT1008AC-Li","TPTA00901":"JCPT1008AC-Li","TPTA00902":"JCPT1008AC-Li","TPTA00903":"ZS1414AC-Li","TPTA00904":"ZS1414AC-Li","TPTA00905":"ZS1414AC-Li","TPTA00906":"ZS1414AC-Li","TPTA00907":"BA20ERT-Li","TPTA00908":"BA20ERT-Li","TPTA00909":"BA20ERT-Li","TPTA00910":"BA20ERT-Li","TPTA00911":"JCPT1412AC-Li","TPTA00912":"JCPT1412AC-Li","TPTA00913":"JCPT0807AC-Pb","TPTA00914":"JCPT0807AC-Pb","TPTA00915":"JCPT0807AC-Pb","TPTA00916":"JCPT1412AC-Li","TPTA00917":"JCPT1412AC-Li","TPTA00918":"JCPT1412AC-Li","TPTA00919":"JCPT1412AC-Li","TPTA00920":"JCPT1212AC-Li","TPTA00921":"JCPT1212AC-Li","TPTA00922":"JCPT1212AC-Li","TPTA00923":"JCPT1212AC-Li","TPTA00924":"JCPT1212AC-Li","TPTA00925":"JCPT1212AC-Li","TPTA00926":"JCPT1212AC-Li","TPTA00927":"JCPT1212AC-Li","TPTA00928":"ZS0808AC-Li","TPTA00929":"ZS1012AC-Li","TPTA00930":"ZS1012AC-Li","TPTA00931":"ZS1012AC-Li","TPTA00932":"ZS1012AC-Li","TPTA00933":"ZS1012AC-Li","TPTA00934":"ZS1012AC-Li","TPTA00935":"ZS1012AC-Li","TPTA00936":"ZS1414AC-Li","TPTA00937":"ZS1414AC-Li","TPTA00938":"ZS1414AC-Li","TPTA00939":"ZS1414AC-Li","TPTA00940":"ZS1414AC-Li","TPTA00941":"ZS1414AC-Li","TPTA00942":"ZS1414AC-Li","TPTA00943":"JCPT1212AC-Li","TPTA00944":"JCPT1212AC-Li","TPTA00945":"JCPT1212AC-Li","TPTA00946":"JCPT1212AC-Li","TPTA00947":"JCPT1212AC-Li","TPTA00948":"JCPT1212AC-Li","TPTA00949":"JCPT1212AC-Li","TPTA00950":"JCPT1212AC-Li","TPTA00951":"BA16NE-Li","TPTA00952":"BA16NE-Li","TPTA00953":"BA16NE-Li","TPTA00954":"BA16NE-Li","TPTA00955":"BA16NE-Li","TPTA00956":"BA16NE-Li","TPTA00957":"BA16NE-Li","TPTA00958":"BA16NE-Li","TPTA00959":"BA16NE-Li","TPTA00960":"BA16NE-Li","TPTA00961":"BA16NE-Li","TPTA00962":"BA16NE-Li","TPTA00963":"ZS0607AC-Li","TPTA00964":"ZS0607AC-Li","TPTA00965":"ZS0607AC-Li","TPTA00966":"ZS0607AC-Li","TPTA00967":"ZS0407DC-Pb","TPTA00968":"ZS0407DC-Pb","TPTA00969":"ZS0407DC-Pb","TPTA00970":"ZS0407DC-Pb","TPTA00971":"ZS0407DC-Pb","TPTA00972":"ZS0407DC-Pb","TPTA00973":"ZS0407DC-Pb","TPTA00974":"ZS0607AC-Li","TPTA00975":"ZS0607AC-Li","TPTA00976":"ZS0607AC-Li","TPTA00977":"ZS0607AC-Li","TPTA00978":"ZS0607AC-Li","TPTA00979":"ZS0808AC-Li","TPTA00980":"ZS0808AC-Li","TPTA00981":"ZS0808AC-Li","TPTA00982":"ZS0808AC-Li","TPTA00983":"ZS0808AC-Li","TPTA00984":"ZS0808AC-Li","TPTA00985":"ZS0808AC-Li","TPTA00986":"ZS0407DC-Pb","TPTA00987":"ZS0407DC-Pb","TPTA00988":"ZS0407DC-Pb","TPTA00989":"ZS0407DC-Pb","TPTA00990":"ZS0407DC-Pb","TPTA00991":"ZS0407DC-Pb","TPTA00992":"ZS0407DC-Pb","TPTA00993":"ZS0407DC-Pb","TPTA00994":"ZS0407DC-Pb","TPTA00995":"ZS0407DC-Pb","TPTA00996":"ZS0407DC-Pb","TPTA00997":"ZS0407DC-Pb","TPTA00998":"ZS0407DC-Pb","TPTA00999":"ZS0407DC-Pb","TPTA01000":"ZS1414AC-Li","TPTA01001":"ZS0407DC-Pb","TPTA01002":"ZS0407DC-Pb","TPTA01003":"ZS0407DC-Pb","TPTA01004":"ZS0808AC-Li","TPTA01005":"ZS0808AC-Li","TPTA01006":"ZS0808AC-Li","TPTA01007":"ZS0808AC-Li","TPTA01008":"ZS0808AC-Li","TPTA01009":"ZS0808AC-Li","TPTA01010":"ZS0607AC-Li","TPTA01011":"BA28ERT-Li","TPTA01012":"ZS0407DC-Pb","TPTA01013":"ZS0407DC-Pb","TPTA01014":"ZS0407DC-Pb","TPTA01015":"ZS0607AC-Li","TPTA01016":"ZS0607AC-Li","TPTA01017":"ZS0607AC-Li","TPTA01018":"ZS0607AC-Li","TPTA01019":"ZS0808AC-Li","TPTA01020":"ZS0808AC-Li","TPTA01021":"ZS0808AC-Li","TPTA01022":"ZS0808AC-Li","TPTA01023":"ZS0808AC-Li","TPTA01024":"ZS0808AC-Li","TPTA01025":"ZS0808AC-Li","TPTA01026":"ZS0808AC-Li","TPTA01027":"ZS0808AC-Li","TPTA01028":"ZS1012AC-Li","TPTA01029":"ZS1012AC-Li","TPTA01030":"ZS1012AC-Li","TPTA01031":"ZS1012AC-Li","TPTA01032":"ZS1012AC-Li","TPTA01033":"ZS1012AC-Li","TPTA01034":"ZS1012AC-Li","TPTA01035":"ZS1012AC-Li","TPTA01036":"ZS1012AC-Li","TPTA01037":"ZS1012AC-Li","TPTA01038":"ZS1012AC-Li","TPTA01039":"ZS1012AC-Li","TPTA01040":"ZS1012AC-Li","TPTA01041":"ZS1012AC-Li","TPTA01042":"ZS1012AC-Li","TPTA01043":"ZS1012AC-Li","TPTA01044":"ZS1212AC-Li","TPTA01045":"ZS1212AC-Li","TPTA01046":"ZS1414AC-Li","TPTA01047":"ZS1414AC-Li","TPTA01048":"ZS1414AC-Li","TPTA01049":"ZS1414AC-Li","TPTA01050":"ZS1414AC-Li","TPTA01051":"ZS1414AC-Li","TPTA01052":"ZS1414AC-Li","TPTA01053":"ZS1414AC-Li","TPTA01054":"ZA20JERT-Li","TPTA01055":"ZS0607AC-Li","TPTA01056":"BA28ERT-Li","TPTA01057":"BT30RT-Di","TPTA01058":"ZS1414AC-Li","TPTA01059":"ZS1414AC-Li","TPTA01060":"BA16NE-Li","TPTA01061":"BA16NE-Li","TPTA01062":"BA16NE-Li","TPTA01063":"ZA14JE-Li","TPTA01064":"ZA14JE-Li","TPTA01065":"ZA14JE-Li","TPTA01066":"ZA14JE-Li","TPTA01067":"ZA14JE-Li","TPTA01068":"ZA14JE-Li","TPTA01069":"ZA14JE-Li","TPTA01070":"ZA14JE-Li","TPTA01071":"ZA14JE-Li","TPTA01072":"ZA14JE-Li","TPTA01073":"ZA14JE-Li","TPTA01074":"ZA14JE-Li","TPTA01075":"ZA14JE-Li","TPTA01076":"ZA14JE-Li","TPTA01077":"ZA14JE-Li","TPTA01078":"ZA14JE-Li","TPTA01079":"ZA14JE-Li","TPTA01080":"ZA14JE-Li","TPTA01081":"ZA14JE-Li","TPTA01082":"ZA14JE-Li","TPTA01083":"ZS0808AC-Li","TPTA01084":"ZS0808AC-Li","TPTA01085":"ZS0808AC-Li","TPTA01086":"ZS0808AC-Li","TPTA01087":"ZS0808AC-Li","TPTA01088":"ZS0808AC-Li","TPTA01089":"ZS1012AC-Li","TPTA01090":"ZS1012AC-Li","TPTA01091":"ZS1012AC-Li","TPTA01092":"ZS1012AC-Li","TPTA01093":"ZS1012AC-Li","TPTA01094":"ZS1012AC-Li","TPTA01095":"ZS1012AC-Li","TPTA01096":"ZS1012AC-Li","TPTA01097":"ZS1012AC-Li","TPTA01098":"ZS1012AC-Li","TPTA01099":"ZS1414AC-Li","TPTA01100":"ZS1414AC-Li","TPTA01101":"ZS1414AC-Li","TPTA01102":"ZA16JERT-Li","TPTA01103":"ZA16JERT-Li","TPTA01104":"ZA20JERT-Li","TPTA01105":"BA16NE-Li","TPTA01106":"BA16NE-Li","TPTA01107":"BA16NE-Li","TPTA01108":"BA16NE-Li","TPTA01109":"BA16NE-Li","TPTA01110":"BA16NE-Li","TPTA01111":"BA16NE-Li","TPTA01112":"ZS1212AC-Li","TPTA01113":"ZS1212AC-Li","TPTA01114":"ZS1212AC-Li","TPTA01115":"ZS1212AC-Li","TPTA01116":"ZS1212AC-Li","TPTA01117":"ZS1212AC-Li","TPTA01118":"ZS1212AC-Li","TPTA01119":"ZS1212AC-Li","TPTA01120":"ZS1212AC-Li","TPTA01121":"ZS1212AC-Li","TPTA01122":"ZS1212AC-Li","TPTA01123":"ZS1212AC-Li","TPTA01124":"ZS1212AC-Li","TPTA01125":"ZS1212AC-Li","TPTA01126":"ZS1212AC-Li","TPTA01127":"ZS1212AC-Li","TPTA01128":"ZS1212AC-Li","TPTA01129":"ZS1212AC-Li","TPTA01130":"ZS1212AC-Li","TPTA01131":"ZS1212AC-Li","TPTA01132":"ZS1212AC-Li","TPTA01133":"ZS1212AC-Li","TPTA01134":"ZS1212AC-Li","TPTA01135":"ZS1212AC-Li","TPTA01136":"ZS1212AC-Li","TPTA01137":"JCPT0607A-Pb","TPTA01138":"BA16NE-Li","TPTA01139":"BA16NE-Li","TPTA01140":"BA16NE-Li","TPTA01141":"BA16NE-Li","TPTA01142":"BA16NE-Li","TPTA01143":"BA16NE-Li","TPTA01144":"BA16NE-Li","TPTA01145":"BA16NE-Li","TPTA01146":"BA16NE-Li","TPTA01147":"BA16NE-Li","TPTA01148":"ZS1012AC-Li","TPTA01149":"ZS1012AC-Li","TPTA01150":"ZS1012AC-Li","TPTA01151":"ZS1012AC-Li","TPTA01152":"ZS1012AC-Li","TPTA01153":"ZS0607AC-Li","TPTA01154":"ZS0607AC-Li","TPTA01155":"ZS0607AC-Li","TPTA01156":"ZS0607AC-Li","TPTA01157":"ZS1212AC-Li","TPTA01158":"ZS1212AC-Li","TPTA01159":"ZS1212AC-Li","TPTA01160":"ZS1212AC-Li","TPTA01161":"ZS1012AC-Li","TPTA01162":"ZS1212AC-Li","TPTA01163":"ZS1414AC-Li","TPTA01164":"ZS1414AC-Li","TPTA01165":"ZS1414AC-Li","TPTA01166":"ZS1414AC-Li","TPTA01167":"ZS1414AC-Li","TPTA01168":"ZS1414AC-Li","TPTA01169":"ZS0808AC-Li","TPTA01170":"ZS0808AC-Li","TPTA01171":"ZS0808AC-Li","TPTA01172":"ZS0808AC-Li","TPTA01173":"ZS0808AC-Li","TPTA01174":"ZS0808AC-Li","TPTA01175":"ZS0808AC-Li","TPTA01176":"ZS0808AC-Li","TPTA01177":"ZS0808AC-Li","TPTA01178":"ZA14JE-Li","TPTA01179":"ZA14JE-Li","TPTA01180":"ZA14JE-Li","TPTA01181":"ZA14JE-Li","TPTA01182":"ZA14JE-Li","TPTA01183":"ZA14JE-Li","TPTA01184":"ZA14JE-Li","TPTA01185":"BA16NE-Li","TPTA01186":"BA16NE-Li","TPTA01187":"BA16NE-Li","TPTA01188":"BA16NE-Li","TPTA01189":"BA16NE-Li","TPTA01190":"BA16NE-Li","TPTA01191":"BA16NE-Li","TPTA01192":"BA16NE-Li","TPTA01193":"JCPT1612AC-Li","TPTA01194":"ZA14JE-Li","TPTA01195":"ZA14JE-Li","TPTA01196":"ZA20JERT-Li","TPTA01197":"ZA20JERT-Li","TPTA01198":"ZA20JERT-Li","TPTA01199":"ZA20JERT-Li","TPTA01200":"ZA20JERT-Li","TPTA01201":"ZA20JERT-Li","TPTA01202":"ZA20JERT-Li","TPTA01203":"ZA20JERT-Li","TPTA01204":"ZA20JERT-Li","TPTA01205":"ZT38JE-Li","TPTA01206":"ZT38JE-Li","TPTA01207":"ZT38JE-Li","TPTA01208":"ZT38JE-Li","TPTA01209":"ZT38JE-Li","TPTA01210":"ZT38JE-Li","TPTA01211":"ZT38JE-Li","TPTA01212":"ZA20JERT-Li","TPTA01213":"ZA20JERT-Li","TPTA01214":"ZA20JERT-Li","TPTA01215":"ZA20JERT-Li","TPTA01216":"ZA20JERT-Li","TPTA01217":"ZA20JERT-Li","TPTA01218":"ZA20JERT-Li","TPTA01219":"BA16CERT-Li","TPTA01220":"BA16CERT-Li","TPTA01221":"BA16CERT-Li","TPTA01222":"BA16CERT-Li","TPTA01223":"JCPT1412AC-Li","TPTA01224":"JCPT1412AC-Li","TPTA01225":"JCPT1823DCB-Pb","TPTA01226":"JCPT1823DCB-Pb","TPTA01227":"BA16CERT-Li","TPTA01228":"BA18CERT-Li","TPTA01229":"BA16CERT-Li","TPTA01230":"BA16CERT-Li","TPTA01231":"BA18CERT-Li","TPTA01232":"BA18CERT-Li","TPTA01233":"BA18CERT-Li","TPTA01234":"BT36HRT-Hi","TPTA01235":"BT36HRT-Hi","TPTA01236":"BT44HRT-Hi","TPTA01237":"BA18CERT-Li","TPTA01238":"BA18CERT-Li","TPTA01239":"BA16CERT-Li","TPTA01240":"BA28HRT-Hi","TPTA01241":"BA16CERT-Li","TPTA01242":"BA16CERT-Li","TPTA01243":"BA18CERT-Li","TPTA01244":"BA16CERT-Li","TPTA01245":"BA16CERT-Li","TPTA01246":"BA18CERT-Li","TPTA01247":"BT34HRT-Hi","TPTA01248":"AMWP 11.5-8200-Li","TPTA01249":"AMWP 11.5-8200-Li","TPTA01250":"AMWP 11.5-8200-Li","TPTA01251":"AMWP 11.5-8200-Li","TPTA01252":"JCPT1823DCB-Pb","TPTA01253":"ZA20JERT-Li","TPTA01254":"ZA20JERT-Li","TPTA01255":"ZA20JERT-Li","TPTA01256":"ZA20JERT-Li","TPTA01257":"ZA20JERT-Li","TPTA01258":"ZA20JERT-Li","TPTA01259":"ZA20JERT-Li","TPTA01260":"ZA20JERT-Li","TPTA01261":"ZA20JERT-Li","TPTA01262":"ZA20JERT-Li","TPTA01263":"ZA20JERT-Li","TPTA01264":"ZS1012AC-Li","TPTA01265":"ZS1012AC-Li","TPTA01266":"ZS1012AC-Li","TPTA01267":"ZS1012AC-Li","TPTA01268":"ZS1012AC-Li","TPTA01269":"ZS1012AC-Li","TPTA01270":"ZS1012AC-Li","TPTA01271":"ZS1012AC-Li","TPTA01272":"ZS1012AC-Li","TPTA01273":"ZS1012AC-Li","TPTA01274":"ZS1012AC-Li","TPTA01275":"ZS1012AC-Li","TPTA01276":"ZS1012AC-Li","TPTA01277":"ZS1012AC-Li","TPTA01278":"ZS0808AC-Li","TPTA01279":"ZS0808AC-Li","TPTA01280":"ZS0808AC-Li","TPTA01281":"ZS0808AC-Li","TPTA01282":"ZS0808AC-Li","TPTA01283":"ZS0808AC-Li","TPTA01284":"ZS0808AC-Li","TPTA01285":"ZS0808AC-Li","TPTA01286":"ZS0808AC-Li","TPTA01287":"ZS0808AC-Li","TPTA01288":"ZS0808AC-Li","TPTA01289":"ZS0808AC-Li","TPTA01290":"BA28HRT-Hi","TPTA01291":"ZA20JERT-Li","TPTA01292":"ZA20JERT-Li","TPTA01293":"ZA20JERT-Li","TPTA01294":"ZA20JERT-Li","TPTA01295":"ZA20JERT-Li","TPTA01296":"ZA20JERT-Li","TPTA01297":"ZA20JERT-Li","TPTA01298":"ZA20JERT-Li","TPTA01299":"ZA20JERT-Li","TPTA01300":"ZA20JERT-Li","TPTA01301":"ZA20JERT-Li","TPTA01302":"ZA20JERT-Li","TPTA01303":"ZA20JERT-Li","TPTA01304":"ZA20JERT-Li","TPTA01305":"BA28HRT-Hi","TPTA01306":"BA28HRT-Hi","TPTA01307":"BT34HRT-Hi","TPTA01308":"BT44HRT-Hi","TPTA01309":"BT44HRT-Hi","TPTA01310":"BT44HRT-Hi","TPTA01311":"BT34HRT-Hi","TPTA01312":"ZA20JERT-Li","TPTA01313":"ZA20JERT-Li","TPTA01314":"ZA20JERT-Li","TPTA01315":"ZA20JERT-Li","TPTA01316":"ZA20JERT-Li","TPTA01317":"ZA20JERT-Li","TPTA01318":"ZA20JERT-Li","TPTA01319":"ZA20JERT-Li","TPTA01320":"ZA20JERT-Li","TPTA01321":"ZA20JERT-Li","TPTA01322":"ZA20JERT-Li","TPTA01323":"ZA20JERT-Li","TPTA01324":"ZA20JERT-Li","TPTA01325":"ZA20JERT-Li","TPTA01326":"ZA20JERT-Li","TPTA01327":"ZS0607AC-Li","TPTA01328":"ZS0607AC-Li","TPTA01329":"ZS0607AC-Li","TPTA01330":"ZS0607AC-Li","TPTA01331":"ZS0607AC-Li","TPTA01332":"ZS0607AC-Li","TPTA01333":"ZS0607AC-Li","TPTA01334":"ZS0607AC-Li","TPTA01335":"ZS0607AC-Li","TPTA01336":"ZS0607AC-Li","TPTA01337":"ZS0607AC-Li","TPTA01338":"ZS0607AC-Li","TPTA01339":"ZS0607AC-Li","TPTA01340":"ZS0607AC-Li","TPTA01341":"ZS0607AC-Li","TPTA01342":"ZS0607AC-Li","TPTA01343":"ZS0607AC-Li","TPTA01344":"ZS0607AC-Li","TPTA01345":"ZS0607AC-Li","TPTA01346":"ZS0607AC-Li","TPTA01347":"ZS0607AC-Li","TPTA01348":"ZS0607AC-Li","TPTA01349":"ZS0607AC-Li","TPTA01350":"ZS0607AC-Li","TPTA01351":"ZS0607AC-Li","TPTA01352":"ZS0607AC-Li","TPTA01353":"ZS0607AC-Li","TPTA01354":"ZS1012AC-Li","TPTA01355":"ZS1012AC-Li","TPTA01356":"ZS1012AC-Li","TPTA01357":"ZS1414AC-Li","TPTA01358":"ZS1414AC-Li","TPTA01359":"ZS0808AC-Li","TPTA01360":"ZS0808AC-Li","TPTA01361":"ZS0808AC-Li","TPTA01362":"ZS0808AC-Li","TPTA01363":"BA18CERT-Li","TPTA01364":"BA18CERT-Li","TPTA01365":"BA16CERT-Li","TPTA01366":"BA16CERT-Li","TPTA01367":"BA16CERT-Li","TPTA01368":"BA16CERT-Li","TPTA01369":"BA16CERT-Li","TPTA01370":"BA16CERT-Li","TPTA01371":"ZS1414AC-Li","TPTA01372":"BA16CERT-Li","TPTA01373":"BA16CERT-Li","TPTA01374":"BA16CERT-Li","TPTA01375":"BA16CERT-Li","TPTA01376":"BA16CERT-Li","TPTA01377":"BA16CERT-Li","TPTA01378":"BA16CERT-Li","TPTA01379":"BA16CERT-Li","TPTA01380":"BA16CERT-Li","TPTA01381":"BA16CERT-Li","TPTA01382":"BA16CERT-Li","TPTA01383":"BA16CERT-Li","TPTA01384":"BA16CERT-Li","TPTA01385":"BA16CERT-Li","TPTA01386":"BA16CERT-Li","TPTA01387":"BA16CERT-Li","TPTA01388":"BA16CERT-Li","TPTA01389":"BA16CERT-Li","TPTA01390":"BA16CERT-Li","TPTA01391":"BA16CERT-Li","TPTA01392":"BA16CERT-Li","TPTA01393":"BA28HRT-Hi","TPTA01394":"BA28HRT-Hi","TPTA01395":"BA28HRT-Hi","TPTA01396":"BA28HRT-Hi","TPTA01397":"BA16CERT-Li","TPTA01398":"BA16CERT-Li","TPTA01399":"BA18CERT-Li","TPTA01400":"BA18CERT-Li","TPTA01401":"BA18CERT-Li","TPTA01402":"BA16CERT-Li","TPTA01403":"BA18CERT-Li","TPTA01404":"BT44HRT-Hi","TPTA01405":"BT44HRT-Hi","TPTA01406":"BT36HRT-Hi","TPTA01407":"BT36HRT-Hi","TPTA01408":"BA28HRT-Hi","TPTA01409":"BA28HRT-Hi","TPTA01410":"BA28HRT-Hi","TPTA01411":"BA28HRT-Hi","TPTA01412":"BA18CERT-Li","TPTA01413":"BA16CERT-Li","TPTA01414":"BA16CERT-Li","TPTA01415":"BA16CERT-Li","TPTA01416":"BA16CERT-Li","TPTA01417":"BA16CERT-Li","TPTA01418":"BA16CERT-Li","TPTA01419":"BA16CERT-Li","TPTA01420":"BA16CERT-Li","TPTA01421":"BT44HRT-Hi","TPTA01422":"BT34HRT-Hi","TPTA01423":"BT44HRT-Hi","TPTA01424":"BA28HRT-Hi","TPTA01425":"BA28HRT-Hi","TPTA01426":"BA28HRT-Hi","TPTA01427":"ZA20JERT-Li","TPTA01428":"ZA20JERT-Li","TPTA01429":"ZA20JERT-Li","TPTA01430":"ZA20JERT-Li","TPTA01431":"ZS1212AC-Li","TPTA01432":"ZS1212AC-Li","TPTA01433":"JCPT0607A-Pb","TPTA01434":"JCPT0607A-Pb","TPTA01435":"BA20CERT-Li","TPTA01436":"BA20CERT-Li","TPTA01437":"BA20CERT-Li","TPTA01438":"BA20CERT-Li","TPTA01439":"BA28BHRT-Hi","TPTA01440":"BA28BHRT-Hi","TPTA01441":"BA28BHRT-Hi","TPTA01442":"BA28BHRT-Hi","TPTA01443":"BA28BHRT-Hi","TPTA01444":"BA20CERT-Li","TPTA01445":"BA20CERT-Li","TPTA01446":"BA20CERT-Li","TPTA01447":"BA20CERT-Li","TPTA01448":"BT34BHRT-Hi","TPTA01449":"BT34BHRT-Hi","TPTA01450":"BA18CERT2-Li","TPTA01451":"BA18CERT2-Li","TPTA01452":"BA18CERT2-Li","TPTA01453":"BA18CERT2-Li","TPTA01454":"BA18CERT2-Li","TPTA01455":"BA18CERT2-Li","TPTA01456":"BA20CERT-Li","TPTA01457":"BA20CERT-Li","TPTA01458":"BA20CERT-Li","TPTA01459":"BA20CERT-Li","TPTA01460":"BA20CERT-Li","TPTA01461":"BA18CERT2-Li","TPTA01462":"BA18CERT2-Li","TPTA01463":"BA18CERT2-Li","TPTA01464":"BA18CERT2-Li","TPTA01465":"ZS0607AC-Li","TPTA01466":"ZS0607AC-Li","TPTA01467":"ZA14JE-Li","TPTA01468":"ZA14JE-Li","TPTA01469":"ZA14JE-Li","TPTA01470":"ZS1012AC-Li","TPTA01471":"ZS1012AC-Li","TPTA01472":"ZS1012AC-Li","TPTA01473":"ZS1012AC-Li","TPTA01474":"ZS1012AC-Li","TPTA01475":"ZS1012AC-Li","TPTA01476":"ZS1012AC-Li","TPTA01477":"ZS1012AC-Li","TPTA01478":"ZS1012AC-Li","TPTA01479":"ZS1012AC-Li","TPTA01480":"ZS1012AC-Li","TPTA01481":"ZS1012AC-Li","TPTA01482":"ZS1012AC-Li","TPTA01483":"ZS1012AC-Li","TPTA01484":"ZS1012AC-Li","TPTA01485":"ZS1012AC-Li","TPTA01486":"ZS1414AC-Li","TPTA01487":"ZS1414AC-Li","TPTA01488":"ZS1414AC-Li","TPTA01489":"ZS1414AC-Li","TPTA01490":"ZS1212AC-Li","TPTA01491":"ZS1212AC-Li","TPTA01492":"ZS1212AC-Li","TPTA01493":"ZS1212AC-Li","TPTA01494":"ZS1212AC-Li","TPTA01495":"ZS1212AC-Li","TPTA01496":"ZA20JERT-Li","TPTA01497":"ZA20JERT-Li","TPTA01498":"ZA20JERT-Li","TPTA01499":"ZA20JERT-Li","TPTA01500":"BA18CERT2-Li","TPTA01501":"BA18CERT2-Li","TPTA01502":"BA18CERT2-Li","TPTA01503":"BA18CERT2-Li","TPTA01504":"BA18CERT2-Li","TPTA01505":"BA18CERT2-Li","TPTA01506":"BA18CERT2-Li","TPTA01507":"BA18CERT2-Li","TPTA01508":"BA18CERT2-Li","TPTA01509":"BA18CERT2-Li","TPTA01510":"ZS0808AC-Li","TPTA01511":"ZS0808AC-Li","TPTA01512":"ZS0808AC-Li","TPTA01513":"ZS0808AC-Li","TPTA01514":"ZS0808AC-Li","TPTA01515":"ZA14JE-Li","TPTA01516":"ZA14JE-Li","TPTA01517":"ZA14JE-Li","TPTA01518":"ZA14JE-Li","TPTA01519":"BA18CERT2-Li","TPTA01520":"BA18CERT2-Li","TPTA01521":"BA18CERT2-Li","TPTA01522":"BA18CERT2-Li","TPTA01523":"BA18CERT2-Li","TPTA01524":"BA18CERT2-Li","TPTA01525":"BA18CERT2-Li","TPTA01526":"BA18CERT2-Li","TPTA01527":"BA18CERT2-Li","TPTA01528":"BA18CERT2-Li","TPTA01529":"BA18CERT2-Li","TPTA01530":"BA18CERT2-Li","TPTA01531":"BA18CERT2-Li","TPTA01532":"BA18CERT2-Li","TPTA01533":"BA18CERT2-Li","TPTA01534":"BA18CERT2-Li","TPTA01535":"BA18CERT2-Li","TPTA01536":"BA18CERT2-Li","TPTA01537":"BA18CERT2-Li","TPTA01538":"BA18CERT2-Li","TPTA01539":"BA18CERT2-Li","TPTA01540":"BA18CERT2-Li","TPTA01541":"BA18CERT2-Li","TPTA01542":"BA18CERT2-Li","TPTA01543":"BA18CERT2-Li","TPTA01544":"BA18CERT2-Li","TPTA01545":"BA20CERT2-Li","TPTA01546":"BA20CERT2-Li","TPTA01547":"BA20CERT2-Li","TPTA01548":"BA20CERT2-Li","TPTA01549":"BA20CERT2-Li","TPTA01550":"BA20CERT2-Li","TPTA01551":"BA20CERT2-Li","TPTA01552":"BA28ERT-Li","TPTA01553":"BA28ERT-Li","TPTA01554":"JCPT0607DCM-Pb","TPTA01555":"JCPT0607DCM-Pb","TPTA01556":"JCPT0607DCM-Pb","TPTA01557":"JCPT0607DCM-Pb","TPTA01558":"JCPT0607DCM-Pb","TPTA01559":"JCPT0607DCM-Pb","TPTA01560":"ZS1414AC-Li","TPTA01561":"ZS1414AC-Li","TPTA01562":"ZS1414AC-Li","TPTA01563":"ZS1414AC-Li","TPTA01564":"ZS1414AC-Li","TPTA01565":"ZS1414AC-Li","TPTA01566":"ZS1414AC-Li","TPTA01567":"ZS1414AC-Li","TPTA01568":"ZS1414AC-Li","TPTA01569":"ZS1414AC-Li","TPTA01570":"ZS1414AC-Li","TPTA01571":"ZS1414AC-Li","TPTA01572":"ZS1414AC-Li","TPTA01573":"ZA14JE-Li","TPTA01574":"ZA14JE-Li","TPTA01575":"ZA14JE-Li","TPTA01576":"ZA14JE-Li","TPTA01577":"ZS1414AC-Li","TPTA01578":"ZS1414AC-Li","TPTA01579":"ZS1414AC-Li","TPTA01580":"ZS1414AC-Li","TPTA01581":"ZS1414AC-Li","TPTA01582":"ZS1414AC-Li","TPTA01583":"ZS1414AC-Li","TPTA01584":"ZS1414AC-Li","TPTA01585":"ZS1414AC-Li","TPTA01586":"ZS1414AC-Li","TPTA01587":"ZS1414AC-Li","TPTA01588":"ZS1414AC-Li","TPTA01589":"ZS1414AC-Li","TPTA01590":"ZS1414AC-Li","TPTA01591":"ZS1414AC-Li","TPTA01592":"ZS1414AC-Li","TPTA01593":"ZS1414AC-Li","TPTA01594":"ZS1414AC-Li","TPTA01595":"ZS1414AC-Li","TPTA01596":"ZS1414AC-Li","TPTA01597":"ZS0607AC-Li","TPTA01598":"ZS0607AC-Li","TPTA01599":"ZS0607AC-Li","TPTA01600":"ZS0607AC-Li","TPTA01601":"ZS0607AC-Li","TPTA01602":"ZS0607AC-Li","TPTA01603":"ZS0607AC-Li","TPTA01604":"ZS0607AC-Li","TPTA01605":"ZS0607AC-Li","TPTA01606":"ZS0607AC-Li","TPTA01607":"ZS0607AC-Li","TPTA01608":"ZS0808AC-Li","TPTA01609":"ZS0808AC-Li","TPTA01610":"ZS0808AC-Li","TPTA01611":"ZS0808AC-Li","TPTA01612":"ZS0808AC-Li","TPTA01613":"ZS0808AC-Li","TPTA01614":"ZS0808AC-Li","TPTA01615":"ZS0808AC-Li","TPTA01616":"ZS0808AC-Li","TPTA01617":"ZS1012AC-Li","TPTA01618":"ZS1012AC-Li","TPTA01619":"ZS1012AC-Li","TPTA01620":"ZS1012AC-Li","TPTA01621":"ZS1012AC-Li","TPTA01622":"ZS1012AC-Li","TPTA01623":"ZS1012AC-Li","TPTA01624":"ZS1012AC-Li","TPTA01625":"ZS1012AC-Li","TPTA01626":"ZS1012AC-Li","TPTA01627":"ZS1012AC-Li","TPTA01628":"ZS1012AC-Li","TPTA01629":"ZS1012AC-Li","TPTA01630":"ZS1012AC-Li","TPTA01631":"ZS1012AC-Li","TPTA01632":"ZS1012AC-Li","TPTA01633":"ZA20JERT-Li","TPTA01634":"ZA20JERT-Li","TPTA01635":"ZA20JERT-Li","TPTA01636":"ZA20JERT-Li","TPTA01637":"ZA20JERT-Li","TPTA01638":"BA11NE-Li","TPTA01639":"BA11NE-Li","TPTA01640":"BT44HRT-Hi","TPTA01641":"BT44HRT-Hi","TPTA01642":"JCPT1212AC-Li","TPTA01643":"JCPT1212AC-Li","TPTA01644":"JCPT1212AC-Li","TPTA01645":"JCPT1212AC-Li","TPTA01646":"JCPT1412AC-Li","TPTA01647":"JCPT1412AC-Li","TPTA01648":"JCPT1412AC-Li","TPTA01649":"JCPT1412AC-Li","TPTA01650":"JCPT1412AC-Li","TPTA01651":"JCPT1412AC-Li","TPTA01652":"JCPT1412AC-Li","TPTA01653":"JCPT1212AC-Li","TPTA01654":"JCPT1212AC-Li","TPTA01655":"JCPT1008AC-Li","TPTA01656":"JCPT1008AC-Li","TPTA01657":"BA18CERT2-Li","TPTA01658":"BA18CERT2-Li","TPTA01659":"BA18CERT2-Li","TPTA01660":"BA18CERT2-Li","TPTA01661":"ZS1414AC-Li","TPTA01662":"BA11NE-Li","TPTA01663":"JCPT1212AC-Li","TPTA01664":"JCPT1212AC-Li","TPTA01665":"JCPT1212AC-Li","TPTA01666":"JCPT1412AC-Li","TPTA01667":"JCPT1412AC-Li","TPTA01668":"BA28BERT-Li","TPTA01669":"BA28BERT-Li","TPTA01670":"BA28BERT-Li","TPTA01671":"JCPT0607A-Pb","TPTA01672":"BA11NE-Li","TPTA01673":"BA18CERT2-Li","TPTA01674":"BA18CERT2-Li","TPTA01675":"BA18CERT2-Li","TPTA01676":"BA18CERT2-Li","TPTA01677":"BA18CERT2-Li","TPTA01678":"BA18CERT2-Li","TPTA01679":"BA18CERT2-Li","TPTA01680":"BA18CERT2-Li","TPTA01681":"BA18CERT2-Li","TPTA01682":"BA18CERT2-Li","TPTA01683":"BA18CERT2-Li","TPTA01684":"BA18CERT2-Li","TPTA01685":"BA28BERT-Li","TPTA01686":"BA28BERT-Li","TPTA01687":"BA28BERT-Li","TPTA01688":"BA28BERT-Li","TPTA01689":"BA28BHRT-Hi","TPTA01690":"BA28BHRT-Hi","TPTA01691":"BA28BHRT-Hi","TPTA01692":"BA28BHRT-Hi","TPTA01693":"BA28BHRT-Hi","TPTA01694":"BA28BHRT-Hi","TPTA01695":"BT34BHRT-Hi","TPTA01696":"BT44HRT-Hi","TPTA01697":"BT44HRT-Hi","TPTA01698":"BT44HRT-Hi","TPTA01699":"JCPT0607DCM-Pb","TPTA01700":"JCPT0607DCM-Pb","TPTA01701":"BA11NE-Li","TPTA01702":"BA11NE-Li","TPTA01703":"BA11NE-Li","TPTA01704":"BA11NE-Li","TPTA01705":"BA11NE-Li","TPTA01706":"BA28BERT-Li","TPTA01707":"JCPT0607DCM-Pb","TPTA01708":"AMWP 11.5-8200-Li","TPTA01709":"AMWP 11.5-8200-Li","TPTA01710":"AMWP 11.5-8200-Li","TPTA01711":"AMWP 11.5-8200-Li","TPTA01712":"AMWP 11.5-8200-Li","TPTA01713":"AMWP 11.5-8200-Li","TPTA01714":"AMWP 11.5-8200-Li","TPTA01715":"AMWP 11.5-8200-Li","TPTA01716":"BA11NE-Li","TPTA01717":"BA11NE-Li","TPTA01718":"BA11NE-Li","TPTA01719":"BA11NE-Li","TPTA01720":"BA11NE-Li","TPTA01721":"BA18CERT2-Li","TPTA01722":"BA18CERT2-Li","TPTA01723":"BA18CERT2-Li","TPTA01724":"BA18CERT2-Li","TPTA01725":"BA18CERT2-Li","TPTA01726":"BA18CERT2-Li","TPTA01727":"BA18CERT2-Li","TPTA01728":"BA18CERT2-Li","TPTA01729":"BA18CERT2-Li","TPTA01730":"BA18CERT2-Li","TPTA01731":"BA20CERT2-Li","TPTA01732":"BA20CERT2-Li","TPTA01733":"BA20CERT2-Li","TPTA01734":"BA20CERT2-Li","TPTA01735":"BA20CERT2-Li","TPTA01736":"BA20CERT2-Li","TPTA01737":"BA20CERT2-Li","TPTA01738":"BA28BERT-Li","TPTA01739":"BA28ERT-Li","TPTA01740":"BA28ERT-Li","TPTA01741":"BA28ERT-Li","TPTA01742":"JCPT0607DCM-Pb","TPTA01743":"JCPT1008AC-Li","TPTA01744":"JCPT1008AC-Li","TPTA01745":"JCPT1008AC-Li","TPTA01746":"JCPT1008AC-Li","TPTA01747":"JCPT1008AC-Li","TPTA01748":"JCPT1008AC-Li","TPTA01749":"JCPT1008AC-Li","TPTA01750":"JCPT1008AC-Li","TPTA01751":"JCPT1212AC-Li","TPTA01752":"JCPT1212AC-Li","TPTA01753":"JCPT1212AC-Li","TPTA01754":"JCPT1212AC-Li","TPTA01755":"JCPT1212AC-Li","TPTA01756":"JCPT1212AC-Li","TPTA01757":"JCPT1212AC-Li","TPTA01758":"JCPT1212AC-Li","TPTA01759":"JCPT1212AC-Li","TPTA01760":"JCPT1212AC-Li","TPTA01761":"JCPT1212AC-Li","TPTA01762":"JCPT1212AC-Li","TPTA01763":"JCPT1212AC-Li","TPTA01764":"JCPT1212AC-Li","TPTA01765":"JCPT1212AC-Li","TPTA01766":"JCPT1212AC-Li","TPTA01767":"JCPT1412AC-Li","TPTA01768":"JCPT1412AC-Li","TPTA01769":"JCPT1412AC-Li","TPTA01770":"JCPT1412AC-Li","TPTA01771":"JCPT1412AC-Li","TPTA01772":"JCPT1412AC-Li","TPTA01773":"JCPT1412AC-Li","TPTA01774":"JCPT1412AC-Li","TPTA01775":"JCPT1412AC-Li","TPTA01776":"JCPT1412AC-Li","TPTA01777":"JCPT1412AC-Li","TPTA01778":"JCPT1412AC-Li","TPTA01779":"JCPT1412AC-Li","TPTA01780":"JCPT1412AC-Li","TPTA01781":"JCPT1412AC-Li","TPTA01782":"JCPT1412AC-Li","TPTA01783":"JCPT1612AC-Li","TPTA01784":"JCPT1612AC-Li","TPTA01785":"JCPT1612AC-Li","TPTA01786":"JCPT1612AC-Li","TPTA01787":"JCPT1612AC-Li","TPTA01788":"JCPT1612AC-Li","TPTA01789":"JCPT1612AC-Li","TPTA01790":"JCPT1612AC-Li","TPTA01791":"JCPT1612AC-Li","TPTA01792":"JCPT1612AC-Li","TPTA01793":"ZA20JERT-Li","TPTA01794":"ZA20JERT-Li","TPTA01795":"ZA20JERT-Li","TPTA01796":"ZA20JERT-Li","TPTA01797":"ZA20JERT-Li","TPTA01798":"ZA20JERT-Li","TPTA01799":"ZA20JERT-Li","TPTA01800":"ZA20JERT-Li","TPTA01801":"AMWP 11.5-8200-Li","TPTA01802":"AMWP 11.5-8200-Li","TPTA01803":"BA18CERT2-Li","TPTA01804":"BA18CERT2-Li","TPTA01805":"BA11NE-Li","TPTA01806":"BA11NE-Li","TPTA01807":"BA11NE-Li","TPTA01808":"BA18CERT2-Li","TPTA01809":"BA18CERT2-Li","TPTA01810":"BA20CERT2-Li","TPTA01811":"BA20CERT2-Li","TPTA01812":"BA20CERT2-Li","TPTA01813":"BA20CERT2-Li","TPTA01814":"BA20CERT2-Li","TPTA01815":"BA20CERT2-Li","TPTA01816":"BA20CERT2-Li","TPTA01817":"JCPT1008AC-Li","TPTA01818":"JCPT1008AC-Li","TPTA01819":"JCPT1008AC-Li","TPTA01820":"JCPT1212AC-Li","TPTA01821":"JCPT1212AC-Li","TPTA01822":"JCPT1212AC-Li","TPTA01823":"JCPT1212AC-Li","TPTA01824":"JCPT1212AC-Li","TPTA01825":"JCPT1212AC-Li","TPTA01826":"JCPT1212AC-Li","TPTA01827":"JCPT1212AC-Li","TPTA01828":"JCPT1212AC-Li","TPTA01829":"JCPT1212AC-Li","TPTA01830":"JCPT1212AC-Li","TPTA01831":"JCPT1212AC-Li","TPTA01832":"JCPT1412AC-Li","TPTA01833":"JCPT1612AC-Li","TPTA01834":"JCPT1612AC-Li","TPTA01835":"JCPT1612AC-Li","TPTA01836":"JCPT1612AC-Li","TPTA01837":"JCPT1612AC-Li","TPTA01838":"JCPT1612AC-Li","TPTA01839":"JCPT1612AC-Li","TPTA01840":"JCPT1612AC-Li","TPTA01841":"JCPT1612AC-Li","TPTA01842":"JCPT1612AC-Li","TPTA01843":"JCPT1612AC-Li","TPTA01844":"JCPT1612AC-Li","TPTA01845":"ZA20JERT-Li","TPTA01846":"ZA20JERT-Li","TPTA01847":"ZA20JERT-Li","TPTA01848":"ZA20JERT-Li","TPTA01849":"ZA20JERT-Li","TPTA01850":"BA11NE-Li","TPTA01851":"BA11NE-Li","TPTA01852":"BA11NE-Li","TPTA01853":"BA20CERT2-Li","TPTA01854":"BA20CERT2-Li","TPTA01855":"BA20CERT2-Li","TPTA01856":"JCPT1008AC-Li","TPTA01857":"JCPT1008AC-Li","TPTA01858":"JCPT1008AC-Li","TPTA01859":"JCPT1008AC-Li","TPTA01860":"JCPT1008AC-Li","TPTA01861":"JCPT1008AC-Li","TPTA01862":"JCPT1008AC-Li","TPTA01863":"JCPT1008AC-Li","TPTA01864":"JCPT1008AC-Li","TPTA01865":"JCPT1008AC-Li","TPTA01866":"JCPT1008AC-Li","TPTA01867":"JCPT1008AC-Li","TPTA01868":"JCPT1008AC-Li","TPTA01869":"JCPT1008AC-Li","TPTA01870":"JCPT1212AC-Li","TPTA01871":"JCPT1212AC-Li","TPTA01872":"JCPT1212AC-Li","TPTA01873":"JCPT1212AC-Li","TPTA01874":"JCPT1212AC-Li","TPTA01875":"JCPT1212AC-Li","TPTA01876":"JCPT1212AC-Li","TPTA01877":"JCPT1212AC-Li","TPTA01878":"JCPT1212AC-Li","TPTA01879":"JCPT1412AC-Li","TPTA01880":"JCPT1412AC-Li","TPTA01881":"JCPT1412AC-Li","TPTA01882":"JCPT1412AC-Li","TPTA01883":"JCPT1412AC-Li","TPTA01884":"JCPT1412AC-Li","TPTA01885":"JCPT1412AC-Li","TPTA01886":"JCPT1412AC-Li","TPTA01887":"JCPT1412AC-Li","TPTA01888":"JCPT1412AC-Li","TPTA01889":"JCPT1412AC-Li","TPTA01890":"JCPT1412AC-Li","TPTA01891":"JCPT1412AC-Li","TPTA01892":"JCPT1412AC-Li","TPTA01893":"JCPT1612AC-Li","TPTA01894":"JCPT1612AC-Li","TPTA01895":"JCPT1612AC-Li","TPTA01896":"JCPT1612AC-Li","TPTA01897":"JCPT1612AC-Li","TPTA01898":"JCPT1612AC-Li","TPTA01899":"JCPT1612AC-Li","TPTA01900":"JCPT1612AC-Li","TPTA01901":"BT44HRT-Hi","TPTA01902":"JCPT1008AC-Li","TPTA01903":"JCPT1612AC-Li","TPTA01904":"ZA20JERT-Li","TPTA01905":"ZA20JERT-Li","TPTA01906":"ZA20JERT-Li","TPTA01907":"ZA20JERT-Li","TPTA01908":"ZA20JERT-Li","TPTA01909":"ZA20JERT-Li","TPTA01910":"ZA20JERT-Li","TPTA01911":"ZA20JERT-Li","TPTA01912":"JCPT0607DCH-Pb","TPTA01913":"JCPT0607DCH-Pb","TPTA01914":"JCPT1008AC-Li","TPTA01915":"JCPT1008AC-Li","TPTA01916":"JCPT1008AC-Li","TPTA01917":"BA20CERT2-Li","TPTA01918":"BA20CERT2-Li","TPTA01919":"BA20CERT2-Li","TPTA01920":"BA28BERT-Li","TPTA01921":"BA28HRT-Hi","TPTA01922":"JCPT1212AC-Li","TPTA01923":"JCPT1212AC-Li","TPTA01924":"JCPT1212AC-Li","TPTA01925":"JCPT1212AC-Li","TPTA01926":"JCPT0607DCM-XD-Pb","TPTA01927":"JCPT1612AC-Li","TPTA01928":"JCPT1612AC-Li","TPTA01929":"OPT0507-Pb","TPTA01930":"ZS0607AC-Li","TPTA01931":"ZS0607AC-Li","TPTA01932":"ZS0607AC-Li","TPTA01933":"ZS0607AC-Li","TPTA01934":"ZS0607AC-Li","TPTA01935":"ZS0607AC-Li","TPTA01936":"ZS0607AC-Li","TPTA01937":"ZS0607AC-Li","TPTA01938":"ZA14JE-Li","TPTA01939":"ZA14JE-Li","TPTA01940":"ZA16JERT-Li","TPTA01941":"ZA16JERT-Li","TPTA01942":"ZA16JERT-Li","TPTA01943":"ZA16JERT-Li","TPTA01944":"ZS0607AC-Li","TPTA01945":"ZS0607AC-Li","TPTA01946":"ZS1012AC-Li","TPTA01947":"ZS1012AC-Li","TPTA01948":"ZS1012AC-Li","TPTA01949":"ZS1012AC-Li","TPTA01950":"ZS1414AC-Li","TPTA01951":"ZS1414AC-Li","TPTA01952":"ZA14JE-Li","TPTA01953":"ZA14JE-Li","TPTA01954":"ZA14JE-Li","TPTA01955":"ZS1414AC-Li","TPTA01956":"ZS1414AC-Li","TPTA01957":"ZA14JE-Li","TPTA01958":"ZA14JE-Li","TPTA01959":"ZA14JE-Li","TPTA01960":"ZA14JE-Li","TPTA01961":"ZA14JE-Li","TPTA01962":"ZA14JE-Li","TPTA01963":"ZA14JE-Li","TPTA01964":"ZA14JE-Li","TPTA01965":"ZA14JE-Li","TPTA01966":"ZA14JE-Li","TPTA01967":"ZA14JE-Li","TPTA01968":"ZA14JE-Li","TPTA01969":"ZA14JE-Li","TPTA01970":"ZA14JE-Li","TPTA01971":"ZA14JE-Li","TPTA01972":"ZA14JE-Li","TPTA01973":"ZA14JE-Li","TPTA01974":"ZA14JE-Li","TPTA01975":"ZA14JE-Li","TPTA01976":"ZA14JE-Li","TPTA01977":"ZA14JE-Li","TPTA01978":"ZA14JE-Li","TPTA01979":"ZA14JE-Li","TPTA01980":"ZA14JE-Li","TPTA01981":"ZA14JE-Li","TPTA01982":"ZA14JE-Li","TPTA01983":"ZS0808AC-Li","TPTA01984":"ZS0808AC-Li","TPTA01985":"BA18CERT2-Li","TPTA01986":"BA18CERT2-Li","TPTA01987":"BA18CERT2-Li","TPTA01988":"BA18CERT2-Li","TPTA01989":"ZS0808AC-Li","TPTA01990":"ZS0808AC-Li","TPTA01991":"ZS0808AC-Li","TPTA01992":"ZS0808AC-Li","TPTA01993":"ZS0808AC-Li","TPTA01994":"ZS1012AC-Li","TPTA01995":"ZS1012AC-Li","TPTA01996":"ZS1012AC-Li","TPTA01997":"ZS1012AC-Li","TPTA01998":"ZS1012AC-Li","TPTA01999":"ZS1414AC-Li","TPTA02000":"ZS1414AC-Li","TPTA02001":"ZS1414AC-Li","TPTA02002":"ZS1414AC-Li","TPTA02003":"ZS1414AC-Li","TPTA02004":"ZS1414AC-Li","TPTA02005":"ZS1414AC-Li","TPTA02006":"ZS1414AC-Li","TPTA02007":"ZS1414AC-Li","TPTA02008":"ZS1414AC-Li","TPTA02009":"ZS1414AC-Li","TPTA02010":"ZS1414AC-Li","TPTA02011":"ZA14JE-Li","TPTA02012":"ZA14JE-Li","TPTA02013":"ZA14JE-Li","TPTA02014":"ZS0808AC-Li","TPTA02015":"ZS0808AC-Li","TPTA02016":"ZS0808AC-Li","TPTA02017":"ZS0808AC-Li","TPTA02018":"ZS0808AC-Li","TPTA02019":"ZS0808AC-Li","TPTA02020":"ZS0808AC-Li","TPTA02021":"ZS0808AC-Li","TPTA02022":"ZS1212AC-Li","TPTA02023":"ZS1212AC-Li","TPTA02024":"ZS1212AC-Li","TPTA02025":"ZS1212AC-Li","TPTA02026":"ZS1212AC-Li","TPTA02027":"BT44HRT-Hi","TPTA02028":"ZS1012AC-Li","TPTA02029":"ZS1012AC-Li","TPTA02030":"ZS1012AC-Li","TPTA02031":"ZS1012AC-Li","TPTA02032":"ZS1012AC-Li","TPTA02033":"ZS1012AC-Li","TPTA02034":"ZS1414AC-Li","TPTA02035":"ZS1414AC-Li","TPTA02036":"ZS1414AC-Li","TPTA02037":"ZS1414AC-Li","TPTA02038":"BA18CERT2-Li","TPTA02039":"BA18CERT2-Li","TPTA02040":"BA18CERT2-Li","TPTA02041":"BA18CERT2-Li","TPTA02042":"BA18CERT2-Li","TPTA02043":"BA18CERT2-Li","TPTA02044":"JCPT0607PA-Pb","TPTA02045":"0407SE-Pb","TPTA02046":"0407SE-Pb","TPTA02047":"0407SE-Pb","TPTA02048":"0407SE-Pb","TPTA02049":"0407SE-Pb","TPTA02050":"0407SE-Pb","TPTA02051":"0407SE-Pb","TPTA02052":"0407SE-Pb","TPTA02053":"0407SE-Pb","TPTA02054":"0407SE-Pb","TPTA02055":"0407SE-Pb","TPTA02056":"JCPT1412AC-Li","TPTA02057":"JCPT1412AC-Li","TPTA02058":"BA28ERT-Li","TPTA02059":"BA16CERT2-Li","TPTA02060":"BA16NE-Li","TPTA02061":"BA16NE-Li","TPTA02062":"BA16NE-Li","TPTA02063":"BA11NE-Li","TPTA02064":"BA11NE-Li","TPTA02065":"BA11NE-Li","TPTA02066":"BA11NE-Li","TPTA02067":"BA28BHRT-Hi","TPTA02068":"BA28ERT-Li","TPTA02069":"JCPT0607A-Pb","TPTA02070":"JCPT0607B-Pb","TPTA02071":"JCPT0807PA-Li","TPTA02072":"JCPT1212AC-Li","TPTA02073":"JCPT1212AC-Li","TPTA02074":"JCPT1212AC-Li","TPTA02075":"JCPT1212AC-Li","TPTA02076":"S1212AC+-Li","TPTA02077":"S1212AC+-Li","TPTA02078":"BA44HRT-Hi","TPTA02079":"S0807AC+-Li","TPTA02080":"S0807AC+-Li","TPTA02081":"S0807AC+-Li","TPTA02082":"S0807AC+-Li","TPTA02083":"S0807AC+-Li","TPTA02084":"S0807AC+-Li","TPTA02085":"AMWP 11.5-8200-Li","TPTA02086":"AMWP 11.5-8200-Li","TPTA02087":"BA28ERT-Li","TPTA02088":"S1008AC+-Li","TPTA02089":"S1412AC+-Li","TPTA02090":"BA11NE-Li","TPTA02091":"BA11NE-Li","TPTA02092":"JCPT0807AC-Pb","TPTA02093":"JCPT0807AC-Pb","TPTA02094":"JCPT0807AC-Pb","TPTA02095":"JCPT0807AC-Pb","TPTA02096":"BA28BHRT-Hi","TPTA02097":"JCPT0607DCM-Pb","TPTA02098":"JCPT0607A-Pb","TPTA02099":"JCPT0607A-Pb","TPTA02100":"JCPT0607A-Pb","TPTA02101":"JCPT0607A-Pb","TPTA02102":"JCPT0607A-Pb","TPTA02103":"JCPT1412AC-Li","TPTA02104":"BT44HRT-Hi","TPTA02105":"ZA14JE-Li","TPTA02106":"ZA14JE-Li","TPTA02107":"ZA14JE-Li","TPTA02108":"ZA14JE-Li","TPTA02109":"ZA14JE-Li","TPTA02110":"ZA14JE-Li","TPTA02111":"ZA14JE-Li","TPTA02112":"ZA14JE-Li","TPTA02113":"ZA14JE-Li","TPTA02114":"ZA14JE-Li","TPTA02115":"ZA14JE-Li","TPTA02116":"ZA14JE-Li","TPTA02117":"ZA14JE-Li","TPTA02118":"ZA14JE-Li","TPTA02119":"ZA14JE-Li","TPTA02120":"ZA14JE-Li","TPTA02121":"ZA14JE-Li","TPTA02122":"ZA14JE-Li","TPTA02123":"ZA14JE-Li","TPTA02124":"ZA14JE-Li","TPTA02125":"ZA14JE-Li","TPTA02126":"ZA14JE-Li","TPTA02127":"ZA14JE-Li","TPTA02128":"ZA14JE-Li","TPTA02129":"ZA14JE-Li","TPTA02130":"ZA14JE-Li","TPTA02131":"ZA14JE-Li","TPTA02132":"ZA14JE-Li","TPTA02133":"ZS0407DC-Pb","TPTA02134":"ZS0407DC-Pb","TPTA02135":"ZS0407DC-Pb","TPTA02136":"ZS0407DC-Pb","TPTA02137":"ZS0407DC-Pb","TPTA02138":"ZS0407DC-Pb","TPTA02139":"ZS0407DC-Pb","TPTA02140":"ZS0407DC-Pb","TPTA02141":"ZS0407DC-Pb","TPTA02142":"ZS0407DC-Pb","TPTA02143":"ZS0407DC-Pb","TPTA02144":"ZS0407DC-Pb","TPTA02145":"ZS0607AC-Li","TPTA02146":"ZS0607AC-Li","TPTA02147":"ZS0607AC-Li","TPTA02148":"ZS0607AC-Li","TPTA02149":"ZS0808AC-Li","TPTA02150":"ZS0808AC-Li","TPTA02151":"ZS0808AC-Li","TPTA02152":"ZS0808AC-Li","TPTA02153":"ZS0808AC-Li","TPTA02154":"ZS0808AC-Li","TPTA02155":"ZS0808AC-Li","TPTA02156":"ZS0808AC-Li","TPTA02157":"ZS0808AC-Li","TPTA02158":"ZS0808AC-Li","TPTA02159":"ZS0808AC-Li","TPTA02160":"ZS0808AC-Li","TPTA02161":"ZS0808AC-Li","TPTA02162":"ZS0808AC-Li","TPTA02163":"ZS0808AC-Li","TPTA02164":"ZS0808AC-Li","TPTA02165":"ZS0808AC-Li","TPTA02166":"ZS0808AC-Li","TPTA02167":"ZS0808AC-Li","TPTA02168":"ZS0808AC-Li","TPTA02169":"ZS0808AC-Li","TPTA02170":"ZS0808AC-Li","TPTA02171":"ZS0808AC-Li","TPTA02172":"ZS0808AC-Li","TPTA02173":"ZS0808AC-Li","TPTA02174":"ZS0808AC-Li","TPTA02175":"ZS0808AC-Li","TPTA02176":"ZS1012AC-Li","TPTA02177":"ZS1012AC-Li","TPTA02178":"ZS1012AC-Li","TPTA02179":"ZS1012AC-Li","TPTA02180":"ZS1012AC-Li","TPTA02181":"ZS1012AC-Li","TPTA02182":"ZS1012AC-Li","TPTA02183":"ZS1012AC-Li","TPTA02184":"ZS1012AC-Li","TPTA02185":"ZS1012AC-Li","TPTA02186":"ZS1012AC-Li","TPTA02187":"ZS1012AC-Li","TPTA02188":"ZS1012AC-Li","TPTA02189":"ZS1012AC-Li","TPTA02190":"ZS1012AC-Li","TPTA02191":"ZS1012AC-Li","TPTA02192":"ZS1012AC-Li","TPTA02193":"ZS1012AC-Li","TPTA02194":"ZS1012AC-Li","TPTA02195":"ZS1012AC-Li","TPTA02196":"ZS1012AC-Li","TPTA02197":"ZS1012AC-Li","TPTA02198":"ZS1012AC-Li","TPTA02199":"ZS1012AC-Li","TPTA02200":"ZS1012AC-Li","TPTA02201":"ZS1012AC-Li","TPTA02202":"ZS1012AC-Li","TPTA02203":"ZS1012AC-Li","TPTA02204":"ZS1012AC-Li","TPTA02205":"ZS1012AC-Li","TPTA02206":"ZS1012AC-Li","TPTA02207":"ZS1012AC-Li","TPTA02208":"ZS1012AC-Li","TPTA02209":"ZS1012AC-Li","TPTA02210":"ZS1012AC-Li","TPTA02211":"ZS1012AC-Li","TPTA02212":"ZS1012AC-Li","TPTA02213":"ZS1012AC-Li","TPTA02214":"ZS1012AC-Li","TPTA02215":"ZS1012AC-Li","TPTA02216":"ZS1012AC-Li","TPTA02217":"ZS1012AC-Li","TPTA02218":"ZS1012AC-Li","TPTA02219":"ZS1012AC-Li","TPTA02220":"ZS1012AC-Li","TPTA02221":"ZS1012AC-Li","TPTA02222":"ZS1012AC-Li","TPTA02223":"ZS1012AC-Li","TPTA02224":"ZS1012AC-Li","TPTA02225":"ZS1012AC-Li","TPTA02226":"ZS1212AC-Li","TPTA02227":"ZS1212AC-Li","TPTA02228":"ZS1212AC-Li","TPTA02229":"ZS1212AC-Li","TPTA02230":"ZS1212AC-Li","TPTA02231":"ZS1212AC-Li","TPTA02232":"ZS1212AC-Li","TPTA02233":"ZS1212AC-Li","TPTA02234":"ZS1212AC-Li","TPTA02235":"ZS1212AC-Li","TPTA02236":"ZS1212AC-Li","TPTA02237":"ZS1212AC-Li","TPTA02238":"ZS1212AC-Li","TPTA02239":"ZS1212AC-Li","TPTA02240":"ZS1212AC-Li","TPTA02241":"ZS1212AC-Li","TPTA02242":"ZS1212AC-Li","TPTA02243":"ZS1212AC-Li","TPTA02244":"ZS1212AC-Li","TPTA02245":"ZS1212AC-Li","TPTA02246":"ZS1212AC-Li","TPTA02247":"ZS1212AC-Li","TPTA02248":"ZS1212AC-Li","TPTA02249":"ZS1212AC-Li","TPTA02250":"ZS1212AC-Li","TPTA02251":"ZS1212AC-Li","TPTA02252":"ZS1212AC-Li","TPTA02253":"ZS1212AC-Li","TPTA02254":"ZS1212AC-Li","TPTA02255":"ZS1212AC-Li","TPTA02256":"ZS1212AC-Li","TPTA02257":"ZS1212AC-Li","TPTA02258":"ZS1212AC-Li","TPTA02259":"ZS1212AC-Li","TPTA02260":"ZS1212AC-Li","TPTA02261":"ZS1212AC-Li","TPTA02262":"ZS1414AC-Li","TPTA02263":"ZS1414AC-Li","TPTA02264":"ZS1414AC-Li","TPTA02265":"ZS1414AC-Li","TPTA02266":"ZS1414AC-Li","TPTA02267":"ZS1414AC-Li","TPTA02268":"ZS1414AC-Li","TPTA02269":"ZS1414AC-Li","TPTA02270":"ZS1414AC-Li","TPTA02271":"ZS1414AC-Li","TPTA02272":"ZS1414AC-Li","TPTA02273":"ZS1414AC-Li","TPTA02274":"ZS1414AC-Li","TPTA02275":"ZS1414AC-Li","TPTA02276":"ZS1414AC-Li","TPTA02277":"ZS1414AC-Li","TPTA02278":"ZS1414AC-Li","TPTA02279":"ZS1414AC-Li","TPTA02280":"ZS1414AC-Li","TPTA02281":"ZS1414AC-Li","TPTA02282":"ZS1414AC-Li","TPTA02283":"ZS1414AC-Li","TPTA02284":"ZS1414AC-Li","TPTA02285":"ZS1414AC-Li","TPTA02286":"ZS1414AC-Li","TPTA02287":"ZS1414AC-Li","TPTA02288":"ZS1414AC-Li","TPTA02289":"ZS1414AC-Li","TPTA02290":"ZS1414AC-Li","TPTA02291":"ZS1414AC-Li","TPTA02292":"ZS1414AC-Li","TPTA02293":"ZS1414AC-Li","TPTA02294":"ZT26JE-Li","TPTA02295":"ZT51JEH-V-Hi","TPTA02296":"BT44HRT-Hi","TPTA02297":"AMWP 11.5-8200-Li","TPTA02298":"BA16NE-Li","TPTA02299":"BA16NE-Li","TPTA02300":"BA28ERT-Li","TPTA02301":"BA28ERT-Li","TPTA02302":"JCPT0607B-Pb","TPTA02303":"JCPT0607B-Pb","TPTA02304":"BA28ERT-Li","TPTA02305":"BA28ERT-Li","TPTA02306":"BA44HRT-Hi","TPTA02307":"S1612AC+Q-Li","TPTA02308":"BA36HRT-Hi","TPTA02309":"BA41HRT-Hi","TPTA02310":"BA28BHRT-Hi","TPTA02311":"BA28BHRT-Hi","TPTA02312":"BA18CERT2-Li","TPTA02313":"BA18CERT2-Li","TPTA02314":"BA18CERT2-Li","TPTA02315":"BA18CERT2-Li","TPTA02316":"BA18CERT2-Li","TPTA02317":"BA44HRT-Hi","TPTA02318":"BA41HRT-Hi","TPTA02319":"BA41HRT-Hi","TPTA02320":"BA44HRT-Hi","TPTA02321":"BA28BERT-Li","TPTA02322":"BA28BERT-Li","TPTA02323":"BA16CERT2-Li","TPTA02324":"BA16CERT2-Li","TPTA02325":"BA16CERT2-Li","TPTA02326":"BA16CERT2-Li","TPTA02327":"BA16CERT2-Li","TPTA02328":"BA16CERT2-Li","TPTA02329":"BA16CERT2-Li","TPTA02330":"BA16CERT2-Li","TPTA02331":"BA16CERT2-Li","TPTA02332":"BA16CERT2-Li","TPTA02333":"S0807AC+Q-Li","TPTA02334":"S0807AC+Q-Li","TPTA02335":"S0807AC+Q-Li","TPTA02336":"S0807AC+Q-Li","TPTA02337":"S1008AC+Q-Li","TPTA02338":"S1008AC+Q-Li","TPTA02339":"S1008AC+Q-Li","TPTA02340":"S1008AC+Q-Li","TPTA02341":"S1008AC+Q-Li","TPTA02342":"S1008AC+Q-Li","TPTA02343":"S1008AC+Q-Li","TPTA02344":"S1008AC+Q-Li","TPTA02345":"S1008AC+Q-Li","TPTA02346":"S1008AC+Q-Li","TPTA02347":"S1008AC+Q-Li","TPTA02348":"S1008AC+Q-Li","TPTA02349":"S1008AC+Q-Li","TPTA02350":"S1008AC+Q-Li","TPTA02351":"S1008AC+Q-Li","TPTA02352":"S1008AC+Q-Li","TPTA02353":"S1008AC+Q-Li","TPTA02354":"BA16CERT2-Li","TPTA02355":"BA16CERT2-Li","TPTA02356":"S1008AC+Q-Li","TPTA02357":"S1008AC+Q-Li","TPTA02358":"BA20CERT2-Li","TPTA02359":"S1008AC+Q-Li","TPTA02360":"S1008AC+Q-Li","TPTA02361":"S1008AC+Q-Li","TPTA02362":"BA20CERT2-Li","TPTA02363":"JCPT0607DCM-Pb","TPTA02364":"JCPT0607DCM-Pb","TPTA02365":"JCPT0607DCM-Pb","TPTA02366":"JCPT0607DCM-Pb","TPTA02367":"JCPT0607DCM-Pb","TPTA02368":"JCPT0607DCM-Pb","TPTA02369":"JCPT0607DCM-Pb","TPTA02370":"JCPT0607DCM-Pb","TPTA02371":"JCPT0607DCM-Pb","TPTA02372":"JCPT0607DCM-Pb","TPTA02373":"JCPT0607DCM-Pb","TPTA02374":"JCPT0607DCM-Pb","TPTA02375":"S1212AC+Q-Li","TPTA02376":"S1212AC+Q-Li","TPTA02377":"S1212AC+Q-Li","TPTA02378":"S1212AC+Q-Li","TPTA02379":"S1212AC+Q-Li","TPTA02380":"S1212AC+Q-Li","TPTA02381":"S1212AC+Q-Li","TPTA02382":"S1212AC+Q-Li","TPTA02383":"S1212AC+Q-Li","TPTA02384":"S1212AC+Q-Li","TPTA02385":"S1212AC+Q-Li","TPTA02386":"S1212AC+Q-Li","TPTA02387":"S1212AC+Q-Li","TPTA02388":"S1212AC+Q-Li","TPTA02389":"S1212AC+Q-Li","TPTA02390":"S1212AC+Q-Li","TPTA02391":"S1212AC+Q-Li","TPTA02392":"S1212AC+Q-Li","TPTA02393":"S1212AC+Q-Li","TPTA02394":"S1212AC+Q-Li","TPTA02395":"S1212AC+Q-Li","TPTA02396":"S1212AC+Q-Li","TPTA02397":"S1212AC+Q-Li","TPTA02398":"S1212AC+Q-Li","TPTA02399":"S1008AC+Q-Li","TPTA02400":"S1008AC+Q-Li","TPTA02401":"S1008AC+Q-Li","TPTA02402":"S1008AC+Q-Li","TPTA02403":"S1008AC+Q-Li","TPTA02404":"S1008AC+Q-Li","TPTA02405":"S1008AC+Q-Li","TPTA02406":"S1008AC+Q-Li","TPTA02407":"S1008AC+Q-Li","TPTA02408":"S1008AC+Q-Li","TPTA02409":"S1008AC+Q-Li","TPTA02410":"BA28BERT-Li","TPTA02411":"BT34BHRT-Hi","TPTA02412":"S1008AC+-Li","TPTA02413":"S1008AC+Q-Li","TPTA02414":"S1008AC+Q-Li","TPTA02415":"S1008AC+Q-Li","TPTA02416":"S1008AC+Q-Li","TPTA02417":"S1008AC+Q-Li","TPTA02418":"S1008AC+Q-Li","TPTA02419":"S1212AC+Q-Li","TPTA02420":"S1212AC+Q-Li","TPTA02421":"S1212AC+Q-Li","TPTA02422":"S1212AC+Q-Li","TPTA02423":"S1212AC+Q-Li","TPTA02424":"S1212AC+Q-Li","TPTA02425":"S1212AC+Q-Li","TPTA02426":"S1212AC+Q-Li","TPTA02427":"S1212AC+Q-Li","TPTA02428":"S1212AC+Q-Li","TPTA02429":"S1212AC+Q-Li","TPTA02430":"S1212AC+Q-Li","TPTA02431":"S1212AC+Q-Li","TPTA02432":"S1212AC+Q-Li","TPTA02433":"S1212AC+Q-Li","TPTA02434":"S1212AC+Q-Li","TPTA02435":"S1212AC+Q-Li","TPTA02436":"S1212AC+Q-Li","TPTA02437":"S1212AC+Q-Li","TPTA02438":"S1212AC+Q-Li","TPTA02439":"S1212AC+Q-Li","TPTA02440":"S1212AC+Q-Li","TPTA02441":"S1212AC+Q-Li","TPTA02442":"S1212AC+Q-Li","TPTA02443":"S1212AC+Q-Li","TPTA02444":"S1212AC+Q-Li","TPTA02445":"S1412AC+Q-Li","TPTA02446":"S1412AC+Q-Li","TPTA02447":"S1412AC+Q-Li","TPTA02448":"S1412AC+Q-Li","TPTA02449":"S1412AC+Q-Li","TPTA02450":"S1412AC+Q-Li","TPTA02451":"S1412AC+Q-Li","TPTA02452":"S1412AC+Q-Li","TPTA02453":"S1412AC+-Li","TPTA02454":"S1412AC+Q-Li","TPTA02455":"S1412AC+Q-Li","TPTA02456":"S1412AC+Q-Li","TPTA02457":"S1412AC+Q-Li","TPTA02458":"S1412AC+Q-Li","TPTA02459":"S1412AC+-Li","TPTA02460":"S1412AC+-Li","TPTA02461":"S1412AC+Q-Li","TPTA02462":"S1412AC+Q-Li","TPTA02463":"S1412AC+-Li","TPTA02464":"S1412AC+Q-Li","TPTA02465":"S1412AC+Q-Li","TPTA02466":"S1412AC+Q-Li","TPTA02467":"S1412AC+Q-Li","TPTA02468":"S1412AC+Q-Li","TPTA02469":"S1412AC+Q-Li","TPTA02470":"S1412AC+Q-Li","TPTA02471":"S1412AC+Q-Li","TPTA02472":"S1412AC+Q-Li","TPTA02473":"S1412AC+Q-Li","TPTA02474":"S1412AC+Q-Li","TPTA02475":"S1412AC+Q-Li","TPTA02476":"S1412AC+Q-Li","TPTA02477":"S1412AC+Q-Li","TPTA02478":"S1412AC+Q-Li","TPTA02479":"S1412AC+Q-Li","TPTA02480":"S1412AC+Q-Li","TPTA02481":"S1412AC+Q-Li","TPTA02482":"S1412AC+Q-Li","TPTA02483":"S1412AC+Q-Li","TPTA02484":"S1412AC+Q-Li","TPTA02485":"S1612AC+Q-Li","TPTA02486":"S1612AC+Q-Li","TPTA02487":"S1612AC+Q-Li","TPTA02488":"S1612AC+Q-Li","TPTA02489":"S1612AC+Q-Li","TPTA02490":"S1612AC+Q-Li","TPTA02491":"S1612AC+Q-Li","TPTA02492":"S1612AC+Q-Li","TPTA02493":"S1612AC+Q-Li","TPTA02494":"S1612AC+Q-Li","TPTA02495":"S1612AC+Q-Li","TPTA02496":"S1612AC+Q-Li","TPTA02497":"S1612AC+Q-Li","TPTA02498":"S1612AC+Q-Li","TPTA02499":"S1612AC+Q-Li","TPTA02500":"S1612AC+Q-Li","TPTA02501":"S1612AC+Q-Li","TPTA02502":"S1612AC+Q-Li","TPTA02503":"S1612AC+Q-Li","TPTA02504":"S1612AC+Q-Li","TPTA02505":"S1612AC+Q-Li","TPTA02506":"S1612AC+Q-Li","TPTA02507":"S1612AC+Q-Li","TPTA02508":"S1612AC+Q-Li","TPTA02509":"S1612AC+Q-Li","TPTA02510":"S1612AC+Q-Li","TPTA02511":"S1612AC+Q-Li","TPTA02512":"S1612AC+Q-Li","TPTA02513":"S1612AC+Q-Li","TPTA02514":"S1612AC+Q-Li","TPTA02515":"S1612AC+Q-Li","TPTA02516":"S1612AC+Q-Li","TPTA02517":"BA16CERT2-Li","TPTA02518":"BA16CERT2-Li","TPTA02519":"BA16CERT2-Li","TPTA02520":"BA16CERT2-Li","TPTA02521":"BA16CERT2-Li","TPTA02522":"BA16CERT2-Li","TPTA02523":"BA16CERT2-Li","TPTA02524":"BA16CERT2-Li","TPTA02525":"BA16CERT2-Li","TPTA02526":"BA16CERT2-Li","TPTA02527":"BA16CERT2-Li","TPTA02528":"BA16CERT2-Li","TPTA02529":"BA16CERT2-Li","TPTA02530":"BA16CERT2-Li","TPTA02531":"BA16CERT2-Li","TPTA02532":"BA16CERT2-Li","TPTA02533":"BA16CERT2-Li","TPTA02534":"BA16CERT2-Li","TPTA02535":"BA20CERT2-Li","TPTA02536":"BA28BERT-Li","TPTA02537":"BA28BERT-Li","TPTA02538":"BA28BHRT-Hi","TPTA02539":"BA28BHRT-Hi","TPTA02540":"BT34BHRT-Hi","TPTA02541":"BT34BHRT-Hi","TPTA02542":"BT34BHRT-Hi","TPTA02543":"BT34BHRT-Hi","TPTA02544":"BA36HRT-Hi","TPTA02545":"BA36HRT-Hi","TPTA02546":"BA41HRT-Hi","TPTA02547":"BA41HRT-Hi","TPTA02548":"BA44HRT-Hi","TPTA02549":"ZS0407DC-Pb","TPTA02550":"ZS0407DC-Pb","TPTA02551":"ZS0407DC-Pb","TPTA02552":"ZS0407DC-Pb","TPTA02553":"ZS0407DC-Pb","TPTA02554":"ZS0407DC-Pb","TPTA02555":"ZS0407DC-Pb","TPTA02556":"ZS0407DC-Pb","TPTA02557":"ZS0407DC-Pb","TPTA02558":"ZS0407DC-Pb","TPTA02559":"ZS0407DC-Pb","TPTA02560":"ZS0407DC-Pb","TPTA02561":"ZS0407DC-Pb","TPTA02562":"ZS0407DC-Pb","TPTA02563":"ZS0407DC-Pb","TPTA02564":"ZS0407DC-Pb","TPTA02565":"ZS0407DC-Pb","TPTA02566":"ZS0407DC-Pb","TPTA02567":"ZS0407DC-Pb","TPTA02568":"ZS0407DC-Pb","TPTA02569":"ZS0407DC-Pb","TPTA02570":"ZS0407DC-Pb","TPTA02571":"ZS0407DC-Pb","TPTA02572":"ZS0407DC-Pb","TPTA02573":"ZS0407DC-Pb","TPTA02574":"ZS0407DC-Pb","TPTA02575":"ZS0407DC-Pb","TPTA02576":"ZS0407DC-Pb","TPTA02577":"ZS0407DC-Pb","TPTA02578":"ZS0407DC-Pb","TPTA02579":"ZS0407DC-Pb","TPTA02580":"ZS0407DC-Pb","TPTA02581":"ZS0407DC-Pb","TPTA02582":"ZS0407DC-Pb","TPTA02583":"ZS0407DC-Pb","TPTA02584":"ZS0407DC-Pb","TPTA02585":"ZS0407DC-Pb","TPTA02586":"ZS1012AC-Li","TPTA02587":"ZS1012AC-Li","TPTA02588":"ZS1012AC-Li","TPTA02589":"ZS1012AC-Li","TPTA02590":"ZS1012AC-Li","TPTA02591":"ZS1012AC-Li","TPTA02592":"ZS1012AC-Li","TPTA02593":"ZS1012AC-Li","TPTA02594":"ZS1012AC-Li","TPTA02595":"ZS1012AC-Li","TPTA02596":"ZS1012AC-Li","TPTA02597":"ZS1012AC-Li","TPTA02598":"ZS1012AC-Li","TPTA02599":"ZS1012AC-Li","TPTA02600":"ZS1012AC-Li","TPTA02601":"ZS1012AC-Li","TPTA02602":"ZS1012AC-Li","TPTA02603":"ZS1012AC-Li","TPTA02604":"ZS1012AC-Li","TPTA02605":"ZS1012AC-Li","TPTA02606":"ZS1012AC-Li","TPTA02607":"ZS1012AC-Li","TPTA02608":"ZS1012AC-Li","TPTA02609":"ZS1012AC-Li","TPTA02610":"ZS1012AC-Li","TPTA02611":"ZS1012AC-Li","TPTA02612":"ZS1012AC-Li","TPTA02613":"ZS1012AC-Li","TPTA02614":"ZS1012AC-Li","TPTA02615":"ZS1012AC-Li","TPTA02616":"ZS1012AC-Li","TPTA02617":"ZS1012AC-Li","TPTA02618":"ZS1012AC-Li","TPTA02619":"ZS1012AC-Li","TPTA02620":"ZS1012AC-Li","TPTA02621":"ZS1012AC-Li","TPTA02622":"ZS1012AC-Li","TPTA02623":"ZS1012AC-Li","TPTA02624":"ZS1012AC-Li","TPTA02625":"ZS1012AC-Li","TPTA02626":"ZS1012AC-Li","TPTA02627":"ZS1012AC-Li","TPTA02628":"ZS1012AC-Li","TPTA02629":"ZS1012AC-Li","TPTA02630":"ZS1012AC-Li","TPTA02631":"ZS1012AC-Li","TPTA02632":"ZS1012AC-Li","TPTA02633":"ZS1012AC-Li","TPTA02634":"ZS1012AC-Li","TPTA02635":"ZS1012AC-Li","TPTA02636":"ZS1012AC-Li","TPTA02637":"ZS1012AC-Li","TPTA02638":"ZS1012AC-Li","TPTA02639":"ZS1012AC-Li","TPTA02640":"ZS1012AC-Li","TPTA02641":"ZS1012AC-Li","TPTA02642":"ZS1012AC-Li","TPTA02643":"ZS1012AC-Li","TPTA02644":"ZS1012AC-Li","TPTA02645":"ZS1012AC-Li","TPTA02646":"ZA14JE-Li","TPTA02647":"ZA14JE-Li","TPTA02648":"ZS0808AC-Li","TPTA02649":"ZS0808AC-Li","TPTA02650":"ZS0808AC-Li","TPTA02651":"ZS0808AC-Li","TPTA02652":"ZS0808AC-Li","TPTA02653":"ZS0808AC-Li","TPTA02654":"ZS0808AC-Li","TPTA02655":"ZS0808AC-Li","TPTA02656":"ZS0808AC-Li","TPTA02657":"ZS0808AC-Li","TPTA02658":"ZS0808AC-Li","TPTA02659":"ZS0808AC-Li","TPTA02660":"ZS0808AC-Li","TPTA02661":"ZS1212AC-Li","TPTA02662":"ZS1212AC-Li","TPTA02663":"ZS1212AC-Li","TPTA02664":"ZS1212AC-Li","TPTA02665":"ZT26JE-Li","TPTA02666":"ZT26JE-Li","TPTA02667":"ZT26JE-Li","TPTA02668":"ZT26JE-Li","TPTA02669":"ZT26JEH-Hi","TPTA02670":"ZT26JEH-Hi","TPTA02671":"ZT26JEH-Hi","TPTA02672":"ZT26JEH-Hi","TPTA02673":"ZT26JEH-Hi","TPTA02674":"ZT32JE-V-Li","TPTA02675":"ZT32JE-V-Li","TPTA02676":"ZT32JE-V-Li","TPTA02677":"ZT32JE-V-Li","TPTA02678":"ZT32JE-V-Li","TPTA02679":"ZT38JE-Li","TPTA02680":"ZT38JE-Li","TPTA02681":"ZT38JE-Li","TPTA02682":"ZT38JE-Li","TPTA02683":"ZT38JE-Li","TPTA02684":"ZT38JE-Li","TPTA02685":"ZT38JE-Li","TPTA02686":"ZT38JE-Li","TPTA02687":"ZT38JE-Li","TPTA02688":"ZT38JE-Li","TPTA02689":"ZT42JEH-Hi","TPTA02690":"ZT42JEH-Hi","TPTA02691":"ZT42JEH-Hi","TPTA02692":"Z-34/22 DC","TPTA02693":"BA41HRT-Hi","TPTA02694":"BA16CERT2-Li","TPTA02695":"BA16CERT2-Li","TPTA02696":"ZA20J-Di","TPTA02697":"ZA20J-Di","TPTA02698":"ZA20J-Di","TPTA02699":"ZA20J-Di","TPTA02700":"ZA20J-Di","TPTA02701":"ZA14NJE-Li","TPTA02702":"ZA14NJE-Li","TPTA02703":"ZA14NJE-Li","TPTA02704":"ZA14NJE-Li","TPTA02705":"ZA14NJE-Li","TPTA02706":"ZA14NJE-Li","TPTA02707":"ZA14NJE-Li","TPTA02708":"ZA14NJE-Li","TPTA02709":"ZA14NJE-Li","TPTA02710":"ZA14NJE-Li","TPTA02711":"ZA14NJE-Li","TPTA02712":"ZA14NJE-Li","TPTA02713":"ZA14NJE-Li","TPTA02714":"ZA14NJE-Li","TPTA02715":"ZA14NJE-Li","TPTA02716":"BT44HRT-Hi","TPTA02717":"BT44HRT-Hi","TPTA02718":"BA16CHRT2-Hi","TPTA02719":"BA16CHRT2-Hi","TPTA02720":"BA16CHRT2-Hi","TPTA02721":"BA16CHRT2-Hi","TPTA02722":"BA18CERT2-Li","TPTA02723":"BA18CERT2-Li","TPTA02724":"BA16CERT2-Li","TPTA02725":"BA16CERT2-Li","TPTA02726":"BA16CERT2-Li","TPTA02727":"BA16CERT2-Li","TPTA02728":"BA16CERT2-Li","TPTA02729":"BA16CERT2-Li","TPTA02730":"BA16CERT2-Li","TPTA02731":"BA18CERT2-Li","TPTA02732":"BA18CERT2-Li","TPTA02733":"BA18CERT2-Li","TPTA02734":"BA18CERT2-Li","TPTA02736":"BA20CERT2-Li","TPTA02737":"BA20CERT2-Li","TPTA02738":"BA20CERT2-Li","TPTA02739":"BA20CHRT2-Hi","TPTA02740":"BA20CHRT2-Hi","TPTA02741":"BA22CERT2-Li","TPTA02742":"BA22CERT2-Li","TPTA02743":"BA22CERT2-Li","TPTA02744":"BA22CERT2-Li","TPTA02745":"BA22CERT2-Li","TPTA02746":"BA28BHRT-Hi","TPTA02747":"BA28BHRT-Hi","TPTA02748":"BA28HRT-Hi","TPTA02749":"S0807AC+-Li","TPTA02750":"S0807AC+-Li","TPTA02751":"S0807AC+-Li","TPTA02752":"S0807AC+-Li","TPTA02753":"S0807AC+-Li","TPTA02754":"S0807AC+-Li","TPTA02755":"S0807AC+-Li","TPTA02756":"S0807AC+-Li","TPTA02757":"S0807AC+-Li","TPTA02758":"S0807AC+-Li","TPTA02759":"S0807AC+-Li","TPTA02760":"S0807AC+-Li","TPTA02761":"S0807AC+-Li","TPTA02762":"S0807AC+-Li","TPTA02763":"S0807AC+-Li","TPTA02764":"S0807AC+-Li","TPTA02765":"S0807AC+-Li","TPTA02766":"S0807AC+-Li","TPTA02767":"S0807AC+-Li","TPTA02768":"S0807AC+-Li","TPTA02769":"S0807AC+-Li","TPTA02770":"S0807AC+-Li","TPTA02771":"S0807AC+-Li","TPTA02772":"S0807AC+-Li","TPTA02773":"S0807AC+-Li","TPTA02774":"S0807AC+-Li","TPTA02775":"S0807AC+-Li","TPTA02776":"S0807AC+-Li","TPTA02777":"S0807AC+-Li","TPTA02778":"S1612AC+Q-Li","TPTA02779":"S1612AC+Q-Li","TPTA02780":"S1612AC+Q-Li","TPTA02781":"S1612AC+Q-Li","TPTA02782":"S1612AC+Q-Li","TPTA02783":"S1612AC+Q-Li","TPTA02784":"S0807AC+-Li","TPTA02785":"S0807AC+-Li","TPTA02786":"S0807AC+-Li","TPTA02787":"S0807AC+-Li","TPTA02788":"S0807AC+-Li","TPTA02789":"S0807AC+-Li","TPTA02790":"S0807AC+-Li","TPTA02791":"S0807AC+-Li","TPTA02792":"S0807AC+-Li","TPTA02793":"S0807AC+-Li","TPTA02794":"S0807AC+-Li","TPTA02795":"S0807AC+-Li","TPTA02796":"S0807AC+-Li","TPTA02797":"S0807AC+-Li","TPTA02798":"S0807AC+-Li","TPTA02799":"S0807AC+-Li","TPTA02881":"BA41HRT-Hi","TPTA02882":"BA41HRT-Hi","TPTA02886":"S1612AC+Q-Li","TPTA02887":"S1612AC+Q-Li","TPTA02888":"S1612AC+Q-Li","TPTA02889":"S1612AC+Q-Li"},"regioes":{"BAIANOPOLIS":"Extremo Oeste Baiano","BARREIRAS":"Extremo Oeste Baiano","CATOLANDIA":"Extremo Oeste Baiano","FORMOSA DO RIO PRETO":"Extremo Oeste Baiano","LUIS EDUARDO MAGALHAES":"Extremo Oeste Baiano","RIACHAO DAS NEVES":"Extremo Oeste Baiano","SAO DESIDERIO":"Extremo Oeste Baiano","ANGICAL":"Extremo Oeste Baiano","BREJOLANDIA":"Extremo Oeste Baiano","COTEGIPE":"Extremo Oeste Baiano","CRISTOPOLIS":"Extremo Oeste Baiano","MANSIDAO":"Extremo Oeste Baiano","SANTA RITA DE CASSIA":"Extremo Oeste Baiano","TABOCAS DO BREJO VELHO":"Extremo Oeste Baiano","WANDERLEY":"Extremo Oeste Baiano","CANAPOLIS":"Extremo Oeste Baiano","COCOS":"Extremo Oeste Baiano","CORIBE":"Extremo Oeste Baiano","CORRENTINA":"Extremo Oeste Baiano","JABORANDI":"Extremo Oeste Baiano","SANTA MARIA DA VITORIA":"Extremo Oeste Baiano","SANTANA":"Extremo Oeste Baiano","SAO FELIX DO CORIBE":"Extremo Oeste Baiano","SERRA DOURADA":"Extremo Oeste Baiano","CAMPO ALEGRE DE LOURDES":"Vale São-Franciscano da Bahia","CASA NOVA":"Vale São-Franciscano da Bahia","CURACA":"Vale São-Franciscano da Bahia","JUAZEIRO":"Vale São-Franciscano da Bahia","PILAO ARCADO":"Vale São-Franciscano da Bahia","REMANSO":"Vale São-Franciscano da Bahia","SENTO SE":"Vale São-Franciscano da Bahia","SOBRADINHO":"Vale São-Franciscano da Bahia","ABARE":"Vale São-Franciscano da Bahia","CHORROCHO":"Vale São-Franciscano da Bahia","GLORIA":"Vale São-Franciscano da Bahia","MACURURE":"Vale São-Franciscano da Bahia","PAULO AFONSO":"Vale São-Franciscano da Bahia","RODELAS":"Vale São-Franciscano da Bahia","BARRA":"Vale São-Franciscano da Bahia","BURITIRAMA":"Vale São-Franciscano da Bahia","IBOTIRAMA":"Vale São-Franciscano da Bahia","ITAGUACU DA BAHIA":"Vale São-Franciscano da Bahia","MORPARA":"Vale São-Franciscano da Bahia","MUQUEM DO SAO FRANCISCO":"Vale São-Franciscano da Bahia","XIQUE-XIQUE":"Vale São-Franciscano da Bahia","BOM JESUS DA LAPA":"Vale São-Franciscano da Bahia","CARINHANHA":"Vale São-Franciscano da Bahia","FEIRA DA MATA":"Vale São-Franciscano da Bahia","PARATINGA":"Vale São-Franciscano da Bahia","SERRA DO RAMALHO":"Vale São-Franciscano da Bahia","SITIO DO MATO":"Vale São-Franciscano da Bahia","ANDORINHA":"Centro-Norte Baiano","ANTONIO GONCALVES":"Centro-Norte Baiano","CAMPO FORMOSO":"Centro-Norte Baiano","FILADELFIA":"Centro-Norte Baiano","ITIUBA":"Centro-Norte Baiano","JAGUARARI":"Centro-Norte Baiano","PINDOBACU":"Centro-Norte Baiano","SENHOR DO BONFIM":"Centro-Norte Baiano","UMBURANAS":"Centro-Norte Baiano","AMERICA DOURADA":"Centro-Norte Baiano","BARRA DO MENDES":"Centro-Norte Baiano","BARRO ALTO":"Centro-Norte Baiano","CAFARNAUM":"Centro-Norte Baiano","CANARANA":"Centro-Norte Baiano","CENTRAL":"Centro-Norte Baiano","GENTIO DO OURO":"Centro-Norte Baiano","IBIPEBA":"Centro-Norte Baiano","IBITITA":"Centro-Norte Baiano","IRAQUARA":"Centro-Norte Baiano","IRECE":"Centro-Norte Baiano","JOAO DOURADO":"Centro-Norte Baiano","JUSSARA":"Centro-Norte Baiano","LAPAO":"Centro-Norte Baiano","MULUNGU DO MORRO":"Centro-Norte Baiano","PRESIDENTE DUTRA":"Centro-Norte Baiano","SAO GABRIEL":"Centro-Norte Baiano","SOUTO SOARES":"Centro-Norte Baiano","UIBAI":"Centro-Norte Baiano","CAEM":"Centro-Norte Baiano","CALDEIRAO GRANDE":"Centro-Norte Baiano","CAPIM GROSSO":"Centro-Norte Baiano","JACOBINA":"Centro-Norte Baiano","MIGUEL CALMON":"Centro-Norte Baiano","MIRANGABA":"Centro-Norte Baiano","MORRO DO CHAPEU":"Centro-Norte Baiano","OUROLANDIA":"Centro-Norte Baiano","PIRITIBA":"Centro-Norte Baiano","PONTO NOVO":"Centro-Norte Baiano","QUIXABEIRA":"Centro-Norte Baiano","SAO JOSE DO JACUIPE":"Centro-Norte Baiano","SAUDE":"Centro-Norte Baiano","SERROLANDIA":"Centro-Norte Baiano","VARZEA DO POCO":"Centro-Norte Baiano","VARZEA NOVA":"Centro-Norte Baiano","BAIXA GRANDE":"Centro-Norte Baiano","BOA VISTA DO TUPIM":"Centro-Norte Baiano","IACU":"Centro-Norte Baiano","IBIQUERA":"Centro-Norte Baiano","ITABERABA":"Centro-Norte Baiano","LAJEDINHO":"Centro-Norte Baiano","MACAJUBA":"Centro-Norte Baiano","MAIRI":"Centro-Norte Baiano","MUNDO NOVO":"Centro-Norte Baiano","RUY BARBOSA":"Centro-Norte Baiano","TAPIRAMUTA":"Centro-Norte Baiano","VARZEA DA ROCA":"Centro-Norte Baiano","AGUA FRIA":"Centro-Norte Baiano","ANGUERA":"Centro-Norte Baiano","ANTONIO CARDOSO":"Centro-Norte Baiano","CONCEICAO DA FEIRA":"Centro-Norte Baiano","CONCEICAO DO JACUIPE":"Centro-Norte Baiano","CORACAO DE MARIA":"Centro-Norte Baiano","ELISIO MEDRADO":"Centro-Norte Baiano","FEIRA DE SANTANA":"Centro-Norte Baiano","IPECAETA":"Centro-Norte Baiano","IPIRA":"Centro-Norte Baiano","IRARA":"Centro-Norte Baiano","ITATIM":"Centro-Norte Baiano","OURICANGAS":"Centro-Norte Baiano","PEDRAO":"Centro-Norte Baiano","PINTADAS":"Centro-Norte Baiano","RAFAEL JAMBEIRO":"Centro-Norte Baiano","SANTA BARBARA":"Centro-Norte Baiano","SANTA TERESINHA":"Centro-Norte Baiano","SANTANOPOLIS":"Centro-Norte Baiano","SANTO ESTEVAO":"Centro-Norte Baiano","SAO GONCALO DOS CAMPOS":"Centro-Norte Baiano","SERRA PRETA":"Centro-Norte Baiano","TANQUINHO":"Centro-Norte Baiano","TEODORO SAMPAIO":"Centro-Norte Baiano","CORONEL JOAO SA":"Nordeste Baiano","JEREMOABO":"Nordeste Baiano","PEDRO ALEXANDRE":"Nordeste Baiano","SANTA BRIGIDA":"Nordeste Baiano","SITIO DO QUINTO":"Nordeste Baiano","CANSANCAO":"Nordeste Baiano","CANUDOS":"Nordeste Baiano","EUCLIDES DA CUNHA":"Nordeste Baiano","MONTE SANTO":"Nordeste Baiano","NORDESTINA":"Nordeste Baiano","QUEIMADAS":"Nordeste Baiano","QUIJINGUE":"Nordeste Baiano","TUCANO":"Nordeste Baiano","UAUA":"Nordeste Baiano","ADUSTINA":"Nordeste Baiano","ANTAS":"Nordeste Baiano","BANZAE":"Nordeste Baiano","CICERO DANTAS":"Nordeste Baiano","CIPO":"Nordeste Baiano","FATIMA":"Nordeste Baiano","HELIOPOLIS":"Nordeste Baiano","ITAPICURU":"Nordeste Baiano","NOVA SOURE":"Nordeste Baiano","NOVO TRIUNFO":"Nordeste Baiano","OLINDINA":"Nordeste Baiano","PARIPIRANGA":"Nordeste Baiano","RIBEIRA DO AMPARO":"Nordeste Baiano","RIBEIRA DO POMBAL":"Nordeste Baiano","ARACI":"Nordeste Baiano","BARROCAS":"Nordeste Baiano","BIRITINGA":"Nordeste Baiano","CANDEAL":"Nordeste Baiano","CAPELA DO ALTO ALEGRE":"Nordeste Baiano","CONCEICAO DO COITE":"Nordeste Baiano","GAVIAO":"Nordeste Baiano","ICHU":"Nordeste Baiano","LAMARAO":"Nordeste Baiano","NOVA FATIMA":"Nordeste Baiano","PE DE SERRA":"Nordeste Baiano","RETIROLANDIA":"Nordeste Baiano","RIACHAO DO JACUIPE":"Nordeste Baiano","SANTALUZ":"Nordeste Baiano","SAO DOMINGOS":"Nordeste Baiano","SERRINHA":"Nordeste Baiano","TEOFILANDIA":"Nordeste Baiano","VALENTE":"Nordeste Baiano","ACAJUTIBA":"Nordeste Baiano","ALAGOINHAS":"Nordeste Baiano","APORA":"Nordeste Baiano","ARACAS":"Nordeste Baiano","ARAMARI":"Nordeste Baiano","CRISOPOLIS":"Nordeste Baiano","INHAMBUPE":"Nordeste Baiano","RIO REAL":"Nordeste Baiano","SATIRO DIAS":"Nordeste Baiano","CARDEAL DA SILVA":"Nordeste Baiano","CONDE":"Nordeste Baiano","ENTRE RIOS":"Nordeste Baiano","ESPLANADA":"Nordeste Baiano","JANDAIRA":"Nordeste Baiano","AMELIA RODRIGUES":"Metropolitana de Salvador","CATU":"Metropolitana de Salvador","ITANAGRA":"Metropolitana de Salvador","MATA DE SAO JOAO":"Metropolitana de Salvador","POJUCA":"Metropolitana de Salvador","SAO SEBASTIAO DO PASSE":"Metropolitana de Salvador","TERRA NOVA":"Metropolitana de Salvador","ARATUIPE":"Metropolitana de Salvador","CABACEIRAS DO PARAGUACU":"Metropolitana de Salvador","CACHOEIRA":"Metropolitana de Salvador","CASTRO ALVES":"Metropolitana de Salvador","CONCEICAO DO ALMEIDA":"Metropolitana de Salvador","CRUZ DAS ALMAS":"Metropolitana de Salvador","DOM MACEDO COSTA":"Metropolitana de Salvador","GOVERNADOR MANGABEIRA":"Metropolitana de Salvador","JAGUARIPE":"Metropolitana de Salvador","MARAGOGIPE":"Metropolitana de Salvador","MUNIZ FERREIRA":"Metropolitana de Salvador","MURITIBA":"Metropolitana de Salvador","NAZARE":"Metropolitana de Salvador","SALINAS DA MARGARIDA":"Metropolitana de Salvador","SANTO AMARO":"Metropolitana de Salvador","SANTO ANTONIO DE JESUS":"Metropolitana de Salvador","SAO FELIPE":"Metropolitana de Salvador","SAO FELIX":"Metropolitana de Salvador","SAPEACU":"Metropolitana de Salvador","SAUBARA":"Metropolitana de Salvador","VARZEDO":"Metropolitana de Salvador","CAMACARI":"Metropolitana de Salvador","CANDEIAS":"Metropolitana de Salvador","DIAS D'AVILA":"Metropolitana de Salvador","ITAPARICA":"Metropolitana de Salvador","LAURO DE FREITAS":"Metropolitana de Salvador","MADRE DE DEUS":"Metropolitana de Salvador","SALVADOR":"Metropolitana de Salvador","SAO FRANCISCO DO CONDE":"Metropolitana de Salvador","SIMOES FILHO":"Metropolitana de Salvador","VERA CRUZ":"Metropolitana de Salvador","BOQUIRA":"Centro-Sul Baiano","BOTUPORA":"Centro-Sul Baiano","BROTAS DE MACAUBAS":"Centro-Sul Baiano","CATURAMA":"Centro-Sul Baiano","IBIPITANGA":"Centro-Sul Baiano","IBITIARA":"Centro-Sul Baiano","IPUPIARA":"Centro-Sul Baiano","MACAUBAS":"Centro-Sul Baiano","NOVO HORIZONTE":"Centro-Sul Baiano","OLIVEIRA DOS BREJINHOS":"Centro-Sul Baiano","TANQUE NOVO":"Centro-Sul Baiano","ABAIRA":"Centro-Sul Baiano","ANDARAI":"Centro-Sul Baiano","BARRA DA ESTIVA":"Centro-Sul Baiano","BONINAL":"Centro-Sul Baiano","BONITO":"Centro-Sul Baiano","CONTENDAS DO SINCORA":"Centro-Sul Baiano","IBICOARA":"Centro-Sul Baiano","ITAETE":"Centro-Sul Baiano","JUSSIAPE":"Centro-Sul Baiano","LENCOIS":"Centro-Sul Baiano","MUCUGE":"Centro-Sul Baiano","NOVA REDENCAO":"Centro-Sul Baiano","PALMEIRAS":"Centro-Sul Baiano","PIATA":"Centro-Sul Baiano","RIO DE CONTAS":"Centro-Sul Baiano","SEABRA":"Centro-Sul Baiano","UTINGA":"Centro-Sul Baiano","WAGNER":"Centro-Sul Baiano","AIQUARA":"Centro-Sul Baiano","AMARGOSA":"Centro-Sul Baiano","APUAREMA":"Centro-Sul Baiano","BREJOES":"Centro-Sul Baiano","CRAVOLANDIA":"Centro-Sul Baiano","IRAJUBA":"Centro-Sul Baiano","IRAMAIA":"Centro-Sul Baiano","ITAGI":"Centro-Sul Baiano","ITAQUARA":"Centro-Sul Baiano","ITIRUCU":"Centro-Sul Baiano","JAGUAQUARA":"Centro-Sul Baiano","JEQUIE":"Centro-Sul Baiano","JIQUIRICA":"Centro-Sul Baiano","JITAUNA":"Centro-Sul Baiano","LAFAIETE COUTINHO":"Centro-Sul Baiano","LAJE":"Centro-Sul Baiano","LAGEDO DO TABOCAL":"Centro-Sul Baiano","MARACAS":"Centro-Sul Baiano","MARCIONILIO SOUZA":"Centro-Sul Baiano","MILAGRES":"Centro-Sul Baiano","MUTUIPE":"Centro-Sul Baiano","NOVA ITARANA":"Centro-Sul Baiano","PLANALTINO":"Centro-Sul Baiano","SANTA INES":"Centro-Sul Baiano","SAO MIGUEL DAS MATAS":"Centro-Sul Baiano","UBAIRA":"Centro-Sul Baiano","DOM BASILIO":"Centro-Sul Baiano","ERICO CARDOSO":"Centro-Sul Baiano","LIVRAMENTO DE NOSSA SENHORA":"Centro-Sul Baiano","PARAMIRIM":"Centro-Sul Baiano","RIO DO PIRES":"Centro-Sul Baiano","CACULE":"Centro-Sul Baiano","CAETITE":"Centro-Sul Baiano","CANDIBA":"Centro-Sul Baiano","GUANAMBI":"Centro-Sul Baiano","IBIASSUCE":"Centro-Sul Baiano","IGAPORA":"Centro-Sul Baiano","IUIU":"Centro-Sul Baiano","JACARACI":"Centro-Sul Baiano","LAGOA REAL":"Centro-Sul Baiano","LICINIO DE ALMEIDA":"Centro-Sul Baiano","MALHADA":"Centro-Sul Baiano","MATINA":"Centro-Sul Baiano","MORTUGABA":"Centro-Sul Baiano","PALMAS DE MONTE ALTO":"Centro-Sul Baiano","PINDAI":"Centro-Sul Baiano","RIACHO DE SANTANA":"Centro-Sul Baiano","SEBASTIAO LARANJEIRAS":"Centro-Sul Baiano","URANDI":"Centro-Sul Baiano","ARACATU":"Centro-Sul Baiano","BRUMADO":"Centro-Sul Baiano","CARAIBAS":"Centro-Sul Baiano","CONDEUBA":"Centro-Sul Baiano","CORDEIROS":"Centro-Sul Baiano","GUAJERU":"Centro-Sul Baiano","ITUACU":"Centro-Sul Baiano","MAETINGA":"Centro-Sul Baiano","MALHADA DE PEDRAS":"Centro-Sul Baiano","PIRIPA":"Centro-Sul Baiano","PRESIDENTE JANIO QUADROS":"Centro-Sul Baiano","RIO DO ANTONIO":"Centro-Sul Baiano","TANHACU":"Centro-Sul Baiano","TREMEDAL":"Centro-Sul Baiano","ANAGE":"Centro-Sul Baiano","BARRA DO CHOCA":"Centro-Sul Baiano","BELO CAMPO":"Centro-Sul Baiano","BOA NOVA":"Centro-Sul Baiano","BOM JESUS DA SERRA":"Centro-Sul Baiano","CAATIBA":"Centro-Sul Baiano","CAETANOS":"Centro-Sul Baiano","CANDIDO SALES":"Centro-Sul Baiano","DARIO MEIRA":"Centro-Sul Baiano","IBICUI":"Centro-Sul Baiano","IGUAI":"Centro-Sul Baiano","MANOEL VITORINO":"Centro-Sul Baiano","MIRANTE":"Centro-Sul Baiano","NOVA CANAA":"Centro-Sul Baiano","PLANALTO":"Centro-Sul Baiano","POCOES":"Centro-Sul Baiano","VITORIA DA CONQUISTA":"Centro-Sul Baiano","ENCRUZILHADA":"Centro-Sul Baiano","ITAMBE":"Centro-Sul Baiano","ITAPETINGA":"Centro-Sul Baiano","ITARANTIM":"Centro-Sul Baiano","ITORORO":"Centro-Sul Baiano","MACARANI":"Centro-Sul Baiano","MAIQUINIQUE":"Centro-Sul Baiano","POTIRAGUA":"Centro-Sul Baiano","RIBEIRAO DO LARGO":"Centro-Sul Baiano","CAIRU":"Sul Baiano","CAMAMU":"Sul Baiano","IGRAPIUNA":"Sul Baiano","ITUBERA":"Sul Baiano","MARAU":"Sul Baiano","NILO PECANHA":"Sul Baiano","PIRAI DO NORTE":"Sul Baiano","PRESIDENTE TANCREDO NEVES":"Sul Baiano","TAPEROA":"Sul Baiano","VALENCA":"Sul Baiano","ALMADINA":"Sul Baiano","ARATACA":"Sul Baiano","AURELINO LEAL":"Sul Baiano","BARRA DO ROCHA":"Sul Baiano","BARRO PRETO":"Sul Baiano","BELMONTE":"Sul Baiano","BUERAREMA":"Sul Baiano","CAMACAN":"Sul Baiano","CANAVIEIRAS":"Sul Baiano","COARACI":"Sul Baiano","FIRMINO ALVES":"Sul Baiano","FLORESTA AZUL":"Sul Baiano","GANDU":"Sul Baiano","GONGOGI":"Sul Baiano","IBICARAI":"Sul Baiano","IBIRAPITANGA":"Sul Baiano","IBIRATAIA":"Sul Baiano","ILHEUS":"Sul Baiano","IPIAU":"Sul Baiano","ITABUNA":"Sul Baiano","ITACARE":"Sul Baiano","ITAGIBA":"Sul Baiano","ITAJU DO COLONIA":"Sul Baiano","ITAJUIPE":"Sul Baiano","ITAMARI":"Sul Baiano","ITAPE":"Sul Baiano","ITAPEBI":"Sul Baiano","ITAPITANGA":"Sul Baiano","JUSSARI":"Sul Baiano","MASCOTE":"Sul Baiano","NOVA IBIA":"Sul Baiano","PAU BRASIL":"Sul Baiano","SANTA CRUZ DA VITORIA":"Sul Baiano","SANTA LUZIA":"Sul Baiano","SAO JOSE DA VITORIA":"Sul Baiano","TEOLANDIA":"Sul Baiano","UBAITABA":"Sul Baiano","UBATA":"Sul Baiano","UNA":"Sul Baiano","URUCUCA":"Sul Baiano","WENCESLAU GUIMARAES":"Sul Baiano","ALCOBACA":"Sul Baiano","CARAVELAS":"Sul Baiano","EUNAPOLIS":"Sul Baiano","GUARATINGA":"Sul Baiano","IBIRAPUA":"Sul Baiano","ITABELA":"Sul Baiano","ITAGIMIRIM":"Sul Baiano","ITAMARAJU":"Sul Baiano","ITANHEM":"Sul Baiano","JUCURUCU":"Sul Baiano","LAJEDAO":"Sul Baiano","MEDEIROS NETO":"Sul Baiano","MUCURI":"Sul Baiano","NOVA VICOSA":"Sul Baiano","PORTO SEGURO":"Sul Baiano","PRADO":"Sul Baiano","SANTA CRUZ CABRALIA":"Sul Baiano","TEIXEIRA DE FREITAS":"Sul Baiano","VEREDA":"Sul Baiano"}};
+var REFS=REFS_PADRAO;
+var CORRECOES={"CAMACAI":"CAMACARI","LUIS EDUARDO":"LUIS EDUARDO MAGALHAES"};
+var COL_LABEL={filial:"Filial",cliente:"Cliente",pat:"Patrimônio",plano:"Plano de preventiva",status:"Status preventiva",dp:"Data prevista",cidade:"Cidade",uf:"UF"};
+
+function processRaw(wb,notes,prev){
+  var rows=null,hi=-1;
+  for(var s=0;s<wb.SheetNames.length&&hi<0;s++){
+    var rr=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[s]],{header:1,raw:true,defval:"",blankrows:true});
+    for(var i=0;i<Math.min(rr.length,15);i++){
+      var h=rr[i].map(norm);
+      if(h.some(function(x){return x==="filial"||x==="filial gerencial";})&&h.indexOf("patrimonio")>=0){hi=i;rows=rr;break;}
+    }
+  }
+  if(hi<0) throw new Error("Não reconheci esse arquivo. Use o Excel Preventivas_atualizado (abas Plano_...) ou a exportação do sistema com as colunas Filial e Patrimônio.");
+  var head=rows[hi].map(norm);
+  function col(names){for(var n=0;n<names.length;n++){var k=head.indexOf(names[n]);if(k>=0)return k;}return -1;}
+  var C={filial:col(["filial","filial gerencial"]),cliente:col(["cliente"]),pat:col(["patrimonio"]),plano:col(["plano de preventiva","necessidade"]),status:col(["status preventiva","backlog"]),dp:col(["data prevista"]),cidade:col(["cidade"]),uf:col(["uf","estado"])};
+  var faltam=Object.keys(C).filter(function(k){return C[k]<0;}).map(function(k){return COL_LABEL[k];});
+  if(faltam.length) throw new Error("Colunas não encontradas na exportação: "+faltam.join(", ")+". Confira se o sistema renomeou alguma.");
+
+  var groups={},desconhecidas={},ignNSS=0;
+  for(var j=hi+1;j<rows.length;j++){
+    var r=rows[j]; if(isBlank(r)) continue;
+    var pm=String(r[C.plano]||"").match(/PLANO\s*P([1-5])\b/i); if(!pm) continue;
+    var fraw=String(r[C.filial]||"").trim().toUpperCase().replace(/\s*-\s*/g," - ");
+    var fil=FILIAIS.find(function(f){return f.key===fraw;});
+    if(fraw==="SE - NSS"){ignNSS++;continue;}
+    if(!fil){desconhecidas[fraw||"(vazio)"]=1;continue;}
+    var pat=String(r[C.pat]||"").trim(); if(!pat) continue;
+    var key=fil.key+"|"+pat;
+    var g=groups[key]=groups[key]||{fil:fil,pat:pat,planos:{},best:null};
+    g.planos["p"+pm[1]]=1;
+    var iso=toISO(r[C.dp]);
+    if(!g.best||(iso&&(!g.best.iso||iso<g.best.iso))) g.best={r:r,iso:iso};
+  }
+  var dk=Object.keys(desconhecidas);
+  if(dk.length) throw new Error("Filial fora do esperado na exportação: "+dk.join(", ")+". Confirme antes de importar.");
+
+  var novos={},presentes={},corrigidas={},semRegiao={};
+  FILIAIS.forEach(function(f){novos[f.key]=[];});
+  Object.keys(groups).forEach(function(k){
+    var g=groups[k],r=g.best.r;
+    var cid=norm(r[C.cidade]).toUpperCase();
+    if(CORRECOES[cid]){corrigidas[cid+" → "+CORRECOES[cid]]=1;cid=CORRECOES[cid];}
+    var uf=String(r[C.uf]||"").trim().toUpperCase();
+    var reg;
+    if(uf!=="BA") reg="Fora do estado";
+    else if(REFS.regioes[cid]) reg=REFS.regioes[cid];
+    else{reg="Não classificado";semRegiao[cid+" - "+uf]=1;}
+    var st=norm(r[C.status]);
+    presentes[g.fil.key]=1;
+    novos[g.fil.key].push(fin({
+      regiao:reg,cliente:String(r[C.cliente]||"").trim().toUpperCase(),patrimonio:g.pat,planos:Object.keys(g.planos).sort(),
+      modelo:REFS.modelos[g.pat.toUpperCase()]||"Não encontrado",cidadeEstado:cid+" - "+uf,dataPrevista:g.best.iso,
+      status:st==="backlog"?"Backlog":st==="em dia"?"Em dia":String(r[C.status]||"").trim(),
+      previsaoSemanal:"",tecnico:"",dataAgendada:"",realizado:"",observacoes:"",removido:false
+    }));
+  });
+
+  var temPrev=!!(prev&&!prev.sample&&prev.filiais);
+  var out={},alertaSim=0,novosN=0,removidosN=0,voltaram=0,ausentes=[];
+  FILIAIS.forEach(function(f){
+    var p=temPrev&&prev.filiais[f.key]?prev.filiais[f.key]:{items:[],removed:[]};
+    if(!presentes[f.key]){
+      out[f.key]={items:p.items,removed:p.removed};
+      if(p.items.length||p.removed.length) ausentes.push(f.key);
+      return;
+    }
+    var antigos={};
+    p.items.concat(p.removed).forEach(function(o){antigos[o.patrimonio]=o;});
+    var visto={};
+    novos[f.key].forEach(function(it){
+      visto[it.patrimonio]=1;
+      var o=antigos[it.patrimonio];
+      if(!o){if(temPrev) novosN++;return;}
+      it.previsaoSemanal=o.previsaoSemanal||"";it.tecnico=o.tecnico||"";it.dataAgendada=o.dataAgendada||"";
+      it.realizado=o.realizado||"";it.observacoes=o.observacoes||"";
+      if(o.modelo&&o.modelo!=="Não encontrado") it.modelo=o.modelo;
+      if(it.regiao==="Não classificado"&&o.regiao&&!o.removido) it.regiao=o.regiao;
+      if(o.removido) voltaram++;
+      if(o.realizado==="Sim"&&o.planos.join(" ")!==it.planos.join(" ")) alertaSim++;
+      fin(it);
+    });
+    var rem=[];
+    p.items.forEach(function(o){if(!visto[o.patrimonio]){o.removido=true;o.regiao="";rem.push(fin(o));removidosN++;}});
+    p.removed.forEach(function(o){if(!visto[o.patrimonio]) rem.push(o);});
+    out[f.key]={items:novos[f.key],removed:rem};
+  });
+
+  FILIAIS.forEach(function(f){
+    if(presentes[f.key]) notes.push(f.key+": "+novos[f.key].length+" equipamento(s).");
+  });
+  ausentes.forEach(function(k){notes.push(k+" não veio neste arquivo. Mantive os dados que já estavam na página; confira se a exportação foi filtrada.");});
+  if(!temPrev) notes.push("Sem versão anterior guardada: previsão, técnico, agendamento, realizado e observações começam vazios.");
+  if(temPrev&&novosN) notes.push(novosN+" equipamento(s) novo(s), com campos manuais em branco.");
+  if(removidosN) notes.push(removidosN+" equipamento(s) saíram do sistema e foram para Removidos.");
+  if(voltaram) notes.push(voltaram+" equipamento(s) voltaram dos removidos para a lista ativa.");
+  if(alertaSim) notes.push(alertaSim+" equipamento(s) com Realizado = Sim tiveram o plano alterado. Confira se o Sim ainda vale.");
+  var ck=Object.keys(corrigidas); if(ck.length) notes.push("Cidades corrigidas: "+ck.join("; ")+".");
+  var sk=Object.keys(semRegiao); if(sk.length) notes.push("Cidades sem região na base (ficaram em Não classificado): "+sk.join("; ")+".");
+  var sm=[];FILIAIS.forEach(function(f){if(presentes[f.key]) novos[f.key].forEach(function(it){if(it.modelo==="Não encontrado") sm.push(it.patrimonio);});});
+  if(sm.length) notes.push(sm.length+" equipamento(s) sem modelo na base: "+sm.slice(0,6).join(", ")+(sm.length>6?"…":"")+".");
+  if(ignNSS) notes.push(ignNSS+" linha(s) de SE - NSS ignoradas (filial fora desta visualização).");
+  var per=new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+  per=per.charAt(0).toUpperCase()+per.slice(1);
+  return {periodo:per,filiais:out};
+}
+
+function parseRefs(wb){
+  var eq=wb.SheetNames.find(function(n){return norm(n)==="eqpts";});
+  var rg=wb.SheetNames.find(function(n){return norm(n)==="regioes";});
+  if(!eq||!rg) throw new Error("Não encontrei as abas Eqpts e Regiões neste arquivo.");
+  var mod={},reg={};
+  var a=XLSX.utils.sheet_to_json(wb.Sheets[eq],{header:1,raw:true,defval:""});
+  var h=(a[0]||[]).map(norm),ip=h.indexOf("patrimonio"),im=h.indexOf("modelo");
+  if(ip<0||im<0) throw new Error("A aba Eqpts precisa das colunas Patrimônio e Modelo.");
+  a.slice(1).forEach(function(r){var p=String(r[ip]||"").trim().toUpperCase(),m=String(r[im]||"").trim();if(p&&m) mod[p]=m;});
+  var b=XLSX.utils.sheet_to_json(wb.Sheets[rg],{header:1,raw:true,defval:""});
+  var g=(b[0]||[]).map(norm),ir=g.indexOf("mesorregiao"),ic=g.indexOf("municipio");
+  if(ir<0||ic<0) throw new Error("A aba Regiões precisa das colunas Mesorregião e Município.");
+  b.slice(1).forEach(function(r){var c=norm(r[ic]).toUpperCase(),m=String(r[ir]||"").trim();if(c&&m) reg[c]=m;});
+  return {modelos:mod,regioes:reg};
+}
+function loadRefs(){
+  var s=safeGet("prev_refs_v1");
+  if(!s) return;
+  try{var o=JSON.parse(s);if(o&&o.modelos&&o.regioes) REFS=o;}catch(e){}
+}
+function aplicarRefsDB(){
+  var n=0;
+  FILIAIS.forEach(function(f){
+    var d=DB.filiais[f.key]; if(!d) return;
+    d.items.concat(d.removed).forEach(function(it){
+      if(!it.modelo||it.modelo==="Não encontrado"){var m=REFS.modelos[it.patrimonio.toUpperCase()];if(m){it.modelo=m;n++;}}
+      if(it.regiao==="Não classificado"){
+        var c=norm(String(it.cidadeEstado).split(/\s+-\s+/)[0]).toUpperCase(),r=REFS.regioes[c];
+        if(r){it.regiao=r;n++;}
+      }
+    });
+  });
+  if(n&&!DB.sample) safeSet("prev_db_v1",JSON.stringify(DB));
+  return n;
+}
+
+function emptyDB(){
+  var f={};FILIAIS.forEach(function(x){f[x.key]={items:[],removed:[]};});
+  return {sample:true,periodo:"",importedAt:0,fileName:"",filiais:f};
+}
+
+/* ---------- estado ---------- */
+var DB=null;
+var ui={wipe:false,filial:"BA - SSF",view:"regioes",q:"",fStatus:"",fPrev:"",fTec:"",fAcao:"",open:{}};
+
+function loadDB(){
+  var s=safeGet("prev_db_v1");
+  if(s){
+    try{
+      var o=JSON.parse(s);
+      if(o&&o.filiais){
+        FILIAIS.forEach(function(f){
+          var d=o.filiais[f.key]||{items:[],removed:[]};
+          d.items=(d.items||[]).map(fin);d.removed=(d.removed||[]).map(fin);
+          o.filiais[f.key]=d;
+        });
+        return o;
+      }
+    }catch(e){}
+  }
+  return emptyDB();
+}
+function cur(){return DB.filiais[ui.filial]||{items:[],removed:[]};}
+function curCode(){return FILIAIS.find(function(f){return f.key===ui.filial;}).code;}
+
+/* ---------- filtros ---------- */
+function hasFilter(){return !!(ui.q.trim()||ui.fStatus||ui.fPrev||ui.fTec||ui.fAcao);}
+function matchQ(i){
+  var q=norm(ui.q); if(!q) return true;
+  return norm([i.patrimonio,i.cliente,i.cidadeEstado,i.modelo].join(" ")).indexOf(q)>=0;
+}
+function filtered(items){
+  return items.filter(function(i){
+    if(!matchQ(i)) return false;
+    if(ui.fStatus&&i.status!==ui.fStatus) return false;
+    if(ui.fPrev){
+      if(ui.fPrev==="__none"){if(i.previsaoSemanal) return false;}
+      else if(i.previsaoSemanal!==ui.fPrev) return false;
+    }
+    if(ui.fTec){
+      if(ui.fTec==="__none"){if(i.tecnico) return false;}
+      else if(norm(i.tecnico)!==norm(ui.fTec)) return false;
+    }
+    if(ui.fAcao){
+      if(ui.fAcao==="Programado"){if(i.acaoRecomendada.indexOf("Programado")!==0) return false;}
+      else if(i.acaoRecomendada!==ui.fAcao) return false;
+    }
+    return true;
+  });
+}
+function byDate(a,b){
+  var x=a.dataPrevista||"9999",y=b.dataPrevista||"9999";
+  return x<y?-1:x>y?1:a.patrimonio.localeCompare(b.patrimonio);
+}
+
+/* ---------- renderização ---------- */
+var $=function(id){return document.getElementById(id);};
+var ICON_CHEV='<svg class="chev" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+var ICON_PIN='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+
+function renderTabs(){
+  $("tabs").innerHTML=FILIAIS.map(function(f){
+    var n=(DB.filiais[f.key]||{items:[]}).items.length;
+    return '<button class="tab" type="button" role="tab" data-filial="'+f.code+'" data-key="'+esc(f.key)+'" aria-selected="'+(f.key===ui.filial)+'"><b>'+esc(f.key)+'</b><small>'+(DB.sample?"sem dados":n+(n===1?" equipamento":" equipamentos"))+'</small></button>';
+  }).join("");
+}
+function renderPeriodo(){
+  var p=DB.periodo;
+  if(p&&p===p.toUpperCase()){p=p.toLowerCase();p=p.charAt(0).toUpperCase()+p.slice(1);}
+  if(!p){p=new Date().toLocaleDateString("pt-BR",{month:"long",year:"numeric"});p=p.charAt(0).toUpperCase()+p.slice(1);}
+  $("periodo").textContent=p;
+}
+function renderBanner(){
+  var txt;
+  if(DB.sample){
+    txt='<strong>Nenhum dado importado.</strong> Importe a exportação do sistema ou o Excel Preventivas_atualizado para ver o planejamento.';
+  }else{
+    var when=new Date(DB.importedAt).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
+    txt='<strong>Importado em '+esc(when)+'</strong><br>'+esc(DB.fileName||"");
+  }
+  txt+='<br>Base de referência: '+Object.keys(REFS.modelos).length+' modelos, '+Object.keys(REFS.regioes).length+' municípios.';
+  $("banner").innerHTML='<p>'+txt+'</p><div class="btns"><button class="btn primary" type="button" id="btnImport">Importar Excel</button><button class="btn" type="button" id="btnRefs">Atualizar base</button>'+(DB.sample?"":'<button class="btn" type="button" id="btnWipe">'+(ui.wipe?"Toque de novo para limpar":"Limpar dados")+'</button>')+'</div>';
+}
+function tile(label,val,opt){
+  opt=opt||{};
+  return '<div class="tile'+(opt.alert?" alert":"")+'"><div class="l">'+label+'</div><div class="v">'+val+(opt.pct?"%":"")+'</div>'+(opt.pct?'<div class="bar" role="progressbar" aria-valuenow="'+val+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+val+'%"></i></div>':"")+'</div>';
+}
+function renderMetrics(){
+  var m=metrics(cur().items);
+  $("metrics").innerHTML=
+    tile("Total de equipamentos",m.total)+
+    tile("Com previsão semanal",m.com)+
+    tile("Sem previsão semanal",m.sem)+
+    tile("Backlog",m.backlog,{alert:m.backlog>0})+
+    tile("Agendadas",m.ag)+
+    tile("% agendado",m.pAg,{pct:true})+
+    tile("Realizadas",m.re)+
+    tile("% realizado",m.pRe,{pct:true});
+}
+function fillSelect(id,opts,val){
+  var el=$(id);
+  el.innerHTML=opts.map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>';}).join("");
+  var ok=opts.some(function(o){return o[0]===val;});
+  el.value=ok?val:"";
+  return el.value;
+}
+function fillFilters(){
+  var d=cur(),seen={},tecs=[];
+  TECS.concat(d.items.map(function(i){return i.tecnico;}),d.removed.map(function(i){return i.tecnico;})).forEach(function(t){
+    if(t&&!seen[norm(t)]){seen[norm(t)]=1;tecs.push(t);}
+  });
+  tecs.sort(function(a,b){return a.localeCompare(b,"pt-BR");});
+  ui.fStatus=fillSelect("fStatus",[["","Todos"],["Backlog","Backlog"],["Em dia","Em dia"]],ui.fStatus);
+  ui.fPrev=fillSelect("fPrev",[["","Todas"],["__none","Sem previsão"]].concat(PREV_OPTS.map(function(p){return [p,p];})),ui.fPrev);
+  ui.fTec=fillSelect("fTec",[["","Todos"],["__none","Sem técnico"]].concat(tecs.map(function(t){return [t,t];})),ui.fTec);
+  ui.fAcao=fillSelect("fAcao",[["","Todas"]].concat(ACOES.map(function(a){return [a,a==="Programado"?"Programado (com semana)":a];})),ui.fAcao);
+}
+function updateBadge(){
+  var n=(ui.fStatus?1:0)+(ui.fPrev?1:0)+(ui.fTec?1:0)+(ui.fAcao?1:0);
+  var b=$("fBadge");b.hidden=!n;b.textContent=n;
+}
+
+function acaoBadge(it){
+  var a=it.acaoRecomendada,c="b-info";
+  if(a==="Realizado")c="b-ok";
+  else if(a==="Agendado")c="b-warn";
+  else if(a==="Definir semana")c="b-idle";
+  else if(a==="Removido do sistema")c="b-rem";
+  return '<span class="badge '+c+'">'+esc(a)+'</span>';
+}
+function cell(label,val){
+  return '<div><dt>'+label+'</dt><dd'+(val?"":' class="nil"')+'>'+(val?esc(val):"—")+'</dd></div>';
+}
+function cardHTML(it){
+  var rem=it.removido,st="";
+  if(it.status==="Backlog")st='<span class="badge b-bad">Backlog</span>';
+  else if(it.status==="Em dia")st='<span class="badge b-ok">Em dia</span>';
+  else if(it.status)st='<span class="badge b-idle">'+esc(it.status)+'</span>';
+  var chips=it.planos.map(function(p){return '<span class="chip">'+esc(p.toUpperCase())+'</span>';}).join("");
+  if(it.dataPrevista)chips+='<span class="chip dt">Prevista '+fmtISO(it.dataPrevista)+'</span>';
+  var cid=fmtCidade(it.cidadeEstado);
+  return '<article class="card t-'+it.tom+'">'+
+    '<div class="c-top"><div><div class="pat'+(rem?" strike":"")+'">'+esc(it.patrimonio)+'</div><div class="mod">'+esc(it.modelo||"Modelo não informado")+'</div></div>'+st+'</div>'+
+    '<div class="cli'+(rem?" strike":"")+'">'+esc(it.cliente)+'</div>'+
+    (cid?'<div class="cid">'+ICON_PIN+'<span'+(rem?' class="strike"':"")+'>'+esc(cid)+'</span></div>':"")+
+    (chips?'<div class="chips">'+chips+'</div>':"")+
+    '<dl class="info">'+cell("Previsão semanal",it.previsaoSemanal)+cell("Técnico",it.tecnico)+cell("Data agendada",it.dataAgendada)+cell("Realizado",it.realizado)+'</dl>'+
+    (it.observacoes?'<p class="obs">'+esc(it.observacoes)+'</p>':"")+
+    '<div class="act">'+acaoBadge(it)+'</div>'+
+  '</article>';
+}
+function sectionHTML(key,name,countTxt,open,inner,extra){
+  return '<section class="region'+(extra||"")+'"><button class="rh" type="button" data-key="'+esc(key)+'" aria-expanded="'+open+'"><span class="rn">'+esc(name)+'</span><span class="rc">'+countTxt+'</span>'+ICON_CHEV+'</button><div class="rb"'+(open?"":" hidden")+'>'+inner+'</div></section>';
+}
+function isOpen(key,def){return ui.open[key]===undefined?def:ui.open[key];}
+
+function renderList(){
+  var d=cur(),all=d.items,box=$("list");
+  if(DB.sample){box.innerHTML='<div class="empty">Importe a exportação do sistema para ver o planejamento da semana.</div>';return;}
+  if(!all.length){box.innerHTML='<div class="empty">'+MSG_VAZIO+'</div>';return;}
+  var items=filtered(all),hf=hasFilter();
+  if(!items.length){
+    box.innerHTML='<div class="empty">Nenhum equipamento encontrado com esses filtros.<br><button class="btn" type="button" data-clear="1">Limpar filtros e busca</button></div>';
+    return;
+  }
+  if(ui.view==="cidade"){
+    var map={};
+    items.forEach(function(i){var c=fmtCidade(i.cidadeEstado)||"Sem cidade";map[c]=(map[c]||0)+1;});
+    var arr=Object.keys(map).map(function(k){return [k,map[k]];}).sort(function(a,b){return b[1]-a[1]||a[0].localeCompare(b[0],"pt-BR");});
+    var max=arr[0][1];
+    box.innerHTML=arr.map(function(r){
+      return '<div class="city"><div class="city-top"><span>'+esc(r[0])+'</span><span>'+r[1]+'</span></div><div class="bar"><i style="width:'+Math.round(r[1]/max*100)+'%"></i></div></div>';
+    }).join("");
+    return;
+  }
+  var tot={},grp={};
+  all.forEach(function(i){var r=i.regiao||"Não classificado";tot[r]=(tot[r]||0)+1;});
+  items.forEach(function(i){var r=i.regiao||"Não classificado";(grp[r]=grp[r]||[]).push(i);});
+  var order=Object.keys(tot).sort(function(a,b){return tot[b]-tot[a]||a.localeCompare(b,"pt-BR");});
+  var html="";
+  order.forEach(function(r,idx){
+    if(!grp[r]) return;
+    var key=ui.filial+"|"+r;
+    var open=isOpen(key,hf?true:idx===0);
+    var list=grp[r].slice().sort(byDate);
+    var cnt=hf?list.length+" de "+tot[r]:String(tot[r]);
+    html+=sectionHTML(key,titulo(r),cnt,open,list.map(cardHTML).join(""));
+  });
+  box.innerHTML=html;
+}
+function renderRemoved(){
+  var rem=cur().removed.filter(matchQ).sort(byDate),box=$("removed");
+  if(!cur().removed.length){box.innerHTML="";return;}
+  if(!rem.length){box.innerHTML="";return;}
+  var key="rem|"+ui.filial;
+  box.innerHTML=sectionHTML(key,"Removidos do sistema",String(rem.length),isOpen(key,false),rem.map(cardHTML).join(""),"rem");
+}
+function renderBody(){renderList();renderRemoved();}
+function renderAll(){
+  $("app").setAttribute("data-filial",curCode());
+  $("app").classList.toggle("no-data",!!DB.sample);
+  renderTabs();renderPeriodo();renderBanner();renderMetrics();fillFilters();updateBadge();renderBody();
+  Array.prototype.forEach.call($("viewSeg").querySelectorAll("button"),function(b){b.setAttribute("aria-pressed",String(b.dataset.v===ui.view));});
+}
+
+/* ---------- toast ---------- */
+var toastT;
+function toast(msg){
+  var t=$("toast");t.textContent=msg;t.hidden=false;
+  clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true;},5200);
+}
+
+function showNotice(title,notes){
+  var n=$("notice");
+  n.innerHTML='<strong>'+esc(title)+'</strong>'+(notes.length?'<ul>'+notes.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul>':'')+'<button class="btn" type="button" id="noticeClose">Fechar</button>';
+  n.hidden=false;
+  window.scrollTo(0,0);
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener("click",function(e){
+  var t=e.target.closest(".tab");
+  if(t){ui.filial=t.dataset.key;safeSet("prev_filial",ui.filial);renderAll();return;}
+  if(e.target.closest("#btnImport")){$("file").click();return;}
+  if(e.target.closest("#btnRefs")){$("fileRefs").click();return;}
+  if(e.target.closest("#btnWipe")){
+    if(!ui.wipe){ui.wipe=true;renderBanner();setTimeout(function(){if(ui.wipe){ui.wipe=false;renderBanner();}},4000);return;}
+    ui.wipe=false;
+    try{localStorage.removeItem("prev_db_v1");}catch(err){}
+    if(window.__cloudPush) window.__cloudPush("prev_db_v1",null);
+    DB=emptyDB();ui.q="";ui.fStatus=ui.fPrev=ui.fTec=ui.fAcao="";$("q").value="";
+    renderAll();showNotice("Dados removidos",["Importe a exportação do sistema para começar de novo."]);
+    return;
+  }
+  if(e.target.closest("#noticeClose")){$("notice").hidden=true;return;}
+  var rh=e.target.closest(".rh");
+  if(rh){
+    var open=rh.getAttribute("aria-expanded")==="true";
+    rh.setAttribute("aria-expanded",String(!open));
+    rh.nextElementSibling.hidden=open;
+    ui.open[rh.dataset.key]=!open;
+    return;
+  }
+  if(e.target.closest("[data-clear]")||e.target.closest("#btnClear")){
+    ui.q="";ui.fStatus=ui.fPrev=ui.fTec=ui.fAcao="";
+    $("q").value="";fillFilters();updateBadge();renderBody();
+  }
+});
+$("q").addEventListener("input",function(e){ui.q=e.target.value;renderBody();});
+[["fStatus","fStatus"],["fPrev","fPrev"],["fTec","fTec"],["fAcao","fAcao"]].forEach(function(p){
+  $(p[0]).addEventListener("change",function(e){ui[p[1]]=e.target.value;updateBadge();renderBody();});
+});
+$("btnF").addEventListener("click",function(){
+  var f=$("filters"),open=f.hidden;
+  f.hidden=!open;$("btnF").setAttribute("aria-expanded",String(open));
+});
+$("viewSeg").addEventListener("click",function(e){
+  var b=e.target.closest("button");if(!b)return;
+  ui.view=b.dataset.v;
+  Array.prototype.forEach.call($("viewSeg").querySelectorAll("button"),function(x){x.setAttribute("aria-pressed",String(x===b));});
+  renderList();
+});
+$("btnTheme").addEventListener("click",function(){
+  var root=document.documentElement;
+  var now=root.getAttribute("data-theme")||(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  var next=now==="dark"?"light":"dark";
+  root.setAttribute("data-theme",next);safeSet("prev_theme",next);
+});
+$("file").addEventListener("change",function(e){
+  var file=e.target.files&&e.target.files[0];
+  if(!file) return;
+  var input=e.target;
+  Promise.resolve().then(function(){
+    if(!window.XLSX) throw new Error("A biblioteca de leitura do Excel não carregou. Verifique a conexão e tente de novo.");
+    return file.arrayBuffer();
+  }).then(function(buf){
+    var wb=XLSX.read(buf,{type:"array",cellDates:true});
+    var notes=[],res;
+    var hasPlano=wb.SheetNames.some(function(n){return /^plano_/i.test(n.trim());});
+    if(hasPlano){
+      res=parseWorkbook(wb);
+      if(res.missing&&res.missing.length) notes.push("Abas não encontradas: "+res.missing.join(", ")+".");
+    }else{
+      res=processRaw(wb,notes,DB);
+    }
+    DB={sample:false,periodo:res.periodo,importedAt:Date.now(),fileName:file.name,filiais:res.filiais};
+    var saved=safeSet("prev_db_v1",JSON.stringify(DB));
+    if(!saved) notes.push("Não foi possível guardar o arquivo neste aparelho.");
+    renderAll();
+    showNotice("Importado: "+file.name,notes);
+  }).catch(function(err){
+    toast(err&&err.message?err.message:"Não consegui ler esse arquivo. Use o Excel Preventivas_atualizado.");
+  }).then(function(){input.value="";});
+});
+
+$("fileRefs").addEventListener("change",function(e){
+  var file=e.target.files&&e.target.files[0];
+  if(!file) return;
+  var input=e.target;
+  Promise.resolve().then(function(){
+    if(!window.XLSX) throw new Error("A biblioteca de leitura do Excel não carregou. Verifique a conexão e tente de novo.");
+    return file.arrayBuffer();
+  }).then(function(buf){
+    var refs=parseRefs(XLSX.read(buf,{type:"array"}));
+    REFS=refs;
+    var saved=safeSet("prev_refs_v1",JSON.stringify(refs));
+    var n=aplicarRefsDB();
+    renderAll();
+    var notes=[Object.keys(refs.modelos).length+" modelos e "+Object.keys(refs.regioes).length+" municípios na base."];
+    if(n) notes.push(n+" campo(s) de equipamentos já importados foram completados.");
+    if(!saved) notes.push("Não foi possível guardar a base neste aparelho.");
+    showNotice("Base atualizada: "+file.name,notes);
+  }).catch(function(err){
+    toast(err&&err.message?err.message:"Não consegui ler esse arquivo de referências.");
+  }).then(function(){input.value="";});
+});
+
+/* ---------- início ---------- */
+var th=safeGet("prev_theme");
+if(th==="dark"||th==="light") document.documentElement.setAttribute("data-theme",th);
+var lastF=safeGet("prev_filial");
+if(lastF&&FILIAIS.some(function(f){return f.key===lastF;})) ui.filial=lastF;
+loadRefs();
+DB=loadDB();
+renderAll();
+window.__appReload=function(){loadRefs();DB=loadDB();renderAll();};
+})();
+</script>
+
+<script type="module">
+/* ============================================================
+   CONFIGURAÇÃO DO FIREBASE  ->  cole aqui os dados do seu projeto
+   (Console Firebase > Configurações do projeto > Seus apps > Web)
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "AIzaSyATKWyh53Q7Fv6d_p7Fy8JnsbrbbK_mUds",
+  authDomain: "preventivas-pemt.firebaseapp.com",
+  projectId: "preventivas-pemt",
+  appId: "1:945564897269:web:e769e53afea6c0d4759abc"
+};
+
+const V = "10.14.1";
+const KEYS = ["prev_db_v1", "prev_refs_v1"];
+const CHUNK = 200000;
+const $ = id => document.getElementById(id);
+const configured = !/COLE_AQUI/.test(firebaseConfig.apiKey);
+
+function setSync(s, txt){
+  const el = $("sync"); if(!el) return;
+  el.dataset.s = s; el.querySelector("span").textContent = txt; el.title = txt;
+}
+
+async function main(){
+  const [{ initializeApp }, A, F] = await Promise.all([
+    import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
+    import(`https://www.gstatic.com/firebasejs/${V}/firebase-auth.js`),
+    import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`)
+  ]);
+  const app = initializeApp(firebaseConfig);
+  const auth = A.getAuth(app);
+  const db = F.initializeFirestore(app, {
+    localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() })
+  });
+
+  let user = null, unsub = null, firstSnap = true;
+  const prevN = {};
+
+  function chunks(str){
+    const out = []; let i = 0;
+    while(i < str.length){
+      let end = Math.min(i + CHUNK, str.length);
+      const c = str.charCodeAt(end - 1);
+      if(end < str.length && c >= 0xD800 && c <= 0xDBFF) end--;
+      out.push(str.slice(i, end)); i = end;
+    }
+    return out.length ? out : [""];
+  }
+  const base = () => F.collection(db, "users", user.uid, "store");
+
+  function push(key, value){
+    if(!user) return;
+    const b = F.writeBatch(db), col = base(), old = prevN[key] || 0;
+    if(value == null){
+      b.delete(F.doc(col, key + "__meta"));
+      for(let i = 0; i < old; i++) b.delete(F.doc(col, key + "__" + i));
+      prevN[key] = 0;
+    }else{
+      const parts = chunks(value);
+      parts.forEach((p, i) => b.set(F.doc(col, key + "__" + i), { d: p }));
+      b.set(F.doc(col, key + "__meta"), { n: parts.length, ts: Date.now() });
+      for(let i = parts.length; i < old; i++) b.delete(F.doc(col, key + "__" + i));
+      prevN[key] = parts.length;
+    }
+    setSync("busy", "Enviando…");
+    b.commit().then(() => setSync(navigator.onLine ? "ok" : "off", navigator.onLine ? "Sincronizado" : "Sem conexão"))
+              .catch(e => { console.error(e); setSync("err", "Erro ao salvar"); });
+  }
+  window.__cloudPush = push;
+
+  function start(){
+    firstSnap = true;
+    unsub = F.onSnapshot(base(), snap => {
+      const fromCache = snap.metadata.fromCache;
+      if(snap.metadata.hasPendingWrites) return;
+      const docs = {}; snap.forEach(d => docs[d.id] = d.data());
+      let changed = false;
+      for(const key of KEYS){
+        const m = docs[key + "__meta"];
+        if(!m){
+          prevN[key] = 0;
+          const local = localStorage.getItem(key);
+          if(firstSnap && !fromCache){ if(local) push(key, local); }
+          else if(!firstSnap && local){ localStorage.removeItem(key); changed = true; }
+          continue;
+        }
+        const parts = [];
+        for(let i = 0; i < m.n; i++){ const d = docs[key + "__" + i]; if(!d){ parts.length = 0; break; } parts.push(d.d); }
+        if(!parts.length && m.n) continue;
+        prevN[key] = m.n;
+        const str = parts.join("");
+        if(str !== localStorage.getItem(key)){ try{ localStorage.setItem(key, str); changed = true; }catch(e){ console.error(e); } }
+      }
+      if(!fromCache) firstSnap = false;
+      setSync(fromCache || !navigator.onLine ? "off" : "ok", fromCache || !navigator.onLine ? "Sem conexão" : "Sincronizado");
+      if(changed && window.__appReload) window.__appReload();
+    }, err => { console.error(err); setSync("err", "Sem permissão"); });
+  }
+
+  A.onAuthStateChanged(auth, u => {
+    if(unsub){ unsub(); unsub = null; }
+    user = u;
+    $("auth").hidden = !!u;
+    $("btnLogout").hidden = !u;
+    if(u){ setSync("busy", "Conectando…"); start(); }
+    else { setSync("local", "Desconectado"); }
+  });
+
+  $("authForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = $("authBtn"), err = $("authErr");
+    err.textContent = ""; btn.disabled = true; btn.textContent = "Entrando…";
+    try{
+      await A.signInWithEmailAndPassword(auth, $("authEmail").value.trim(), $("authPass").value);
+      $("authPass").value = "";
+    }catch(ex){
+      const c = ex && ex.code || "";
+      err.textContent = /invalid-credential|wrong-password|user-not-found|invalid-email/.test(c) ? "E-mail ou senha incorretos."
+        : /too-many-requests/.test(c) ? "Muitas tentativas. Aguarde um pouco e tente de novo."
+        : /network/.test(c) ? "Sem conexão com a internet."
+        : "Não foi possível entrar (" + c + ").";
+    }
+    btn.disabled = false; btn.textContent = "Entrar";
+  });
+
+  $("btnLogout").addEventListener("click", async () => {
+    await A.signOut(auth);
+    KEYS.forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
+    if(window.__appReload) window.__appReload();
+  });
+
+  window.addEventListener("online", () => user && setSync("ok", "Sincronizado"));
+  window.addEventListener("offline", () => user && setSync("off", "Sem conexão"));
+}
+
+if(configured){
+  $("auth").hidden = false;
+  main().catch(e => { console.error(e); $("auth").hidden = true; setSync("err", "Modo local"); });
+}else{
+  console.warn("Firebase não configurado: o site funciona só localmente.");
+}
+</script>
+</body>
+</html>
