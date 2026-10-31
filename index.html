@@ -1159,7 +1159,7 @@ body.pm-bk .fxbar{box-shadow:inset 0 -4px 0 #8A96AB}
 .pm-three .fld span{font-size:12px}
 .pm-three .fld input{min-height:42px;padding:8px 10px}
 body.pm-plan .meta-card,body.pm-plan [data-done]{display:none!important}
-body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk #btnImport,body.pm-bk #btnRefs,body.pm-bk #btnWipe,body.pm-bk button[data-edit]{display:none!important}
+body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk #btnImport,body.pm-bk #btnRefs,body.pm-bk #btnWipe,body.pm-bk .btn[data-edit]{display:none!important}
 .kb-w1,.kb-w2,.kb-w3,.kb-w4,.kb-w5{--kc:var(--f)}
 .pm-sec{margin-top:4px}
 .pm-sl{display:block;font-size:13px;color:var(--muted);margin-top:12px}
@@ -1253,6 +1253,20 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
   .top-in{max-width:1120px}
   main>:not(#list):not(#removed){margin-left:max(0px,calc((100% - 1120px)/2));margin-right:0}
   main>:not(#list):not(#removed):not(.sections){max-width:1120px}
+}
+
+/* ---------- aba Clientes: nome em uma linha e janela do cliente ---------- */
+.bk-real{display:flex;align-items:flex-end;gap:10px}
+.bk-real .fld{flex:1;margin-top:12px}
+.bk-real .btn{flex:none;min-height:46px}
+.bk-row .btn.dn{flex:none;min-height:38px;width:38px;padding:0;justify-content:center}
+@media (min-width:820px){
+  .cgrid .crow{grid-template-columns:min(var(--cw,260px),46%) 1fr}
+  .crowtop .cname{display:flex;align-items:baseline;gap:6px;white-space:nowrap;overflow:hidden}
+  .crowtop .cname b{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .crowtop .cname i,.crowtop .cname .cst{flex:none;margin-left:0}
+  .crowtop{flex-wrap:nowrap}
+  .crowtop .btn{flex:none}
 }
 </style>
 </head>
@@ -1411,11 +1425,12 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
     <label class="fld"><span>Previsão semanal</span><select id="bkPrev"></select></label>
     <label class="fld"><span>Técnico</span><input id="bkTec" data-ac="tec" autocomplete="off" placeholder="Deixe vazio para não alterar"></label>
     <label class="fld"><span>Data agendada (para todas)</span><input id="bkAg" data-dp="1" data-title="Data para todas as máquinas" placeholder="Escolha a data" autocomplete="off"></label>
+    <div class="bk-real"><label class="fld"><span>Realizado?</span><select id="bkReal"><option value="">Não alterar</option><option value="Sim">Sim</option><option value="Não">Não</option><option value="__limpar">Não informado (limpar)</option></select></label><button type="button" class="btn" id="bkDone" title="Preenche com Sim; vale para as máquinas marcadas ao aplicar">Feito</button></div>
     <div class="ret-row"><button type="button" class="cx-chip" data-ret="bkAg" aria-pressed="false">RETORNO</button><small>Marca todas as máquinas como recebidas de volta na filial.</small></div>
     <div class="bk-head"><span>Máquinas e datas (você pode ajustar cada uma)</span><button class="btn sm" id="bkAll" type="button">Marcar/desmarcar todas</button></div>
     <div class="bk-list" id="bkList"></div>
     <div class="cx-warn" id="bkWarn" hidden></div>
-    <p class="bk-hint">Só os campos preenchidos são aplicados às máquinas marcadas. Se a previsão semanal ficar em "Pela data de cada máquina", a semana é preenchida automaticamente a partir da data. Depois você ainda pode editar cada uma.</p>
+    <p class="bk-hint">Só os campos preenchidos são aplicados às máquinas marcadas, inclusive "Realizado?". Se a previsão semanal ficar em "Pela data de cada máquina", a semana é preenchida automaticamente a partir da data. Depois você ainda pode editar cada uma.</p>
     <div class="sheet-actions"><button class="btn" id="bkCancel" type="button">Cancelar</button><button class="btn primary" id="bkSave" type="button">Aplicar</button></div>
   </div>
 </div>
@@ -1990,18 +2005,24 @@ function renderClientes(items){
   });
   var flash=ui.flashCli;ui.flashCli=null;
   var html='<div class="ctools"><span>'+cities.length+(cities.length===1?" cidade · ":" cidades · ")+nCli+(nCli===1?" cliente · ":" clientes · ")+items.length+(items.length===1?" máquina":" máquinas")+'<span class="leg"><i class="lb"></i>Backlog</span><span class="leg"><i class="lk"></i>Em dia</span><span class="leg"><i class="la"></i>Agendado</span><span class="leg"><i class="lp"></i>Parcial</span><span class="leg"><i class="lr"></i>Retorno</span><span class="leg"><i class="ln"></i>Não realizar</span></span><button class="btn" type="button" id="btnCopy">Copiar lista</button></div>';
+  var mcx=document.createElement("canvas").getContext("2d");
+  mcx.font="700 16px "+(getComputedStyle(document.body).fontFamily||"sans-serif");
   cities.forEach(function(c){
-    var key="cli|"+ui.filial+"|"+c.name;
-    var inner=c.arr.map(function(x){
+    var key="cli|"+ui.filial+"|"+c.name,cw=260;
+    c.arr.forEach(function(x){
+      var st0=cstat[x.name+"|"+c.name]||{t:0,a:0},tg=st0.a>0?(st0.a===st0.t?(st0.t===1?86:132):118):0;
+      cw=Math.max(cw,Math.ceil(mcx.measureText(x.name).width)+34+tg+118+40);
+    });
+    var inner='<div class="cgrid" style="--cw:'+cw+'px">'+c.arr.map(function(x){
       var st=cstat[x.name+"|"+c.name]||{t:0,a:0};
       var cls=st.t>0&&st.a===st.t?" cs-all":st.a>0?" cs-part":"";
       var tag=cls===" cs-all"?'<span class="cst">'+(st.t===1?"agendada":"todas agendadas")+'</span>':cls?'<span class="cst">'+st.a+' de '+st.t+' agendadas</span>':"";
-      return '<div class="crow'+cls+(flash&&x.name===flash?" cflash":"")+'"><div class="crowtop"><div class="cname"><b>'+esc(x.name)+'</b> <i>('+x.list.length+')</i>'+tag+'</div><button class="btn sm" type="button" data-bulk="'+esc(x.name)+'" title="Agendar todas as preventivas deste cliente">'+ICON_CAL+'Agendar</button></div><div class="cpts">'+x.list.map(function(i){
+      return '<div class="crow'+cls+(flash&&x.name===flash?" cflash":"")+'"><div class="crowtop"><div class="cname" title="'+esc(x.name)+'"><b>'+esc(x.name)+'</b> <i>('+x.list.length+')</i>'+tag+'</div><button class="btn sm" type="button" data-bulk="'+esc(x.name)+'" title="Agendar todas as preventivas deste cliente">'+ICON_CAL+'Agendar</button></div><div class="cpts">'+x.list.map(function(i){
         var pl=i.planos.map(function(p){return p.toUpperCase();}).join(", ")||"—";
         var mod=i.modelo||"Modelo não informado";
-        return '<button type="button" class="pt'+(i.status==="Backlog"?" bl":i.status==="Em dia"?" ok":"")+(i.tom==="nr"?" nr":i.tom==="ret"?" ret":"")+'" data-mod="'+esc(mod)+'" data-pl="'+esc(pl)+'" aria-label="'+esc(i.patrimonio+", modelo "+mod+", planos "+pl)+'">'+esc(i.patrimonio)+'</button>';
+        return '<button type="button" class="pt'+(i.status==="Backlog"?" bl":i.status==="Em dia"?" ok":"")+(i.tom==="nr"?" nr":i.tom==="ret"?" ret":"")+'" data-edit="'+esc(i.patrimonio)+'" data-mod="'+esc(mod)+'" data-pl="'+esc(pl)+'" aria-label="'+esc(i.patrimonio+", modelo "+mod+", planos "+pl)+'">'+esc(i.patrimonio)+'</button>';
       }).join("")+'</div></div>';
-    }).join("");
+    }).join("")+'</div>';
     html+=sectionHTML(key,c.name,c.n+(c.n===1?" máquina":" máquinas"),isOpen(key,true),inner,"","blk");
   });
   box.innerHTML=html;
@@ -2239,6 +2260,7 @@ function toggleDone(btn){
     it.realizado=w0?"":"Sim";fin(it);DB.editedAt=Date.now();
     var ok0=saveDB();
     renderMetricsAnim();mapRefresh();
+    if(BK){BK.changed=true;bkRowSync(pat);}
     if(!w0){var nb0=document.querySelector('#mapInfo [data-done="'+pat+'"]')||document.querySelector('#mpPanel [data-done="'+pat+'"]');if(nb0){nb0.classList.add("pop");burst(nb0);}}
     toast(ok0?(w0?pat+": marcação de realizado removida.":pat+" marcado como realizado."):"Não foi possível guardar neste aparelho.");
     return;
@@ -2603,27 +2625,45 @@ function openBulk(cli){
   $("bulkModal").setAttribute("data-filial",curCode());
   $("bkSub").innerHTML='<b>'+esc(cli)+'</b> · '+items.length+(items.length===1?" máquina":" máquinas");
   $("bkPrev").innerHTML=[["","Pela data de cada máquina"]].concat(PREV_OPTS.map(function(p){return [p,p];})).map(function(o){return '<option value="'+esc(o[0])+'">'+esc(o[1])+'</option>';}).join("");
-  $("bkTec").value="";$("bkAg").value="";
+  $("bkTec").value="";$("bkAg").value="";$("bkReal").value="";
   $("bkList").innerHTML=items.map(function(it,i){
     var dn=it.realizado==="Sim";
     return '<div class="bk-row'+(dn?" off":"")+'"><label class="bk-ck"><input type="checkbox" data-bk="'+i+'"'+(dn?"":" checked")+'>'+
       '<span class="bk-t"><b>'+esc(it.patrimonio)+'</b><small>'+esc(fmtCidade(it.cidadeEstado))+(dn?" · já realizada":"")+'</small></span></label>'+
-      '<input class="bk-d" data-bkd="'+i+'" data-orig="'+esc(it.dataAgendada||"")+'" placeholder="Data" data-title="Data de '+esc(it.patrimonio)+'" value="'+esc(it.dataAgendada||"")+'" data-dp="1" autocomplete="off" aria-label="Data de '+esc(it.patrimonio)+'"></div>';
+      '<input class="bk-d" data-bkd="'+i+'" data-orig="'+esc(it.dataAgendada||"")+'" placeholder="Data" data-title="Data de '+esc(it.patrimonio)+'" value="'+esc(it.dataAgendada||"")+'" data-dp="1" autocomplete="off" aria-label="Data de '+esc(it.patrimonio)+'">'+doneBtn(it,true)+'</div>';
   }).join("");
   initDP($("bkList"));
   retSync("bkAg");bkWarn();
   $("bulkModal").hidden=false;document.body.style.overflow="hidden";
   setTimeout(function(){$("bkAg").focus();},30);
 }
-function closeBulk(){$("bulkModal").hidden=true;BK=null;document.body.style.overflow="";}
+function closeBulk(){
+  var ch=BK&&BK.changed;
+  $("bulkModal").hidden=true;BK=null;document.body.style.overflow="";
+  if(ch) renderAll();
+}
+function bkRowSync(pat){
+  if(!BK) return;
+  for(var i=0;i<BK.items.length;i++){
+    if(BK.items[i].patrimonio!==pat) continue;
+    var it=BK.items[i],ck=document.querySelector('[data-bk="'+i+'"]');if(!ck) return;
+    var row=ck.closest(".bk-row"),dn=it.realizado==="Sim";
+    row.classList.toggle("off",dn);ck.checked=!dn;
+    var sm=row.querySelector(".bk-t small");if(sm) sm.textContent=fmtCidade(it.cidadeEstado)+(dn?" · já realizada":"");
+    var ob=row.querySelector("[data-done]");
+    if(ob){ob.outerHTML=doneBtn(it,true);var nb=row.querySelector("[data-done]");if(dn&&nb&&!REDUCE){nb.classList.add("pop");burst(nb);}}
+    bkWarn();return;
+  }
+}
 function applyBulk(){
   if(!BK) return;
-  var prev=$("bkPrev").value,tec=$("bkTec").value.trim(),n=0,nbN=0;
+  var prev=$("bkPrev").value,tec=$("bkTec").value.trim(),real=$("bkReal").value,n=0,nbN=0;
   BK.items.forEach(function(it,i){
     var ck=document.querySelector('[data-bk="'+i+'"]');if(!ck||!ck.checked) return;
     var d=toAg(document.querySelector('[data-bkd="'+i+'"]').value.trim()),ch=false;
     if(prev){it.previsaoSemanal=prev;ch=true;}
     if(tec){it.tecnico=tec;ch=true;}
+    if(real&&real!==(it.realizado||"")){it.realizado=real==="__limpar"?"":real;ch=true;}
     if(d!==(it.dataAgendada||"")){
       it.dataAgendada=d;ch=true;
       var pd=parseAg(d);
@@ -3096,6 +3136,7 @@ function extraClick(e){
   if(t.closest("#mtDel")){removeMeta();return true;}
   if(t===$("metaModal")){closeMeta();return true;}
   if(t.closest("#bkSave")){applyBulk();return true;}
+  if(t.closest("#bkDone")){$("bkReal").value="Sim";return true;}
   if(t.closest("#bkCancel")){closeBulk();return true;}
   if(t===$("bulkModal")){closeBulk();return true;}
   if((b=t.closest("[data-mz]"))){
@@ -5753,7 +5794,7 @@ document.addEventListener("mouseover",function(e){
 });
 document.addEventListener("click",function(e){
   var p=e.target.closest&&e.target.closest(".pt");
-  if(p) showTip(p); else hideTip();
+  if(p&&!p.hasAttribute("data-edit")) showTip(p); else hideTip();
 });
 window.addEventListener("scroll",hideTip,true);
 $("btnTheme").addEventListener("click",function(){
