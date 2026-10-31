@@ -1193,7 +1193,7 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .fxbar .fx{margin:0 auto;max-width:560px;padding:8px 12px;font-size:13px;line-height:1.35;white-space:normal}
 @media (min-width:820px){
   .fxbar{padding:0 24px 10px}
-  .fxbar .fx{max-width:1224px;margin-top:0;font-size:13px;padding:7px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fxbar .fx{max-width:1120px;margin-top:0;font-size:13px;padding:7px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   body{font-size:14px}
   .top{padding:12px 24px 8px}
   .top h1{font-size:22px}
@@ -1246,6 +1246,13 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
   .pm-main{padding:9px 6px 9px 12px}
   .pm-tx b{font-size:14px}
   .pm-tx small{font-size:12px}
+}
+
+/* ---------- largura do layout: 1120 px, com a lista de equipamentos na largura total ---------- */
+@media (min-width:820px){
+  .top-in{max-width:1120px}
+  main>:not(#list):not(#removed){margin-left:max(0px,calc((100% - 1120px)/2));margin-right:0}
+  main>:not(#list):not(#removed):not(.sections){max-width:1120px}
 }
 </style>
 </head>
