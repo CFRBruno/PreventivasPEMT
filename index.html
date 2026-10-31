@@ -71,7 +71,7 @@ button{cursor:pointer}
 :focus-visible{outline:3px solid var(--ft,#2E74B5);outline-offset:2px}
 .top :focus-visible{outline-color:#fff}
 
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:#fff;padding:12px 14px 12px}
+.top{position:relative;z-index:21;background:var(--navy);color:#fff;padding:12px 14px 12px}
 .top-in{max-width:560px;margin:0 auto}
 .top-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .top h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
@@ -575,12 +575,16 @@ select option{background:var(--surface);color:var(--ink)}
 @media (prefers-reduced-motion: reduce){.crow.cflash{animation:none}.crow.cs-all,.crow.cs-part{transition:none}}
 
 /* retornos e NÃO REALIZAR */
-:root{--c-ret:#CDEFEB;--ret-ink:#0B6B66;--c-nr:#FFA9B2;--nr-ink:#A31B2B}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--c-ret:#12403F;--ret-ink:#7FE0D8;--c-nr:#6E1F2B;--nr-ink:#FF9AA5}}
-:root[data-theme="dark"]{--c-ret:#12403F;--ret-ink:#7FE0D8;--c-nr:#6E1F2B;--nr-ink:#FF9AA5}
+:root{--c-ret:#EFDCCB;--ret-ink:#7A4624;--c-nr:#FFA9B2;--nr-ink:#A31B2B;--sim-ink:#1B6B2A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--c-ret:#3D2A1B;--ret-ink:#E6AE7E;--c-nr:#6E1F2B;--nr-ink:#FF9AA5;--sim-ink:#7EE29B}}
+:root[data-theme="dark"]{--c-ret:#3D2A1B;--ret-ink:#E6AE7E;--c-nr:#6E1F2B;--nr-ink:#FF9AA5;--sim-ink:#7EE29B}
 .card.t-ret,.lrow.t-ret,.arow.t-ret{background:var(--c-ret);border-color:var(--ret-ink)}
 .card.t-nr,.lrow.t-nr,.arow.t-nr{background:var(--c-nr);border-color:#E5484D}
 .tile.tone-ret{background:var(--c-ret);border-color:var(--ret-ink)}
+.tile.tone-sim{background:var(--c-sim);border-color:#2EA043}
+.tile.tone-sim .v{color:var(--sim-ink)}
+.tile.tone-sim .l{color:inherit;font-weight:600}
+.tile.tone-sim .bar i{background:#2EA043}
 .tile.tone-nr{background:var(--c-nr);border-color:#E5484D}
 .tile.tone-ret .v{color:var(--ret-ink)}
 .tile.tone-nr .v{color:var(--nr-ink)}
@@ -1049,8 +1053,8 @@ select.cx-in{appearance:auto}
 .pm-btn svg{flex:none}
 body.pm-plan .pm-btn{background:#E8A317;color:#2A1D00;border-color:transparent}
 body.pm-bk .pm-btn{background:#8A96AB;color:#0F1A2B;border-color:transparent}
-body.pm-plan .top{box-shadow:inset 0 -4px 0 #E8A317}
-body.pm-bk .top{box-shadow:inset 0 -4px 0 #8A96AB}
+body.pm-plan .fxbar{box-shadow:inset 0 -4px 0 #E8A317}
+body.pm-bk .fxbar{box-shadow:inset 0 -4px 0 #8A96AB}
 @media (max-width:420px){.pm-btn span{display:none}.pm-btn{padding:0 13px}}
 @media (min-width:820px){.pm-btn{height:50px;border-radius:16px;font-size:14px;padding:0 16px}}
 .pm-side{position:fixed;top:0;bottom:0;left:0;width:min(86vw,300px);z-index:36;background:var(--surface);color:var(--ink);border-right:1px solid var(--line);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);transform:translateX(-104%);visibility:hidden;box-shadow:0 0 40px rgba(0,10,25,.28)}
@@ -1183,6 +1187,66 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .mi-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--c)}
 .map-info{max-height:60vh;overflow-y:auto}
 @media (min-width:1000px){.map-side .map-info{max-height:calc(100vh - var(--toph,170px) - 250px)}}
+
+/* ---------- faixa de resumo fixa + layout compacto ---------- */
+.fxbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--navy);color:#fff;padding:0 14px 10px}
+.fxbar .fx{margin:0 auto;max-width:560px;padding:8px 12px;font-size:13px;line-height:1.35;white-space:normal}
+@media (min-width:820px){
+  .fxbar{padding:0 24px 10px}
+  .fxbar .fx{max-width:1224px;margin-top:0;font-size:13px;padding:7px 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body{font-size:14px}
+  .top{padding:12px 24px 8px}
+  .top h1{font-size:22px}
+  .per{font-size:13px}
+  .icon-btn{width:42px;height:42px;border-radius:13px}
+  .pm-btn{height:42px;border-radius:13px;font-size:13px;padding:0 13px}
+  .sync{height:38px;font-size:12px;padding:0 10px;border-radius:12px}
+  main{padding:16px 24px 72px}
+  .banner{padding:10px 14px 10px 16px;border-radius:14px}
+  .banner p{font-size:13.5px}
+  .btn{min-height:40px;padding:0 16px;font-size:14px;border-radius:12px}
+  .metrics{gap:12px;margin:16px 0}
+  .tile{padding:12px 16px;min-height:88px;border-radius:14px}
+  .tile .l{font-size:13px}
+  .tile .v{font-size:32px;margin-top:4px}
+  .bar{height:7px;margin-top:8px}
+  .meta-card{padding:12px 16px;border-radius:14px}
+  .mc-pct{font-size:38px}
+  .mc-pct span{font-size:20px}
+  .mc-main{margin:8px 0 10px;gap:16px}
+  .mc-bar{height:10px;margin:4px 0 16px}
+  .sections{padding:4px;border-radius:13px;margin-bottom:12px}
+  .sections button{min-height:38px;font-size:13.5px}
+  .search input{height:46px;font-size:15px;padding-left:44px;border-radius:14px}
+  .search svg{left:15px}
+  .sortbox{min-height:40px}
+  .sortbox select{min-height:38px;font-size:13.5px}
+  .seg button{min-height:38px;padding:0 16px;font-size:14px}
+  .filters{gap:10px 14px;padding:14px;border-radius:14px}
+  .filters label{font-size:13px}
+  .filters select{height:42px;border-radius:12px}
+  #list,#removed{margin-top:16px}
+  .rh{min-height:48px;padding:8px 14px 8px 16px;border-radius:14px}
+  .rh .rn{font-size:16px}
+  .rh .rc{font-size:13px;padding:3px 10px}
+  .rb{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding-top:12px}
+  .card{padding:16px;border-radius:14px}
+  .pat{font-size:21px}
+  .mod{font-size:13.5px}
+  .cli{font-size:14px}
+  .cid{font-size:13.5px}
+  .chip,.badge{min-height:26px;font-size:12.5px;padding:0 10px}
+  .info dt{font-size:12.5px}
+  .info dd{font-size:14px}
+  .obs{font-size:13.5px}
+  .city{padding:11px 15px;font-size:14px}
+  .notice{padding:12px 16px;font-size:14px;border-radius:14px}
+  .toast{font-size:14px;padding:11px 16px}
+  .pm-hd b{font-size:16px}
+  .pm-main{padding:9px 6px 9px 12px}
+  .pm-tx b{font-size:14px}
+  .pm-tx small{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -1205,9 +1269,10 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
         </button>
       </div>
     </div>
-    <div class="fx" id="fx" role="status" aria-live="polite"></div>
+    
   </div>
 </header>
+<div class="fxbar" id="fxbar"><div class="fx" id="fx" role="status" aria-live="polite"></div></div>
 
 <main id="app" data-filial="SSF">
   <div class="pm-band" id="pmBand" hidden></div>
@@ -1766,8 +1831,8 @@ function renderMetrics(){
     tile("Backlog",m.backlog,{alert:m.backlog>0})+
     tile("Agendadas",m.ag)+
     tile("% agendado",m.pAg,{pct:true})+
-    tile("Realizadas",m.re)+
-    tile("% realizado",m.pRe,{pct:true})+
+    tile("Realizadas",m.re,{tone:"sim"})+
+    tile("% realizado",m.pRe,{pct:true,tone:"sim"})+
     tile("Retornos",m.ret,{tone:"ret"})+
     tile("NÃO REALIZAR",m.nr,{tone:"nr"});
 }
@@ -2570,7 +2635,7 @@ function applyBulk(){
 
 /* ---------- aba Mapa (grafo) ---------- */
 var MAP={org:null,orgSave:{},nodes:[],links:[],pos:{},raf:0,alpha:0,z:1,ox:0,oy:0,w:0,h:0,dpr:1,cv:null,cx:null,sel:null,hov:null,drag:null,pan:null,ptr:{},pinch:0,moved:false,user:false,active:false,tgt:null,bound:null};
-var TOMC={sim:"#2EA043",ag:"#F2B01E",nao:"#E5484D",neu:"#7F93B2",ret:"#17A6A0",nr:"#B3122A"};
+var TOMC={sim:"#2EA043",ag:"#F2B01E",nao:"#E5484D",neu:"#7F93B2",ret:"#A9683A",nr:"#B3122A"};
 function stopMap(){MAP.active=false;if(MAP.raf) cancelAnimationFrame(MAP.raf);MAP.raf=0;}
 /* ---------- aba Grafo: cidade (roxo) → cliente (tamanho = nº de equipamentos) ---------- */
 var MAP_PURPLE="#7B3FE4",BLC="#FF6B3D";
@@ -2670,7 +2735,7 @@ function buildMap(items){
 }
 function sizeMap(){
   var wrap=$("mapWrap");if(!wrap||!MAP.cv) return;
-  var th=document.querySelector(".top"),thH=th?th.offsetHeight:150;
+  var th=document.querySelector(".fxbar"),thH=th?th.offsetHeight:50;
   var w=Math.max(280,wrap.clientWidth),h=window.innerWidth<820?Math.max(400,Math.min(620,Math.round(window.innerHeight*.62))):window.innerWidth>=1000?Math.max(420,Math.min(640,window.innerHeight-thH-48)):Math.max(440,Math.min(560,Math.round(w*.55)));
   var dpr=Math.min(2,window.devicePixelRatio||1);
   MAP.w=w;MAP.h=h;MAP.dpr=dpr;
@@ -5506,7 +5571,7 @@ window.addEventListener("scroll",pmMenuClose,true);
 function pmInit(){
   ui.pmPin=safeGet("prev_pm_pin")==="1";ui.pmOpen=false;ui.pmHover=false;
 }
-function pmTopH(){var t=document.querySelector(".top");if(t) document.documentElement.style.setProperty("--toph",t.offsetHeight+"px");}
+function pmTopH(){var t=document.querySelector(".fxbar");if(t) document.documentElement.style.setProperty("--toph",t.offsetHeight+"px");}
 
 /* Kanban do planejamento (por semana do mês) */
 var PMKBO=["w1","w2","w3","w4","w5","plan","fora"];
@@ -5543,42 +5608,43 @@ var TEC_FILIAL={SSF:2,LDM:1};
 function fxN(n,s1,sp){return n+" "+(n===1?s1:sp);}
 function renderFx(){
   var el=$("fx");if(!el) return;
-  var code=curCode(),h='<b>'+esc(ui.filial)+'</b>';
+  var code=curCode(),h='<b>'+esc(ui.filial)+'</b>',plain=ui.filial;
   el.setAttribute("data-filial",code);
-  function seg(t){h+=' · <span class="fxs">'+t+'</span>';}
-  if(DB.sample){seg("sem dados importados");el.innerHTML=h;return;}
+  function seg(t){h+=' · <span class="fxs">'+t+'</span>';plain+=' · '+t;}
+  function done(){el.innerHTML=h;el.title=plain;pmTopH();}
+  if(DB.sample){seg("sem dados importados");done();return;}
   var items=cur().items,t=items.length,re=items.filter(function(i){return i.realizado==="Sim";}).length;
   if(ui.ctx==="plan"){
     var p=planById(ui.ctxId),cl={},ci={},y=p?+p.ym.slice(0,4):new Date().getFullYear(),mo=p?+p.ym.slice(5,7)-1:new Date().getMonth();
     items.forEach(function(i){if(i.cliente) cl[norm(i.cliente)]=1;var c=fmtCidade(i.cidadeEstado);if(c) ci[norm(c)]=1;});
     var du=bizCount(new Date(y,mo,1),new Date(y,mo+1,0)),tec=TEC_FILIAL[code]||1,per=t&&du?t/du/tec:0;
-    seg(fxN(t,"preventiva prevista","preventivas previstas"));
-    seg(fxN(Object.keys(cl).length,"cliente","clientes")+", "+fxN(Object.keys(ci).length,"cidade","cidades")+".");
-    seg(nf(per,1)+" equipamentos por técnico / dia.");
-    el.innerHTML=h;return;
+    seg(fxN(t,"prevista","previstas"));
+    seg(fxN(Object.keys(cl).length,"cliente","clientes")+", "+fxN(Object.keys(ci).length,"cidade","cidades"));
+    seg(nf(per,1)+" equip. por técnico / dia");
+    done();return;
   }
   var st=metaState(code);
   if(ui.ctx==="bk"){
     var z=st?st.pend:t-re,tx=st?Math.round(st.pct):(t?Math.round(re/t*100):0);
-    seg(fxN(t,"preventiva","preventivas")+" no total");
-    seg((z===1?"ficou pendente 1 equipamento":"ficaram pendentes "+z+" equipamentos")+" no mês.");
-    seg("Taxa alcançada: "+tx+"%");
-    el.innerHTML=h;return;
+    seg(t+" no total");
+    seg(fxN(z,"pendente","pendentes")+" no mês");
+    seg("taxa alcançada "+tx+"%");
+    done();return;
   }
   var pend=st?st.pend:Math.max(0,t-re);
-  seg(fxN(t,"preventiva prevista","preventivas previstas"));
+  seg(fxN(t,"prevista","previstas"));
   seg(p2(re)+(re===1?" realizada":" realizadas")+", "+p2(pend)+(pend===1?" pendente":" pendentes"));
   var rc=refCount();
   if(rc.late) seg("prazo do mês encerrado");
   else{
-    seg(fxN(rc.weeks,"semana restante","semanas restantes")+" (contando a atual)");
-    seg(fxN(rc.days,"dia útil restante","dias úteis restantes")+" (sem contar hoje)");
+    seg(fxN(rc.weeks,"semana","semanas")+" (com a atual)");
+    seg(fxN(rc.days,"dia útil","dias úteis")+" (sem hoje)");
   }
   if(st){
-    seg("taxa atual: "+Math.round(st.pct)+"%");
-    seg(st.need>0?fxN(st.need,"equipamento","equipamentos")+" para alcançar a meta":"meta de "+nf(st.goal)+"% atingida");
+    seg("taxa "+Math.round(st.pct)+"%");
+    seg(st.need>0?"faltam "+st.need+" para a meta":"meta de "+nf(st.goal)+"% atingida");
   }
-  el.innerHTML=h;
+  done();
 }
 
 /* ---------- eventos ---------- */
