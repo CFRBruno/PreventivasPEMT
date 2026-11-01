@@ -2075,6 +2075,30 @@ function regionOrder(all,tot){
   return keys.sort(function(a,b){return tot[b]-tot[a]||coll.compare(a,b);});
 }
 
+/* ---------- distância das cidades até a filial (linha reta) ---------- */
+var CID_XY={
+"ALAGOINHAS":[-12.1356,-38.4208,"BA"],"BARREIRAS":[-12.1528,-44.99,"BA"],"CAMACARI":[-12.6996,-38.3263,"BA"],
+"CONCEICAO DO JACUIPE":[-12.33,-38.77,"BA"],"CRUZ DAS ALMAS":[-12.6675,-39.1008,"BA"],"FEIRA DE SANTANA":[-12.2664,-38.9663,"BA"],
+"GUANAMBI":[-14.2231,-42.7799,"BA"],"IBIRAPITANGA":[-14.18,-39.38,"BA"],"IRAQUARA":[-12.25,-41.62,"BA"],"IRECE":[-11.3036,-41.8531,"BA"],
+"ITAGIBA":[-14.28,-39.84,"BA"],"ITAPETINGA":[-15.2489,-40.2481,"BA"],"LAURO DE FREITAS":[-12.8978,-38.3272,"BA"],
+"LUIS EDUARDO MAGALHAES":[-12.0953,-45.7867,"BA"],"LUIS EDUARDO":[-12.0953,-45.7867,"BA"],"MARACAS":[-13.44,-40.43,"BA"],
+"SALVADOR":[-12.9714,-38.5014,"BA"],"SAO DESIDERIO":[-12.36,-44.97,"BA"],"SAO FRANCISCO DO CONDE":[-12.62,-38.68,"BA"],
+"SIMOES FILHO":[-12.79,-38.40,"BA"],"VERA CRUZ":[-12.96,-38.61,"BA"],"VITORIA DA CONQUISTA":[-14.8615,-40.8442,"BA"],
+"SANTA FILOMENA":[-9.11,-45.92,"PI"],"URUCUI":[-7.24,-44.56,"PI"],"ALMAS":[-11.57,-47.18,"TO"],"ARRAIAS":[-12.93,-46.94,"TO"]
+};
+var FIL_XY={SSF:[-12.82815,-38.405885],LDM:[-12.0819764,-45.7308899]};
+function kmBetween(a,b){
+  var R=6371,r=Math.PI/180,dl=(b[0]-a[0])*r,dg=(b[1]-a[1])*r;
+  var h=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dg/2)*Math.sin(dg/2);
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function cityKm(name){
+  var p=String(name||"").split(/\s+-\s+/),k=norm(p[0]).toUpperCase(),uf=(p[1]||"").trim().toUpperCase();
+  var e=CID_XY[k],o=FIL_XY[curCode()];
+  if(!e||!o||(uf&&e[2]!==uf)) return null;
+  return kmBetween(o,e);
+}
+function kmTxt(v){return v<1?"menos de 1 km":nf(v,0)+" km";}
 function renderClientes(items){
   var box=$("list"),byCity={};
   items.forEach(function(i){
@@ -2093,7 +2117,12 @@ function renderClientes(items){
     });
     c.arr.sort(function(a,b){return mais?(b.list.length-a.list.length||coll.compare(a.name,b.name)):coll.compare(a.name,b.name);});
   });
-  cities.sort(function(a,b){return mais?(b.n-a.n||coll.compare(a.name,b.name)):coll.compare(a.name,b.name);});
+  var dist=ui.csort==="dist";
+  cities.forEach(function(c){c.km=cityKm(c.name);});
+  cities.sort(function(a,b){
+    if(dist){var x=a.km==null?1e9:a.km,y=b.km==null?1e9:b.km;return x-y||coll.compare(a.name,b.name);}
+    return mais?(b.n-a.n||coll.compare(a.name,b.name)):coll.compare(a.name,b.name);
+  });
   ui.copyTxt=cities.map(function(c){
     return c.name+":\n"+c.arr.map(function(x){
       return x.name+" ("+x.list.length+"): "+x.list.map(function(i){return i.patrimonio;}).join(", ");
@@ -2126,7 +2155,7 @@ function renderClientes(items){
         return '<button type="button" class="pt'+(i.status==="Backlog"?" bl":i.status==="Em dia"?" ok":"")+(i.tom==="nr"?" nr":i.tom==="ret"?" ret":"")+'" data-edit="'+esc(i.patrimonio)+'" data-mod="'+esc(mod)+'" data-pl="'+esc(pl)+'" aria-label="'+esc(i.patrimonio+", modelo "+mod+", planos "+pl)+'">'+esc(i.patrimonio)+'</button>';
       }).join("")+'</div></div>';
     }).join("")+'</div>';
-    html+=sectionHTML(key,c.name,c.n+(c.n===1?" máquina":" máquinas"),isOpen(key,true),inner,"","blk");
+    html+=sectionHTML(key,c.name,c.n+(c.n===1?" máquina":" máquinas")+(dist?" · "+(c.km!=null?kmTxt(c.km):"distância indisponível"):""),isOpen(key,true),inner,"","blk");
   });
   box.innerHTML=html;
 }
@@ -2182,7 +2211,7 @@ function syncToolbar(){
   Array.prototype.forEach.call($("sections").querySelectorAll("button"),function(b){b.setAttribute("aria-selected",String(b.dataset.s===ui.section));});
   Array.prototype.forEach.call($("viewSeg").querySelectorAll("button"),function(b){b.setAttribute("aria-pressed",String(b.dataset.v===ui.layout));});
   $("viewSeg").hidden=ui.section!=="equip";
-  var opts=cl?[["az","Cliente (A–Z)"],["maq","Mais máquinas"]]:[["cliente","Cliente (A–Z)"],["backlog","Backlog mais antigo"]];
+  var opts=cl?[["az","Cliente (A–Z)"],["maq","Mais máquinas"],["dist","Mais perto da filial"]]:[["cliente","Cliente (A–Z)"],["backlog","Backlog mais antigo"]];
   var el=$("sortSel");
   el.innerHTML=opts.map(function(o){return '<option value="'+o[0]+'">'+o[1]+'</option>';}).join("");
   el.value=cl?ui.csort:ui.sort;
