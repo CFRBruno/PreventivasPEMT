@@ -871,21 +871,22 @@ select.cx-in{appearance:auto}
 @media (prefers-reduced-motion: reduce){.cx-hl,.ch-hl{transition:none}}
 
 /* ---------- 7 abas, Kanban, Mapa da Bahia, horários ---------- */
-.sections{grid-template-columns:repeat(7,1fr)}
-.sections[data-sel]::before{width:calc((100% - 44px)/7);transform:translateX(calc((100% + 6px)*var(--i,0)))}
+.sections{grid-template-columns:repeat(8,1fr)}
+.sections[data-sel]::before{width:calc((100% - 50px)/8);transform:translateX(calc((100% + 6px)*var(--i,0)))}
 .sections[data-sel="equip"]{--i:0;--c:0;--r:0}
 .sections[data-sel="clientes"]{--i:1;--c:1;--r:0}
 .sections[data-sel="semana"]{--i:2;--c:2;--r:0}
 .sections[data-sel="grafo"]{--i:3;--c:3;--r:0}
 .sections[data-sel="mapa"]{--i:4;--c:0;--r:1}
-.sections[data-sel="agenda"]{--i:5;--c:1;--r:1}
-.sections[data-sel="chamados"]{--i:6;--c:2;--r:1}
+.sections[data-sel="ritmo"]{--i:5;--c:1;--r:1}
+.sections[data-sel="agenda"]{--i:6;--c:2;--r:1}
+.sections[data-sel="chamados"]{--i:7;--c:3;--r:1}
 @media (max-width:539px){
   .sections{grid-template-columns:repeat(4,1fr)}
   .sections[data-sel]::before{width:calc((100% - 26px)/4);height:calc((100% - 14px)/2);bottom:auto;transform:translate(calc((100% + 6px)*var(--c,0)),calc((100% + 6px)*var(--r,0)))}
 }
 @media (min-width:540px) and (max-width:819px){.sections button{font-size:12.5px}}
-@media (min-width:820px){.sections[data-sel]::before{width:calc((100% - 46px)/7)}.sections{max-width:980px}}
+@media (min-width:820px){.sections[data-sel]::before{width:calc((100% - 52px)/8)}.sections{max-width:980px}}
 #app[data-sec="grafo"] .sortbox,#app[data-sec="grafo"] #viewSeg{display:none}
 
 /* Kanban */
@@ -1268,6 +1269,101 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
   .crowtop{flex-wrap:nowrap}
   .crowtop .btn{flex:none}
 }
+/* ---------- Ritmo ---------- */
+.rfoot{margin:6px 0 0;font-size:12px;font-weight:600;color:var(--sim-ink,#1B6B2A)}
+.kb-card .rfoot{margin:2px 0 0;font-size:11.5px}
+.l-obs .rfoot{display:block;margin:2px 0 0}
+#app[data-sec="ritmo"] .search,#app[data-sec="ritmo"] .tb-row,#app[data-sec="ritmo"] .filters{display:none}
+.rt-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 12px}
+.rt-head h2{margin:0;font-size:20px}
+.rt-head p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.rt-btns{display:flex;gap:8px;flex-wrap:wrap}
+.rt-intro{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px;line-height:1.5;font-size:14.5px}
+.rt-intro p{margin:0 0 8px}
+.rt-w{color:var(--muted)}
+.rt-pills{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.rt-pill{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:150px;padding:8px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left}
+.rt-pill small{color:var(--muted);font-size:12px}
+.rt-pill[aria-pressed="true"]{border-color:var(--f);box-shadow:inset 0 0 0 1px var(--f)}
+.rt-hero{display:flex;align-items:center;gap:18px;padding:16px 20px;border-radius:18px;border:2px solid;margin-bottom:12px;overflow:hidden}
+.rt-hero.up{background:color-mix(in srgb,#2EA043 14%,var(--surface));border-color:#2EA043;color:#1B6B2A}
+.rt-hero.down{background:color-mix(in srgb,#E5484D 13%,var(--surface));border-color:#E5484D;color:#B3262C}
+.rt-hero.eq{background:color-mix(in srgb,#E8A317 15%,var(--surface));border-color:#E8A317;color:#8A5A00}
+:root[data-theme="dark"] .rt-hero.up{color:#7EE29B}
+:root[data-theme="dark"] .rt-hero.down{color:#FF9AA5}
+:root[data-theme="dark"] .rt-hero.eq{color:#F2C46B}
+.rt-arrows{display:flex;gap:2px;flex:none}
+.rt-arrows svg{width:24px;height:34px;opacity:.3}
+.rt-hero.down .rt-arrows{transform:scaleX(-1)}
+.rt-eqs{font-size:44px;font-weight:800;line-height:1;flex:none;width:60px;text-align:center}
+.rt-ht{flex:1;min-width:0;color:var(--ink)}
+.rt-ht b{display:block;font-size:24px;letter-spacing:-.01em}
+.rt-ht small{color:var(--muted);font-size:13.5px}
+.rt-emoji{font-size:46px;line-height:1;flex:none}
+@media (prefers-reduced-motion: no-preference){
+  .rt-hero.up .rt-arrows svg{animation:rtGo 1.5s ease-in-out infinite}
+  .rt-hero.down .rt-arrows svg{animation:rtGo 1.9s ease-in-out infinite}
+  .rt-arrows svg:nth-child(2){animation-delay:.18s!important}
+  .rt-arrows svg:nth-child(3){animation-delay:.36s!important}
+  .rt-arrows svg:nth-child(4){animation-delay:.54s!important}
+  .rt-hero.up .rt-emoji{animation:rtHop 1.3s ease-in-out infinite}
+  .rt-hero.down .rt-emoji{animation:rtSway 3s ease-in-out infinite}
+  .rt-hero.eq .rt-emoji{animation:rtSway 2.4s ease-in-out infinite}
+  @keyframes rtGo{0%{opacity:.18;transform:translateX(-7px);filter:hue-rotate(0)}50%{opacity:1;transform:translateX(0);filter:hue-rotate(-18deg) brightness(1.25)}100%{opacity:.18;transform:translateX(7px);filter:hue-rotate(14deg)}}
+  @keyframes rtHop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-9px) rotate(-6deg)}60%{transform:translateY(0) rotate(4deg)}}
+  @keyframes rtSway{0%,100%{transform:translateX(-4px) rotate(-3deg)}50%{transform:translateX(4px) rotate(3deg)}}
+}
+.rt-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.rt-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.rt-card span{font-size:12.5px;color:var(--muted)}
+.rt-card b{font-size:22px;letter-spacing:-.01em}
+.rt-card em{font-style:normal;font-size:13px;font-weight:600;color:var(--muted)}
+.rt-card small{font-size:12px;color:var(--muted)}
+.rt-card b.pos{color:#1B8A32}.rt-card b.neg{color:#D23038}
+:root[data-theme="dark"] .rt-card b.pos{color:#7EE29B}
+:root[data-theme="dark"] .rt-card b.neg{color:#FF8A92}
+.rt-sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 2px 8px}
+.rt-sec>b{font-size:15px}
+.rt-key{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.rt-key i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-left:8px}
+.rt-key i.pos,.rt-d.pos{background:#2EA043;border-color:#2EA043}
+.rt-key i.eq,.rt-d.eq{background:#98A2B3;border-color:#98A2B3}
+.rt-key i.neg,.rt-d.neg{background:#E5484D;border-color:#E5484D}
+.rt-weeks{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.rt-week{display:grid;grid-template-columns:120px minmax(0,1fr) 210px;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+.rt-wl b{display:block;font-size:14px}
+.rt-wl small{color:var(--muted);font-size:12px}
+.rt-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.rt-d{border:2px solid var(--line);border-radius:12px;min-height:56px;padding:4px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:var(--bg);color:var(--ink);line-height:1.1}
+.rt-d i{font-style:normal;font-size:10.5px;opacity:.75;font-weight:700}
+.rt-d b{font-size:19px}
+.rt-d small{font-size:10.5px;opacity:.85}
+.rt-d.pos,.rt-d.eq,.rt-d.neg{color:#fff}
+.rt-d.eq{color:#10223D}
+.rt-d.hoje{border-color:var(--f);border-style:solid;background:var(--surface)}
+.rt-d.fut{border-style:dashed;background:transparent}
+.rt-d.pre,.rt-d.off{border-style:dotted;background:transparent;opacity:.55}
+.rt-ws{display:flex;flex-direction:column;gap:2px;text-align:right}
+.rt-ws b{font-size:22px}
+.rt-ws b.pos{color:#1B8A32}.rt-ws b.neg{color:#D23038}.rt-ws b.eq{color:var(--muted)}.rt-ws b.mu{color:var(--muted)}
+:root[data-theme="dark"] .rt-ws b.pos{color:#7EE29B}
+:root[data-theme="dark"] .rt-ws b.neg{color:#FF8A92}
+.rt-ws small{font-size:12px;color:var(--muted)}
+.rt-chart{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px}
+.rt-chart svg{width:100%;height:auto;display:block}
+.rt-lg{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-bottom:4px}
+.rt-lg i{display:inline-block;width:18px;height:0;border-top:3px solid var(--f);vertical-align:middle;margin-right:6px}
+.rt-lg i.e{border-top:3px dashed #8A96AB}
+.rt-segs{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:13.5px}
+.rt-segs>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 14px;padding:5px 0;border-top:1px solid var(--line);margin-top:5px}
+.rt-segs span+span{color:var(--muted)}
+@media (max-width:819px){
+  .rt-week{grid-template-columns:1fr}
+  .rt-ws{text-align:left}
+  .rt-hero{gap:12px;padding:14px}
+  .rt-ht b{font-size:19px}
+  .rt-emoji{font-size:36px}
+}
 </style>
 </head>
 <body>
@@ -1310,6 +1406,7 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
     <button type="button" role="tab" data-s="semana" aria-selected="false" title="Semana: gráfico e relatório em imagem">Semana</button>
     <button type="button" role="tab" data-s="grafo" aria-selected="false" title="Grafo de preventivas por cidade">Grafo</button>
     <button type="button" role="tab" data-s="mapa" aria-selected="false" title="Mapa da Bahia com os equipamentos por cidade">Mapa</button>
+    <button type="button" role="tab" data-s="ritmo" aria-selected="false" title="Ritmo do mês: corrida das preventivas">Ritmo</button>
     <button type="button" role="tab" data-s="agenda" aria-selected="false" title="Agenda em calendário">Agenda</button>
     <button type="button" role="tab" data-s="chamados" aria-selected="false" title="Chamados de manutenção corretiva">Chamados</button>
   </div>
@@ -1487,7 +1584,7 @@ function fmtCidade(s){
 function fmtISO(iso){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||"");return m?m[3]+"/"+m[2]+"/"+m[1]:"";}
 function isBlank(r){return !r||r.every(function(c){return c===""||c==null||(typeof c==="string"&&!c.trim());});}
 function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function isSyncKey(k){return k==="prev_db_v1"||k==="prev_refs_v1"||k==="prev_meta_v1"||k==="prev_ag_v1"||k==="prev_ch_v1"||k==="prev_plans_v1"||k.indexOf("prev_pl_")===0||k.indexOf("prev_bk_")===0;}
+function isSyncKey(k){return k==="prev_db_v1"||k==="prev_refs_v1"||k==="prev_meta_v1"||k==="prev_ag_v1"||k==="prev_ch_v1"||k==="prev_plans_v1"||k==="prev_race_v1"||k.indexOf("prev_pl_")===0||k.indexOf("prev_bk_")===0;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){return false;}
   if(isSyncKey(k)&&window.__cloudPush) window.__cloudPush(k,v);
   return true;}
@@ -1693,7 +1790,7 @@ function processRaw(wb,notes,prev){
       var o=antigos[it.patrimonio];
       if(!o){if(temPrev) novosN++;return;}
       it.previsaoSemanal=o.previsaoSemanal||"";it.tecnico=o.tecnico||"";it.dataAgendada=o.dataAgendada||"";
-      it.realizado=o.realizado||"";it.observacoes=o.observacoes||"";
+      it.realizado=o.realizado||"";it.observacoes=o.observacoes||"";if(o.realizadoEm) it.realizadoEm=o.realizadoEm;
       if(o.modelo&&o.modelo!=="Não encontrado") it.modelo=o.modelo;
       if(it.regiao==="Não classificado"&&o.regiao&&!o.removido) it.regiao=o.regiao;
       if(o.removido) voltaram++;
@@ -1916,6 +2013,12 @@ function doneBtn(it,icon){
   var on=it.realizado==="Sim";
   return '<button class="btn dn'+(icon?" ico":"")+'" type="button" data-done="'+esc(it.patrimonio)+'" aria-pressed="'+on+'" aria-label="'+(on?"Desmarcar ":"Marcar ")+esc(it.patrimonio)+' como realizado" title="'+(on?"Realizado. Toque para desfazer":"Marcar como realizado")+'">'+ICON_CK+(icon?"":"<span>Feito</span>")+'</button>';
 }
+function stampReal(it,prev){
+  if(it.realizado==="Sim"){if(prev!=="Sim") it.realizadoEm=Date.now();}
+  else delete it.realizadoEm;
+}
+function realTxt(it){return it.realizado==="Sim"&&it.realizadoEm?"Realizada em "+fmtDM(new Date(it.realizadoEm)):"";}
+function realFoot(it){var t=realTxt(it);return t?'<p class="rfoot">'+esc(t)+'</p>':"";}
 function cardHTML(it){
   var rem=it.removido;
   var chips=it.planos.map(function(p){return '<span class="chip">'+esc(p.toUpperCase())+'</span>';}).join("");
@@ -1927,7 +2030,7 @@ function cardHTML(it){
     (cid?'<div class="cid">'+ICON_PIN+'<span'+(rem?' class="strike"':"")+'>'+esc(cid)+'</span></div>':"")+
     (chips?'<div class="chips">'+chips+'</div>':"")+
     '<dl class="info">'+cell("Previsão semanal",it.previsaoSemanal)+cell("Técnico",it.tecnico)+cell("Data agendada",it.dataAgendada)+cell("Realizado",it.realizado)+'</dl>'+
-    (it.observacoes?'<p class="obs">'+esc(it.observacoes)+'</p>':"")+
+    (it.observacoes?'<p class="obs">'+esc(it.observacoes)+'</p>':"")+realFoot(it)+
     '<div class="act">'+acaoBadge(it)+(rem?"":'<div class="abtns">'+doneBtn(it,false)+'<button class="btn" type="button" data-edit="'+esc(it.patrimonio)+'">'+ICON_EDIT+'Editar</button></div>')+'</div>'+
   '</article>';
 }
@@ -1944,7 +2047,7 @@ function rowHTML(it){
     '<div class="lmeta">'+mi("Previsão",it.previsaoSemanal)+mi("Técnico",it.tecnico)+mi("Agendada",it.dataAgendada)+mi("Realizado",it.realizado)+'</div>'+
     '<div class="lc l-ac">'+acaoBadge(it)+'</div>'+
     '<div class="lc l-ed">'+(rem?"":doneBtn(it,true)+'<button class="btn ico" type="button" data-edit="'+esc(it.patrimonio)+'" aria-label="Editar '+esc(it.patrimonio)+'">'+ICON_EDIT+'</button>')+'</div>'+
-    (it.observacoes?'<div class="l-obs">'+esc(it.observacoes)+'</div>':"")+
+    (it.observacoes||realTxt(it)?'<div class="l-obs">'+esc(it.observacoes||"")+realFoot(it)+'</div>':"")+
   '</article>';
 }
 var LHEAD='<div class="lhead"><div>Patrimônio</div><div>Cliente</div><div>Planos e data prevista</div><div>Status</div><div>Previsão</div><div>Técnico</div><div>Agendada</div><div>Realizado</div><div>Ação recomendada</div><div></div></div>';
@@ -2069,6 +2172,7 @@ function renderBody(){
   if(ui.section==="chamados"){renderCh();$("removed").innerHTML="";return;}
   if(ui.section==="grafo"){renderMapa();$("removed").innerHTML="";return;}
   if(ui.section==="mapa"){mpRender();$("removed").innerHTML="";return;}
+  if(ui.section==="ritmo"){renderRitmo();$("removed").innerHTML="";return;}
   renderList();
   if(ui.section==="clientes") $("removed").innerHTML=""; else renderRemoved();
 }
@@ -2123,7 +2227,7 @@ function saveEdit(){
   it.previsaoSemanal=$("edPrev").value;
   it.tecnico=$("edTec").value.trim();
   it.dataAgendada=toAg($("edAg").value.trim());
-  it.realizado=$("edReal").value;
+  var prR=it.realizado;it.realizado=$("edReal").value;stampReal(it,prR);
   it.observacoes=$("edObs").value.trim();
   fin(it);
   DB.editedAt=Date.now();
@@ -2257,7 +2361,7 @@ function toggleDone(btn){
   if(!it||it.removido) return;
   if(!art){
     var w0=it.realizado==="Sim";
-    it.realizado=w0?"":"Sim";fin(it);DB.editedAt=Date.now();
+    it.realizado=w0?"":"Sim";stampReal(it,w0?"Sim":"");fin(it);DB.editedAt=Date.now();
     var ok0=saveDB();
     renderMetricsAnim();mapRefresh();
     if(BK){BK.changed=true;bkRowSync(pat);}
@@ -2267,7 +2371,7 @@ function toggleDone(btn){
   }
   var was=it.realizado==="Sim";
   var oldCls=art.className.replace(/\s*done-anim/g,"");
-  it.realizado=was?"":"Sim";
+  it.realizado=was?"":"Sim";stampReal(it,was?"Sim":"");
   fin(it);
   DB.editedAt=Date.now();
   var ok=saveDB();
@@ -2663,7 +2767,7 @@ function applyBulk(){
     var d=toAg(document.querySelector('[data-bkd="'+i+'"]').value.trim()),ch=false;
     if(prev){it.previsaoSemanal=prev;ch=true;}
     if(tec){it.tecnico=tec;ch=true;}
-    if(real&&real!==(it.realizado||"")){it.realizado=real==="__limpar"?"":real;ch=true;}
+    if(real&&real!==(it.realizado||"")){var prB=it.realizado;it.realizado=real==="__limpar"?"":real;stampReal(it,prB);ch=true;}
     if(d!==(it.dataAgendada||"")){
       it.dataAgendada=d;ch=true;
       var pd=parseAg(d);
@@ -2983,7 +3087,7 @@ function mapStat(list){
   return c.sim+' realizadas · '+c.ag+' agendadas · '+c.bl+' em backlog';
 }
 function eqRow(it){
-  var det=[it.status||"Sem status",it.acaoRecomendada||"",it.tecnico?shortName(it.tecnico):"",it.dataAgendada||""].filter(Boolean).map(esc).join(" · ");
+  var det=[it.status||"Sem status",it.acaoRecomendada||"",it.tecnico?shortName(it.tecnico):"",it.dataAgendada||"",realTxt(it)].filter(Boolean).map(esc).join(" · ");
   return '<div class="mi-eq"><div class="mi-e"><b><i class="mi-dot" style="--c:'+(CATC[catOfItem(it)]||TOMC.neu)+'"></i>'+esc(it.patrimonio)+'</b><small>'+det+'</small></div><div class="abtns">'+doneBtn(it,false)+'<button class="btn" type="button" data-edit="'+esc(it.patrimonio)+'">'+ICON_EDIT+'Editar</button></div></div>';
 }
 function mapInfo(){
@@ -4597,7 +4701,7 @@ function kbCardHTML(it){
     '<div class="r1"><b>'+esc(it.patrimonio)+'</b>'+(bl?'<span class="kb-bl">Backlog</span>':'')+doneBtn(it,true)+'</div>'+
     '<div class="r2">'+esc(it.cliente)+'</div>'+
     '<div class="r3">'+esc(fmtCidade(it.cidadeEstado))+'</div>'+
-    '<div class="r4">'+(when?'<span class="kb-w">'+esc(when)+'</span>':'')+(tec?'<em class="tchip" style="--tc:'+tcol(cm,tec)+'">'+esc(shortName(tec))+'</em>':'')+'</div></article>';
+    '<div class="r4">'+(when?'<span class="kb-w">'+esc(when)+'</span>':'')+(tec?'<em class="tchip" style="--tc:'+tcol(cm,tec)+'">'+esc(shortName(tec))+'</em>':'')+'</div>'+realFoot(it)+'</article>';
 }
 function renderKanban(items){
   var PK=ui.ctx==="plan",KO=PK?PMKBO:KBO,KD=PK?PMKBD:KBD;
@@ -5226,7 +5330,7 @@ function copyPend(src,origin){
     (d.items||[]).forEach(function(it){
       if(it.removido||it.realizado==="Sim"||isRet(it)) return;
       var c=JSON.parse(JSON.stringify(it));
-      c.previsaoSemanal="";c.dataAgendada="";c.realizado="";
+      c.previsaoSemanal="";c.dataAgendada="";c.realizado="";delete c.realizadoEm;
       fin(c);items.push(c);n++;
     });
     out.filiais[f.key]={items:items,removed:[]};
@@ -5250,7 +5354,9 @@ function makeBackup(label,ym){
   try{db=JSON.parse(raw);}catch(e){return false;}
   try{meta=JSON.parse(safeGet("prev_meta_v1")||"{}")||{};}catch(e){meta={};}
   var id=newId(),ts=Date.now();
-  var ok=safeSet("prev_bk_"+id,JSON.stringify({ym:ym,label:label,ts:ts,db:db,meta:meta}));
+  var rr=null;try{rr=JSON.parse(safeGet("prev_race_v1")||"null");}catch(e){rr=null;}
+  if(!(rr&&rr.ym===ym)) rr=null;
+  var ok=safeSet("prev_bk_"+id,JSON.stringify({ym:ym,label:label,ts:ts,db:db,meta:meta,race:rr}));
   if(!ok) return false;
   var cd=parseDBStr(raw);
   PL.backups.unshift({id:id,ym:ym,label:label,ts:ts,sum:cd?sumDB(cd):null});
@@ -5438,6 +5544,7 @@ function pmTurn(p){
     var raw=safeGet("prev_pl_"+p.id),guardou=makeBackup(ymLabel(old),old);
     if(raw) safeSet("prev_db_v1",raw); else{try{localStorage.removeItem("prev_db_v1");}catch(e){}if(window.__cloudPush) window.__cloudPush("prev_db_v1",null);}
     safeSet("prev_meta_v1",JSON.stringify(metaFromPlan(p)));
+    RACE=null;safeDel("prev_race_v1");
     PL.curYm=p.ym;PL.curSum=p.sum||null;
     safeDel("prev_pl_"+p.id);
     PL.plans=PL.plans.filter(function(x){return x.id!==p.id;});
@@ -5472,6 +5579,8 @@ function pmBkAct(a){
       makeBackup(ymLabel(PL.curYm)+" (antes de restaurar)",PL.curYm);
       if(dbStr) safeSet("prev_db_v1",dbStr); else{try{localStorage.removeItem("prev_db_v1");}catch(e){}if(window.__cloudPush) window.__cloudPush("prev_db_v1",null);}
       safeSet("prev_meta_v1",JSON.stringify(meta));
+      if(o.race&&o.race.segs&&o.race.segs.length) safeSet("prev_race_v1",JSON.stringify(o.race)); else safeDel("prev_race_v1");
+      loadRace();
       PL.curYm=ym;PL.curSum=sm;savePlans();
       setCtx("cur");
       toast("Cópia restaurada: "+ymLabel(ym)+" é o mês atual.");
@@ -5597,6 +5706,13 @@ document.addEventListener("click",function(e){
     return;
   }
   if(t.closest("[data-pm-new]")){openPlanModal("new");return;}
+  if((b=t.closest("[data-rt]"))){
+    var ra=b.getAttribute("data-rt");
+    if(ra==="start") raceStart(false);
+    else if(ra==="check") plAsk("Atualizar a corrida? Será criado um checkpoint a partir de hoje: o ritmo é recalculado com o que ainda falta para a meta e o saldo do trecho recomeça em zero. O histórico até aqui fica guardado.","Atualizar",function(){raceStart(true);},false);
+    else if(ra==="reset") plAsk("Reiniciar a corrida do mês? Todo o histórico de ritmo deste mês será apagado e uma nova corrida começa do zero quando você iniciar.","Reiniciar",function(){RACE=null;saveRace();renderAll();toast("Corrida reiniciada.");},true);
+    return;
+  }
   if(t.closest("[data-pm-bk-toggle]")){ui.pmBk=!ui.pmBk;$("pmFt").innerHTML=pmFootHTML();return;}
   if((b=t.closest("[data-pm-bk]"))){pmBkAct(b.getAttribute("data-pm-bk"));return;}
 });
@@ -5694,6 +5810,180 @@ function renderFx(){
   }
   done();
 }
+
+/* ---------- Ritmo: corrida do mês ---------- */
+var RACE=null;
+function ymd(d){return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate());}
+function ymdDate(k){return new Date(+k.slice(0,4),+k.slice(5,7)-1,+k.slice(8,10));}
+function loadRace(){
+  var s=safeGet("prev_race_v1"),o=null;
+  if(s){try{o=JSON.parse(s);}catch(e){o=null;}}
+  RACE=(o&&o.segs&&o.segs.length&&ymOk(o.ym))?o:null;
+}
+function saveRace(){if(RACE) safeSet("prev_race_v1",JSON.stringify(RACE));else safeDel("prev_race_v1");}
+function raceFor(){
+  if(ui.ctx==="cur") return (RACE&&RACE.ym===PL.curYm)?RACE:null;
+  if(ui.ctx==="bk"){var b=readBk(ui.ctxId);return b&&b.race&&b.race.segs&&b.race.segs.length?b.race:null;}
+  return null;
+}
+function raceFromDay(now){
+  var d=startOfDay(now);
+  if(!(isBizDay(d)&&now.getHours()<19)){d=addDays(d,1);while(!isBizDay(d)) d=addDays(d,1);}
+  return d;
+}
+function raceStart(cp){
+  if(ui.ctx!=="cur") return;
+  var now=new Date(),from=raceFromDay(now),mm=metaMonth(),me=lastBizOfMonth(mm.y,mm.m);
+  if(from>me){toast("O último dia útil do mês já passou: não há dias para a corrida.");return;}
+  var rate={},need={},days={},any=false;
+  FILIAIS.forEach(function(f){
+    var st=metaState(f.code);if(!st) return;
+    any=true;var D=bizCount(from,me);
+    need[f.code]=st.need;days[f.code]=D;rate[f.code]=D?st.need/D:0;
+  });
+  if(!any){toast("Informe o BI (Atualizar BI) de pelo menos uma filial para iniciar a corrida.");return;}
+  var seg={ts:Date.now(),from:ymd(from),rate:rate,need:need,days:days};
+  if(!cp||!RACE||RACE.ym!==PL.curYm) RACE={ym:PL.curYm,segs:[seg]};
+  else{
+    RACE.segs=RACE.segs.filter(function(s){return s.from!==seg.from;});
+    RACE.segs.push(seg);RACE.segs.sort(function(a,b){return a.from<b.from?-1:1;});
+  }
+  saveRace();renderAll();
+  toast((cp?"Checkpoint criado":"Corrida iniciada")+": a contagem vale a partir de "+fmtDM(from)+".");
+}
+function raceCalc(code,race){
+  if(!race) return null;
+  var segs=race.segs.filter(function(s){return s.rate&&s.rate[code]!=null;}).sort(function(a,b){return a.from<b.from?-1:1;});
+  if(!segs.length) return null;
+  var fk=null;FILIAIS.forEach(function(f){if(f.code===code) fk=f.key;});
+  var items=(DB.filiais[fk]||{items:[]}).items,doneBy={};
+  items.forEach(function(it){if(it.realizado==="Sim"&&it.realizadoEm){var k=ymd(new Date(it.realizadoEm));doneBy[k]=(doneBy[k]||0)+1;}});
+  var y=+race.ym.slice(0,4),m=+race.ym.slice(5,7)-1,first=new Date(y,m,1),last=new Date(y,m+1,0);
+  var now=new Date(),today=startOfDay(now),after19=now.getHours()>=19,f0=segs[0].from;
+  function segOf(k){var s=null;for(var i=0;i<segs.length;i++){if(segs[i].from<=k) s=segs[i];}return s;}
+  function closed(d){return d<today||(d.getTime()===today.getTime()&&after19);}
+  var segIdx={};segs.forEach(function(s){segIdx[s.from]=0;});
+  var weeks=[],wk=null,carry=0,tot={};
+  segs.forEach(function(s){tot[s.from]=0;});
+  var d=new Date(first);
+  while(d<=last){
+    var mon=mondayOf(d),mk=ymd(mon);
+    if(!wk||wk.key!==mk){wk={key:mk,mon:mon,cells:[null,null,null,null,null],extra:0,meta:0,done:0,contrib:0,final:true,any:false};weeks.push(wk);}
+    var k=ymd(d),w=d.getDay(),dn=doneBy[k]||0;
+    if(isBizDay(d)){
+      var cell={date:new Date(d),k:k,done:dn,meta:0,state:"pre"};
+      if(k>=f0){
+        var s=segOf(k);segIdx[s.from]++;var idx=segIdx[s.from],r=+s.rate[code]||0;
+        cell.meta=Math.ceil(r*idx-1e-9)-Math.ceil(r*(idx-1)-1e-9);cell.seg=s.from;
+        wk.any=true;wk.meta+=cell.meta;wk.done+=dn;
+        if(closed(d)){cell.state=dn>cell.meta?"pos":dn===cell.meta?"eq":"neg";cell.c=dn-cell.meta;}
+        else if(d.getTime()===today.getTime()){cell.state="hoje";cell.c=Math.max(0,dn-cell.meta);wk.final=false;}
+        else{cell.state="fut";cell.c=0;wk.final=false;}
+        wk.contrib+=cell.c;tot[s.from]+=cell.c;
+      }
+      wk.cells[w-1]=cell;
+    }else if(k>=f0&&dn){
+      wk.extra+=dn;wk.done+=dn;wk.contrib+=dn;wk.any=true;
+      var s2=segOf(k);if(s2) tot[s2.from]+=dn;
+    }
+    d=addDays(d,1);
+  }
+  weeks.forEach(function(w){
+    w.debtIn=carry;
+    w.saldo=w.contrib-w.debtIn;
+    carry=w.any&&w.final?Math.max(0,-w.saldo):0;
+    w.debtOut=carry;
+  });
+  var S=0,D=0,out=[];
+  segs.forEach(function(s,i){
+    var sv=tot[s.from],r=+s.rate[code]||0,sd=r>0?sv/r:0;S+=sv;D+=sd;
+    out.push({from:s.from,to:i<segs.length-1?segs[i+1].from:null,rate:r,need:s.need[code],S:sv,D:sd});
+  });
+  var lastSeg=out[out.length-1],tdc=null;
+  weeks.forEach(function(w){w.cells.forEach(function(c){if(c&&c.k===ymd(today)) tdc=c;});});
+  return {segs:out,weeks:weeks,S:S,D:D,Sseg:lastSeg.S,Dseg:lastSeg.D,rate:lastSeg.rate,today:tdc,month:race.ym};
+}
+function rtN(v,d){var s=nf(Math.abs(v),d==null?1:d);return (v>0?"+":v<0?"−":"")+s;}
+function rtDays(v){var a=Math.abs(v),s=nf(a,1);return s+(s==="1"?" dia":" dias");}
+var RT_ARROW='<svg viewBox="0 0 24 36" aria-hidden="true"><path d="M6 4l13 14L6 32" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function rtHero(c,code,compact){
+  var d=c.D,kind=d>=.5?"up":d<=-.5?"down":"eq",emo=kind==="up"?"🐇":kind==="down"?"🐢":"🚶";
+  var txt=kind==="up"?"Acelerado: "+rtDays(d):kind==="down"?"Atrasado: "+rtDays(d):"No ritmo";
+  var aS=Math.abs(c.S),sub=(c.S>=0?"+":"−")+nf(aS,0)+(aS===1?" preventiva":" preventivas")+" em relação ao ritmo do mês";
+  var arr=kind==="eq"?'<div class="rt-eqs" aria-hidden="true">=</div>':'<div class="rt-arrows" aria-hidden="true">'+RT_ARROW+RT_ARROW+RT_ARROW+RT_ARROW+'</div>';
+  return '<div class="rt-hero '+kind+(compact?" cp":"")+'" role="status">'+arr+'<div class="rt-ht"><b>'+txt+'</b><small>'+(compact?esc(code)+" · ":"")+sub+'</small></div><div class="rt-emoji" aria-hidden="true">'+emo+'</div></div>';
+}
+function rtChart(c){
+  var pts=[],cum=0,exp=0,act=0,i=0,tc=null;
+  c.weeks.forEach(function(w){w.cells.forEach(function(x){if(!x||x.state==="pre") return;exp+=x.meta;act+=x.done;i++;pts.push({i:i,exp:exp,act:(x.state==="fut"?null:act),k:x.k});});});
+  if(!pts.length) return "";
+  var mx=Math.max(1,exp,act),W=640,H=150,pl=34,pr=10,pt=10,pb=22,n=pts.length;
+  function X(j){return pl+(n===1?0:(W-pl-pr)*(j/(n-1)));}
+  function Y(v){return H-pb-(H-pt-pb)*(v/mx);}
+  var el=pts.map(function(p,j){return (j?"L":"M")+X(j).toFixed(1)+" "+Y(p.exp).toFixed(1);}).join(" ");
+  var al=pts.filter(function(p){return p.act!=null;}).map(function(p,j){var jj=pts.indexOf(p);return (j?"L":"M")+X(jj).toFixed(1)+" "+Y(p.act).toFixed(1);}).join(" ");
+  var g='<line x1="'+pl+'" y1="'+Y(0)+'" x2="'+(W-pr)+'" y2="'+Y(0)+'" stroke="var(--line)"/><line x1="'+pl+'" y1="'+Y(mx)+'" x2="'+(W-pr)+'" y2="'+Y(mx)+'" stroke="var(--line)" stroke-dasharray="3 4"/>'+
+    '<text x="4" y="'+(Y(mx)+4)+'" font-size="11" fill="var(--muted)">'+mx+'</text><text x="4" y="'+(Y(0)+4)+'" font-size="11" fill="var(--muted)">0</text>'+
+    '<text x="'+pl+'" y="'+(H-4)+'" font-size="11" fill="var(--muted)">'+fmtDM(ymdDate(pts[0].k))+'</text><text x="'+(W-pr)+'" y="'+(H-4)+'" font-size="11" text-anchor="end" fill="var(--muted)">'+fmtDM(ymdDate(pts[n-1].k))+'</text>';
+  return '<div class="rt-chart"><div class="rt-lg"><span><i class="e"></i>Meta acumulada</span><span><i class="a"></i>Feitas acumuladas</span></div><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Preventivas acumuladas contra a meta acumulada">'+g+'<path d="'+el+'" fill="none" stroke="#8A96AB" stroke-width="2.5" stroke-dasharray="6 5"/><path d="'+al+'" fill="none" stroke="var(--f)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+}
+var RT_DN=["Seg","Ter","Qua","Qui","Sex"];
+function rtWeeks(c){
+  var h="",cm=0;
+  c.weeks.forEach(function(w,i){
+    var fri=addDays(w.mon,4),lbl=fmtDM(w.mon)+" – "+fmtDM(fri),has=w.cells.some(function(x){return x;});
+    if(!has&&!w.extra) return;
+    var cells=w.cells.map(function(x,j){
+      var dt=fmtDM(addDays(w.mon,j));
+      if(!x){var okm=addDays(w.mon,j);var inMonth=ymd(okm).slice(0,7)===c.month;return '<div class="rt-d off" title="'+dt+(inMonth?" · sem expediente":" · fora do mês")+'"><i>'+RT_DN[j]+'</i><b>–</b></div>';}
+      var s=x.state,label=s==="pre"?"antes da corrida":s==="fut"?"dia futuro":s==="hoje"?"hoje: cobrança às 19h":"feitas "+x.done+" · meta "+x.meta;
+      var body=s==="pre"||s==="fut"?'<b>'+(s==="fut"?"":"–")+'</b>':'<b>'+x.done+'</b><small>/'+x.meta+'</small>';
+      return '<div class="rt-d '+s+'" title="'+RT_DN[j]+" "+dt+" · "+label+'"><i>'+RT_DN[j]+'</i>'+body+'</div>';
+    }).join("");
+    var cls=!w.any?"mu":w.saldo>0?"pos":w.saldo<0?"neg":"eq",sd=w.any?rtN(w.saldo,0):"–";
+    var note=w.any?'meta '+(w.meta+w.debtIn)+(w.debtIn?' (inclui '+w.debtIn+' de dívida)':'')+' · feitas '+w.done+(w.extra?' ('+w.extra+' fora do expediente)':'')+(w.final?'':' · em andamento'):'antes da corrida';
+    h+='<div class="rt-week"><div class="rt-wl"><b>Semana '+(++cm)+'</b><small>'+lbl+'</small></div><div class="rt-days">'+cells+'</div><div class="rt-ws"><b class="'+cls+'">'+sd+'</b><small>'+esc(note)+'</small></div></div>';
+  });
+  return h;
+}
+function renderRitmo(){
+  var box=$("list"),code=curCode();
+  if(ui.ctx==="plan"){box.innerHTML='<div class="empty">O ritmo existe só para o <b>mês atual</b> e para as <b>cópias de segurança</b>. Volte ao mês atual na sidebar.</div>';return;}
+  if(DB.sample){box.innerHTML='<div class="empty">Importe a exportação do sistema para usar o ritmo.</div>';return;}
+  var race=raceFor(),ro=ui.ctx==="bk";
+  var st=ro?null:metaState(code);
+  var head='<div class="rt-head"><div><h2>Ritmo do mês</h2><p>'+(race?'Corrida de <b>'+esc(ymLabel(race.ym))+'</b> · '+race.segs.length+(race.segs.length===1?' trecho':' trechos'):'Acompanhe se a equipe está acima ou abaixo do ritmo necessário para a meta.')+'</p></div>';
+  if(!ro) head+='<div class="rt-btns">'+(race?'<button type="button" class="btn" data-rt="check">Atualizar corrida</button><button type="button" class="btn" data-rt="reset">Reiniciar</button>':'<button type="button" class="btn primary" data-rt="start">Iniciar corrida</button>')+'</div>';
+  head+='</div>';
+  if(!race){
+    box.innerHTML=head+'<div class="rt-intro"><p><b>Como funciona</b></p><p>Ao iniciar a corrida, o site calcula o ritmo de cada filial: quantas preventivas por dia útil faltam para a meta. Cada preventiva que você marcar como <b>Feito</b> a partir daí entra na conta, e o saldo mostra quantos dias a equipe está à frente (🐇) ou atrás (🐢).</p><p>Uma meta de 7 preventivas na semana, por exemplo, exige 2, 1, 1, 2 e 1 por dia (o ritmo é arredondado para cima). O dia só é cobrado às 19h, e a dívida de uma semana negativa passa inteira para a seguinte.</p>'+(ro?'<p class="rt-w">Esta cópia de segurança não tem corrida guardada.</p>':'')+'</div>';
+    return;
+  }
+  var cs={};FILIAIS.forEach(function(f){cs[f.code]=raceCalc(f.code,race);});
+  var c=cs[code];
+  var pills='<div class="rt-pills">'+FILIAIS.map(function(f){
+    var x=cs[f.code];
+    if(!x) return '<button type="button" class="rt-pill" data-filial="'+f.code+'" data-pm-fil="'+esc(f.key)+'" aria-pressed="'+(f.key===ui.filial)+'"><b>'+f.code+'</b><small>sem BI na corrida</small></button>';
+    var k=x.D>=.5?"🐇":x.D<=-.5?"🐢":"🚶";
+    return '<button type="button" class="rt-pill" data-filial="'+f.code+'" data-pm-fil="'+esc(f.key)+'" aria-pressed="'+(f.key===ui.filial)+'"><b>'+f.code+' '+k+'</b><small>'+rtN(x.D,1)+' dia(s) · '+rtN(x.S,0)+' prev.</small></button>';
+  }).join("")+'</div>';
+  if(!c){box.innerHTML=head+pills+'<div class="empty">Esta filial não tinha o BI informado quando a corrida começou. Informe o BI e use <b>Atualizar corrida</b> para incluí-la.</div>';return;}
+  var tdC=c.today?c.today:null,need=st?st.need:null,left=null;
+  if(st){
+    var now=new Date(),fromN=raceFromDay(now),me=lastBizOfMonth(+race.ym.slice(0,4),+race.ym.slice(5,7)-1),dl=fromN<=me?bizCount(fromN,me):0;
+    left=dl>0?st.need/dl:null;
+  }
+  var cards='<div class="rt-cards">'+
+    '<div class="rt-card"><span>Ritmo da corrida</span><b>'+nf(c.rate,2)+'/dia</b><small>fixo desde '+fmtDM(ymdDate(c.segs[c.segs.length-1].from))+'</small></div>'+
+    '<div class="rt-card"><span>Saldo do trecho atual</span><b class="'+(c.Sseg>0?"pos":c.Sseg<0?"neg":"")+'">'+rtN(c.Sseg,0)+' <em>('+rtN(c.Dseg,1)+' dia)</em></b><small>recomeça a cada atualização</small></div>'+
+    '<div class="rt-card"><span>Saldo do mês</span><b class="'+(c.S>0?"pos":c.S<0?"neg":"")+'">'+rtN(c.S,0)+' <em>('+rtN(c.D,1)+' dia)</em></b><small>soma de todos os trechos</small></div>'+
+    '<div class="rt-card"><span>Hoje</span><b>'+(tdC?tdC.done+' <em>/ meta '+tdC.meta+'</em>':'–')+'</b><small>'+(tdC?'cobrança às 19h':'dia sem expediente')+'</small></div>'+
+    (left!=null?'<div class="rt-card"><span>Necessário daqui para frente</span><b>'+nf(left,2)+'/dia</b><small>faltam '+st.need+' para a meta</small></div>':'')+
+  '</div>';
+  var segs=c.segs.length>1?'<div class="rt-segs"><b>Trechos da corrida</b>'+c.segs.map(function(s,i){return '<div><span>Trecho '+(i+1)+' · '+fmtDM(ymdDate(s.from))+(s.to?' → '+fmtDM(addDays(ymdDate(s.to),-1)):' → hoje')+'</span><span>ritmo '+nf(s.rate,2)+'/dia · saldo '+rtN(s.S,0)+' ('+rtN(s.D,1)+' dia)</span></div>';}).join("")+'</div>':'';
+  box.innerHTML=head+pills+rtHero(c,code)+cards+'<div class="rt-sec"><b>Semanas do mês</b><span class="rt-key"><i class="pos"></i>acima <i class="eq"></i>na meta <i class="neg"></i>abaixo</span></div><div class="rt-weeks">'+rtWeeks(c)+'</div>'+rtChart(c)+segs;
+}
+setInterval(function(){if(ui.section==="ritmo"&&!document.hidden) renderRitmo();},60000);
 
 /* ---------- eventos ---------- */
 document.addEventListener("click",function(e){
@@ -5870,7 +6160,7 @@ function persistMigration(){
 }
 loadRefs();
 TEC_MIGRATED=false;
-loadPlans();pmInit();
+loadPlans();loadRace();pmInit();
 DB=loadDB();
 persistMigration();
 loadMeta();
@@ -5878,7 +6168,7 @@ loadAg();
 loadCh();
 initDP();
 renderAll();
-window.__appReload=function(){loadRefs();TEC_MIGRATED=false;loadPlans();ctxValidate();DB=loadDB();persistMigration();loadMeta();loadAg();loadCh();renderAll();};
+window.__appReload=function(){loadRefs();TEC_MIGRATED=false;loadPlans();loadRace();ctxValidate();DB=loadDB();persistMigration();loadMeta();loadAg();loadCh();renderAll();};
 })();
 </script>
 
@@ -5895,7 +6185,7 @@ const firebaseConfig = {
 };
 
 const V = "10.14.1";
-const KEYS = ["prev_db_v1", "prev_refs_v1", "prev_meta_v1", "prev_ag_v1", "prev_ch_v1", "prev_plans_v1"];
+const KEYS = ["prev_db_v1", "prev_refs_v1", "prev_meta_v1", "prev_ag_v1", "prev_ch_v1", "prev_plans_v1", "prev_race_v1"];
 const DYN = /^prev_(pl|bk)_/;
 function dynLocal(){ const out = []; try{ for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if(DYN.test(k)) out.push(k); } }catch(e){} return out; }
 const CHUNK = 200000;
