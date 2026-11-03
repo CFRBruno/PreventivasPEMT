@@ -875,23 +875,28 @@ select.cx-in{appearance:auto}
 }
 @media (prefers-reduced-motion: reduce){.cx-hl,.ch-hl{transition:none}}
 
-/* ---------- 7 abas, Kanban, Mapa da Bahia, horários ---------- */
-.sections{grid-template-columns:repeat(8,1fr)}
-.sections[data-sel]::before{width:calc((100% - 50px)/8);transform:translateX(calc((100% + 6px)*var(--i,0)))}
+/* ---------- 9 abas (com Planejar), Kanban, Mapa da Bahia, horários ---------- */
+.sections{grid-template-columns:repeat(9,minmax(0,1fr))}
+.sections button{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sections{container-type:inline-size}
+@container (max-width:1040px){.sections .lg{display:none}.sections .sh{display:inline}}
+.sections[data-sel]::before{width:calc((100% - 56px)/9);transform:translateX(calc((100% + 6px)*var(--i,0)))}
 .sections[data-sel="equip"]{--i:0;--c:0;--r:0}
-.sections[data-sel="clientes"]{--i:1;--c:1;--r:0}
-.sections[data-sel="semana"]{--i:2;--c:2;--r:0}
-.sections[data-sel="grafo"]{--i:3;--c:3;--r:0}
-.sections[data-sel="mapa"]{--i:4;--c:0;--r:1}
-.sections[data-sel="ritmo"]{--i:5;--c:1;--r:1}
-.sections[data-sel="agenda"]{--i:6;--c:2;--r:1}
-.sections[data-sel="chamados"]{--i:7;--c:3;--r:1}
-@media (max-width:539px){
-  .sections{grid-template-columns:repeat(4,1fr)}
-  .sections[data-sel]::before{width:calc((100% - 26px)/4);height:calc((100% - 14px)/2);bottom:auto;transform:translate(calc((100% + 6px)*var(--c,0)),calc((100% + 6px)*var(--r,0)))}
+.sections[data-sel="planejar"]{--i:1;--c:1;--r:0}
+.sections[data-sel="clientes"]{--i:2;--c:2;--r:0}
+.sections[data-sel="semana"]{--i:3;--c:3;--r:0}
+.sections[data-sel="grafo"]{--i:4;--c:4;--r:0}
+.sections[data-sel="mapa"]{--i:5;--c:0;--r:1}
+.sections[data-sel="ritmo"]{--i:6;--c:1;--r:1}
+.sections[data-sel="agenda"]{--i:7;--c:2;--r:1}
+.sections[data-sel="chamados"]{--i:8;--c:3;--r:1}
+@media (max-width:819px){
+  .sections{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .sections[data-sel]::before{width:calc((100% - 32px)/5);height:calc((100% - 14px)/2);bottom:auto;transform:translate(calc((100% + 6px)*var(--c,0)),calc((100% + 6px)*var(--r,0)))}
+  .sections button{font-size:12.5px;padding:0 2px}
 }
-@media (min-width:540px) and (max-width:819px){.sections button{font-size:12.5px}}
-@media (min-width:820px){.sections[data-sel]::before{width:calc((100% - 52px)/8)}.sections{max-width:980px}}
+@media (max-width:400px){.sections button{font-size:11.5px;padding:0;letter-spacing:-.01em}}
+@media (min-width:820px){.sections[data-sel]::before{top:4px;bottom:4px;left:4px;width:calc((100% - 56px)/9)}.sections{max-width:1060px}}
 #app[data-sec="grafo"] .sortbox,#app[data-sec="grafo"] #viewSeg{display:none}
 
 /* Kanban */
@@ -1384,6 +1389,88 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .pl-tip{position:fixed;z-index:130;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:600;padding:5px 10px;border-radius:8px;white-space:nowrap;opacity:0}
 .pl-tip.on{opacity:1}
 @media (prefers-reduced-motion: no-preference){.pl-tip{transition:opacity .15s}}
+
+/* ---------- aba Planejar ---------- */
+#app[data-sec="planejar"] .search,#app[data-sec="planejar"] .tb-row,#app[data-sec="planejar"] .filters{display:none}
+.pq{max-width:1120px}
+.pq .btn svg{width:16px;height:16px;flex:none}
+.pq-hero{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 10px}
+.pq-st{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;min-width:0}
+.pq-st small{display:block;color:var(--muted);font-size:12.5px;font-weight:700}
+.pq-st b{display:block;font-size:26px;line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums}
+.pq-st span{display:block;color:var(--muted);font-size:12.5px;line-height:1.35;margin-top:3px}
+.pq-st.ok b{color:var(--sim-ink)}.pq-st.warn b{color:var(--fac-ink)}.pq-st.bad b{color:var(--nr-ink)}
+.pq-say{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--f);border-radius:14px;padding:10px 14px;font-size:14px;line-height:1.45;margin:0 0 14px}
+.pq-say.ok{border-left-color:#2EA043}.pq-say.warn{border-left-color:#F2B01E}.pq-say.bad{border-left-color:#E5484D}
+.pq-step,.pq-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin:0 0 10px}
+.pq-step>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer}
+.pq-step>summary::-webkit-details-marker{display:none}
+.pq-num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;background:color-mix(in srgb,var(--f) 16%,transparent);color:var(--ft)}
+.pq-step.rv .pq-num{background:#2EA043;color:#fff}
+.pq-tt{flex:1;min-width:0}
+.pq-tt b{display:block;font-size:15.5px}
+.pq-tt small{display:block;color:var(--muted);font-size:13px;line-height:1.35;margin-top:1px}
+.pq-chev{flex:none;width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 6px 4px 0}
+.pq-step[open] .pq-chev{transform:rotate(-135deg);margin:4px 6px 0 0}
+.pq-body{padding:0 14px 14px;border-top:1px solid var(--line)}
+.pq-card{padding:12px 14px 14px}
+.pq-card>h3{margin:0;font-size:15.5px}
+.pq-card>p.pq-sub{margin:2px 0 0;color:var(--muted);font-size:13px}
+.pq-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:12px;flex-wrap:wrap}
+.pq-h4{margin:14px 0 6px;font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.pq-none{margin:10px 0 0;color:var(--muted);font-size:13.5px}
+.pq-grp{border:1px solid var(--line);border-left:5px solid var(--lc);border-radius:12px;padding:8px 10px;margin-top:8px;background:var(--bg)}
+.pq-grp-h{display:flex;align-items:center;gap:8px}
+.pq-grp-h b{flex:1;min-width:0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pq-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pq-chip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;padding:3px 9px;border-radius:99px;background:var(--surface);border:1px solid var(--line);max-width:100%}
+.pq-chip small{color:var(--muted)}
+.pq-inchip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:6px;background:var(--bad-bg);color:var(--bad-ink);margin-left:6px;vertical-align:middle;white-space:nowrap}
+.pq-row{display:flex;align-items:center;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);min-width:0}
+.pq-row:last-child{border-bottom:0}
+.pq-row .pq-rt{flex:1;min-width:0}
+.pq-row .pq-rt b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pq-row .pq-rt small{display:block;color:var(--muted);font-size:12.5px}
+.pq-row .btn{flex:none}
+.pq-dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--pc,#8A96AB)}
+.pq-more{margin-top:10px}
+.pq-more>summary{cursor:pointer;color:var(--ft);font-weight:700;font-size:13.5px;padding:6px 0}
+.pq-q{width:100%;min-height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 12px;font-size:15px;margin:6px 0 4px}
+.pq-blk{border:1px solid var(--line);border-left:5px solid #E5484D;border-radius:12px;padding:8px 10px;margin-top:8px;background:var(--bg)}
+.pq-blk-h{display:flex;align-items:center;gap:8px}
+.pq-blk-h .pq-rt{flex:1;min-width:0}
+.pq-blk-h .pq-rt b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pq-blk-h .pq-rt small{display:block;color:var(--muted);font-size:12.5px}
+.pq-obs{width:100%;min-height:38px;margin-top:6px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font-size:14px}
+.pq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px 12px}
+.pq-in{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--bg);min-width:0}
+.pq-in>span{min-width:0;font-size:13.5px;line-height:1.3}
+.pq-in>span small{display:block;color:var(--muted);font-size:12px}
+.pq-in input{flex:none;width:76px;min-height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 8px;font-size:15px;font-weight:700;text-align:right}
+.pq-note{margin:8px 0 0;color:var(--muted);font-size:12.5px;line-height:1.4}
+.pq-wk{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,2fr) auto;align-items:center;gap:6px 12px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.pq-wk:last-child{border-bottom:0}
+.pq-wk b{font-size:14px;display:block}
+.pq-wk small{display:block;color:var(--muted);font-size:12.5px}
+.pq-wk.past{opacity:.5}
+.pq-wk .pq-sal{font-weight:800;font-size:13.5px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pq-wk .pq-sal.ok{color:var(--sim-ink)}.pq-wk .pq-sal.bad{color:var(--nr-ink)}
+.pq-bar{position:relative;height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px}
+.pq-bar i{display:block;height:100%;border-radius:inherit;background:var(--f)}
+.pq-bar i.over{background:#E5484D}
+.pq-cty{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.pq-cty:last-child{border-bottom:0}
+.pq-cty b{font-size:14px}
+.pq-cty small{color:var(--muted);font-size:12.5px;grid-column:1/-1}
+.pq-cty em{font-style:normal;font-weight:800;font-size:13.5px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pq-tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle;white-space:nowrap}
+.au-row .au-d{min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font-size:15px;font-weight:600}
+.au-warn{color:var(--muted)}
+:root[data-theme="dark"] .au-warn{color:var(--muted)}
+@media (min-width:820px){
+  .pq-hero{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .pq-wk{grid-template-columns:220px minmax(0,1fr) 150px}
+}
 .cx-lgpl{margin-top:-4px}
 .cx-lgpl .cx-lp{width:16px;height:7px;border-radius:4px;display:inline-block}
 .sb-nav{display:flex;align-items:center;justify-content:space-between;margin:6px 0 4px}
@@ -1509,6 +1596,7 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 
   <div class="sections" id="sections" role="tablist" aria-label="Seção">
     <button type="button" role="tab" data-s="equip" aria-selected="true"><span class="lg">Equipamentos</span><span class="sh">Equip.</span></button>
+    <button type="button" role="tab" data-s="planejar" aria-selected="false" title="Planejar o mês: links, ausências, integração, premissas e carga">Planejar</button>
     <button type="button" role="tab" data-s="clientes" aria-selected="false" title="Clientes por cidade">Clientes</button>
     <button type="button" role="tab" data-s="semana" aria-selected="false" title="Semana: gráfico e relatório em imagem">Semana</button>
     <button type="button" role="tab" data-s="grafo" aria-selected="false" title="Grafo de preventivas por cidade">Grafo</button>
@@ -1604,6 +1692,17 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
     <h2>Escala de sobreaviso</h2>
     <img id="sbImg" alt="Prévia da imagem da escala de sobreaviso">
     <div class="sheet-actions"><button type="button" class="btn" id="sbPClose">Fechar</button><button type="button" class="btn" id="sbPShare" hidden>Compartilhar</button><button type="button" class="btn primary" id="sbPDown">Baixar imagem</button></div>
+  </div>
+</div>
+<div class="modal" id="auModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="auTitle">
+    <h2 id="auTitle">Ausências dos técnicos</h2>
+    <p class="ed-sub">Um técnico por linha. O período pode atravessar meses. As mudanças são salvas na hora.</p>
+    <div class="sb-nav"><button type="button" class="cx-nb" id="auPrev" aria-label="Mês anterior"><svg class="cxi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><b id="auMes"></b><button type="button" class="cx-nb" id="auNext" aria-label="Próximo mês"><svg class="cxi" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+    <div id="auList"></div>
+    <p class="sb-warn au-warn" id="auWarn" role="status"></p>
+    <div class="sb-btns"><button type="button" class="btn" id="auAdd">+ Adicionar período</button></div>
+    <div class="sheet-actions"><button type="button" class="btn primary" id="auClose">Concluir</button></div>
   </div>
 </div>
 <div class="lk-tip" id="lkTip" role="tooltip" hidden></div>
@@ -1722,7 +1821,7 @@ function fmtCidade(s){
 function fmtISO(iso){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||"");return m?m[3]+"/"+m[2]+"/"+m[1]:"";}
 function isBlank(r){return !r||r.every(function(c){return c===""||c==null||(typeof c==="string"&&!c.trim());});}
 function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function isSyncKey(k){return k==="prev_db_v1"||k==="prev_refs_v1"||k==="prev_meta_v1"||k==="prev_ag_v1"||k==="prev_ch_v1"||k==="prev_plans_v1"||k==="prev_race_v1"||k==="prev_links_v1"||k.indexOf("prev_pl_")===0||k.indexOf("prev_bk_")===0;}
+function isSyncKey(k){return k==="prev_db_v1"||k==="prev_refs_v1"||k==="prev_meta_v1"||k==="prev_ag_v1"||k==="prev_ch_v1"||k==="prev_plans_v1"||k==="prev_race_v1"||k==="prev_links_v1"||k==="prev_pq_v1"||k.indexOf("prev_pl_")===0||k.indexOf("prev_bk_")===0;}
 function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){return false;}
   if(isSyncKey(k)&&window.__cloudPush) window.__cloudPush(k,v);
   return true;}
@@ -2287,7 +2386,7 @@ function renderClientes(items){
       var st=cstat[x.name+"|"+c.name]||{t:0,a:0};
       var cls=st.t>0&&st.a===st.t?" cs-all":st.a>0?" cs-part":"";
       var tag=cls===" cs-all"?'<span class="cst">'+(st.t===1?"agendada":"todas agendadas")+'</span>':cls?'<span class="cst">'+st.a+' de '+st.t+' agendadas</span>':"";
-      return '<div class="crow'+cls+(flash&&x.name===flash?" cflash":"")+'"><div class="crowtop"><div class="cname" title="'+esc(x.name)+'"><b>'+esc(x.name)+'</b>'+lkI(x.name)+' <i>('+x.list.length+')</i>'+tag+'</div><div class="cbtns"><button class="btn sm" type="button" data-lk-edit="'+esc(x.name)+'" title="Linkar com outros clientes do mesmo local">'+LK_SVG+'Linkar</button><button class="btn sm" type="button" data-bulk="'+esc(x.name)+'" title="Agendar todas as preventivas deste cliente">'+ICON_CAL+'Agendar</button></div></div><div class="cpts">'+x.list.map(function(i){
+      return '<div class="crow'+cls+(flash&&x.name===flash?" cflash":"")+'"><div class="crowtop"><div class="cname" title="'+esc(x.name)+'"><b>'+esc(x.name)+'</b>'+lkI(x.name)+' <i>('+x.list.length+')</i>'+inChip(x.name)+tag+'</div><div class="cbtns"><button class="btn sm" type="button" data-lk-edit="'+esc(x.name)+'" title="Linkar com outros clientes do mesmo local">'+LK_SVG+'Linkar</button><button class="btn sm" type="button" data-bulk="'+esc(x.name)+'" title="Agendar todas as preventivas deste cliente">'+ICON_CAL+'Agendar</button></div></div><div class="cpts">'+x.list.map(function(i){
         var pl=i.planos.map(function(p){return p.toUpperCase();}).join(", ")||"—";
         var mod=i.modelo||"Modelo não informado";
         return '<button type="button" class="pt'+(i.status==="Backlog"?" bl":i.status==="Em dia"?" ok":"")+(i.tom==="nr"?" nr":i.tom==="ret"?" ret":"")+'" data-edit="'+esc(i.patrimonio)+'" data-mod="'+esc(mod)+'" data-pl="'+esc(pl)+'" aria-label="'+esc(i.patrimonio+", modelo "+mod+", planos "+pl)+'">'+esc(i.patrimonio)+lkI(i.cliente,true)+'</button>';
@@ -2340,6 +2439,7 @@ function renderBody(){
   if(ui.section==="grafo"){renderMapa();$("removed").innerHTML="";return;}
   if(ui.section==="mapa"){mpRender();$("removed").innerHTML="";return;}
   if(ui.section==="ritmo"){renderRitmo();$("removed").innerHTML="";return;}
+  if(ui.section==="planejar"){renderPlanejar();$("removed").innerHTML="";return;}
   renderList();
   if(ui.section==="clientes") $("removed").innerHTML=""; else renderRemoved();
 }
@@ -3742,6 +3842,7 @@ function daySummary(k,anim){
   if(H) rows+=holRow(H);
   var pl0=plOn(k);
   if(pl0) rows+='<div class="cx-row"><i class="cx-ld" style="background:'+(AGTC[pl0.tec]||"#8A96AB")+';margin-top:6px"></i><span><span class="tn">Sobreaviso</span><small> · '+esc(pl0.tec)+'</small></span></div>';
+  ausOnDay(k).forEach(function(a){rows+='<div class="cx-row"><i class="cx-ld" style="background:'+(AGTC[a.tec]||"#8A96AB")+';margin-top:6px;opacity:.45"></i><span><span class="tn">Ausente</span><small> · '+esc(a.tec)+' ('+esc(a.why)+')</small></span></div>';});
   if(obs) rows+='<div class="cx-row">'+agIc("note",1)+'<span>'+esc(obs)+'</span></div>';
   tt.forEach(function(n){
     var m=String(r[n].m||"").trim(),t=String(r[n].t||"").trim();
@@ -5910,6 +6011,7 @@ function plSave(){
   PL.plans.push(pl);plSort();
   ok=savePlans()&&ok;
   closePlanModal();
+  ui.section="planejar";
   setCtx("plan",pl.id);
   pmNarrowClose();
   toast(!ok?"Não foi possível guardar neste aparelho.":from!=="blank"&&db.sample?"Planejamento de "+ymLabel(ym)+" criado em branco: não havia pendências para copiar.":from==="blank"?"Planejamento de "+ymLabel(ym)+" criado. Importe o Excel quando tiver.":"Planejamento de "+ymLabel(ym)+" criado com "+pl.sum.t+" equipamentos.");
@@ -6808,6 +6910,428 @@ document.addEventListener("change",function(e){
     var h=document.querySelector('[data-lkc-all="'+o2.ci+'"]');if(h) h.checked=any;
   }
 });
+
+/* ---------- aba Planejar (fase 1: links, ausências, integração, premissas e carga) ---------- */
+var PQ={integ:{},rev:{},prem:null};
+var PQ_TEC={SSF:["Jairo","Rafael","Gercelino"],LDM:["Eder"]};
+var PQ_DEF={tec:{Jairo:80,Rafael:80,Gercelino:25,Eder:75},corr:{SSF:23,LDM:4},corrDia:0.5,marg:15,vel:75,fat:1.3,cap:{aS:5,aD:4,bS:4,bD:3,far:2}};
+/* faixas pela distância de estrada estimada (linha reta × fator) */
+var PQ_BANDS=[[35,"a","Perto da filial (até 35 km)"],[70,"b","Até 70 km"],[150,"c","70 a 150 km · meio turno de viagem"],[250,"d","150 a 250 km · quase um dia de viagem"],[1e9,"e","Mais de 250 km · dia inteiro de viagem"]];
+var PQ_STOP=["ltda","eireli","construtora","construcoes","construcao","consorcio","condominio","empreendimentos","empreendimento","engenharia","comercio","industria","industrial","servicos","servico","brasil","bahia","nordeste","grupo","companhia","associacao","sociedade","empresa","locacao","locacoes","incorporadora","incorporacao","holding","participacoes","administracao","montagens","solucoes","projetos","obras"];
+var AU_WHY=["Férias","Folga","Atestado","Não justificado"];
+var AU={y:0,m:0};
+function loadPQ(){
+  var s=safeGet("prev_pq_v1"),o=null;
+  if(s){try{o=JSON.parse(s);}catch(e){o=null;}}
+  PQ=(o&&typeof o==="object"&&!Array.isArray(o))?o:{};
+  PQ.integ=PQ.integ&&typeof PQ.integ==="object"?PQ.integ:{};
+  PQ.rev=PQ.rev&&typeof PQ.rev==="object"?PQ.rev:{};
+  PQ.prem=pqMerge(PQ.prem);
+}
+function pqMerge(p){
+  p=p&&typeof p==="object"?p:{};
+  var d=JSON.parse(JSON.stringify(PQ_DEF));
+  function ok(v){return v!==""&&v!=null&&isFinite(+v);}
+  ["tec","corr","cap"].forEach(function(k){var src=p[k]||{};Object.keys(d[k]).forEach(function(x){if(ok(src[x])) d[k][x]=+src[x];});});
+  ["corrDia","marg","vel","fat"].forEach(function(k){if(ok(p[k])) d[k]=+p[k];});
+  return d;
+}
+function savePQ(){return safeSet("prev_pq_v1",JSON.stringify(PQ));}
+function pqRefresh(){if(ui.section==="planejar") renderBody();}
+
+/* integração: cliente bloqueado para o planejamento até liberar o acesso */
+function inKey(code,cli){return code+"|"+norm(cli);}
+function inOf(cli,code){return PQ.integ[inKey(code||curCode(),cli)]||null;}
+function inChip(cli){return inOf(cli)?'<span class="pq-inchip" title="'+esc((inOf(cli).obs||"Aguardando integração do técnico"))+'">INTEGRAÇÃO</span>':"";}
+function inToggle(cli){
+  if(ui.ctx==="bk"){roBlock();return;}
+  var k=inKey(curCode(),cli);
+  if(PQ.integ[k]) delete PQ.integ[k];
+  else PQ.integ[k]={cli:cli,obs:"",ts:Date.now()};
+  savePQ();renderAll();
+  toast(PQ.integ[k]?cli+": marcado como INTEGRAÇÃO (fora do planejamento).":cli+": liberado para o planejamento.");
+}
+
+/* ausências dos técnicos (ficam na Agenda: AG.aus) */
+function auList(){AG.aus=Array.isArray(AG.aus)?AG.aus:[];return AG.aus;}
+function auNextId(){var mx=0;auList().forEach(function(a){if(a.id>mx) mx=a.id;});return mx+1;}
+function auOn(tec,k){var L=auList();for(var i=0;i<L.length;i++){if(L[i].tec===tec&&L[i].from<=k&&k<=L[i].to) return L[i];}return null;}
+function ausOnDay(k){return auList().filter(function(a){return a.from<=k&&k<=a.to;});}
+function auOverlap(id,tec,a,b){var L=auList();for(var i=0;i<L.length;i++){if(L[i].id!==id&&L[i].tec===tec&&L[i].from<=b&&a<=L[i].to) return L[i];}return null;}
+function auBiz(a,b){var n=0;if(a>b) return 0;for(var d=dOf(a);kOf(d)<=b;d=addDays(d,1)){if(isBizDay(d)) n++;}return n;}
+function auSave(){saveAg();agRefresh();pqRefresh();}
+function auOpen(){
+  var P=pqPeriod();AU.y=P.y;AU.m=P.m;auRender();
+  $("auModal").setAttribute("data-filial",curCode());
+  $("auModal").hidden=false;document.body.style.overflow="hidden";
+}
+function auClose(){$("auModal").hidden=true;document.body.style.overflow="";}
+function auRender(){
+  var y=AU.y,m=AU.m,a=sbKey(y,m,1),b=sbKey(y,m,sbDays(y,m));
+  $("auMes").textContent=MES_PT[m].charAt(0).toUpperCase()+MES_PT[m].slice(1)+" de "+y;
+  var L=auList().filter(function(p){return p.to>=a&&p.from<=b;}).sort(function(x,z){return x.from<z.from?-1:x.from>z.from?1:x.id-z.id;});
+  $("auList").innerHTML=L.length?L.map(function(p){
+    return '<div class="sb-row au-row" data-id="'+p.id+'" style="--pc:'+(AGTC[p.tec]||"#8A96AB")+'"><select data-au="tec" aria-label="Técnico ausente">'+AGTEC.map(function(x){return '<option value="'+x+'"'+(x===p.tec?" selected":"")+'>'+x+'</option>';}).join("")+'</select>'+
+      '<span>de</span><button type="button" class="au-d" data-au="from" aria-label="Primeiro dia da ausência">'+fmtISO(p.from)+'</button><span>a</span><button type="button" class="au-d" data-au="to" aria-label="Último dia da ausência">'+fmtISO(p.to)+'</button>'+
+      '<select data-au="why" aria-label="Justificativa">'+AU_WHY.map(function(x){return '<option'+(x===p.why?" selected":"")+'>'+x+'</option>';}).join("")+'</select>'+
+      '<button type="button" class="sb-x" data-au="del" aria-label="Apagar este período">×</button></div>';
+  }).join(""):'<p class="sb-empty">Nenhuma ausência neste mês. Use <b>+ Adicionar período</b>.</p>';
+  var per={};
+  L.forEach(function(p){per[p.tec]=(per[p.tec]||0)+auBiz(p.from>a?p.from:a,p.to<b?p.to:b);});
+  var tx=Object.keys(per).map(function(t){return t+" "+per[t]+(per[t]===1?" dia útil":" dias úteis");});
+  $("auWarn").textContent=tx.length?"Neste mês: "+tx.join(" · ")+".":"";
+}
+function auMove(d){var t=new Date(AU.y,AU.m+d,1);AU.y=t.getFullYear();AU.m=t.getMonth();auRender();}
+function auFind(el){var row=el.closest(".au-row"),id=row?+row.getAttribute("data-id"):0,p=null;auList().forEach(function(x){if(x.id===id) p=x;});return p;}
+function auAdd(){
+  var y=AU.y,m=AU.m,n=sbDays(y,m),td=todayK(),code=curCode(),start=1;
+  if(td.slice(0,7)===sbKey(y,m,1).slice(0,7)) start=+td.slice(8);
+  var tecs=(PQ_TEC[code]||[]).concat(AGTEC.filter(function(t){return (PQ_TEC[code]||[]).indexOf(t)<0;}));
+  for(var i=0;i<tecs.length;i++){
+    for(var d=start;d<=n;d++){
+      var k=sbKey(y,m,d);
+      if(!auOn(tecs[i],k)){auList().push({id:auNextId(),tec:tecs[i],from:k,to:k,why:AU_WHY[0]});auSave();auRender();return;}
+    }
+  }
+  toast("Todos os técnicos já têm ausência em todos os dias que restam deste mês.");
+}
+function auChange(el){
+  var p=auFind(el);if(!p) return;
+  var k=el.getAttribute("data-au");
+  if(k==="why"){p.why=el.value;auSave();auRender();return;}
+  if(k==="tec"){
+    var o=auOverlap(p.id,el.value,p.from,p.to);
+    if(o){toast(el.value+" já tem ausência de "+fmtISO(o.from)+" a "+fmtISO(o.to)+". Ajuste as datas antes.");auRender();return;}
+    p.tec=el.value;auSave();auRender();
+  }
+}
+function auDate(el){
+  var p=auFind(el);if(!p) return;
+  var which=el.getAttribute("data-au");
+  openDatePicker({value:p[which],title:which==="from"?"Ausência: primeiro dia":"Ausência: último dia",onPick:function(k){
+    var a=p.from,b=p.to;
+    if(which==="from"){a=k;if(b<a) b=a;}else{b=k;if(a>b) a=b;}
+    var o=auOverlap(p.id,p.tec,a,b);
+    if(o){toast(p.tec+" já tem ausência de "+fmtISO(o.from)+" a "+fmtISO(o.to)+". Um período por vez.");return;}
+    p.from=a;p.to=b;
+    var ma=sbKey(AU.y,AU.m,1),mb=sbKey(AU.y,AU.m,sbDays(AU.y,AU.m));
+    if(p.to<ma||p.from>mb){var q=dOf(p.from);AU.y=q.getFullYear();AU.m=q.getMonth();}
+    auSave();auRender();
+  }});
+}
+function auDel(el){var p=auFind(el);if(!p) return;AG.aus=auList().filter(function(x){return x!==p;});auSave();auRender();}
+$("auModal").addEventListener("click",function(e){
+  var t=e.target,b;
+  if(t===$("auModal")||t.closest("#auClose")){auClose();return;}
+  if(t.closest("#auPrev")){auMove(-1);return;}
+  if(t.closest("#auNext")){auMove(1);return;}
+  if(t.closest("#auAdd")){auAdd();return;}
+  if((b=t.closest('[data-au="del"]'))){auDel(b);return;}
+  if((b=t.closest('[data-au="from"],[data-au="to"]'))){auDate(b);return;}
+});
+$("auModal").addEventListener("change",function(e){if(e.target.getAttribute&&e.target.getAttribute("data-au")) auChange(e.target);});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("auModal").hidden&&$("dpModal").hidden&&$("cfModal").hidden) auClose();});
+
+/* período, capacidade e carga */
+function pqPeriod(){
+  var ym=ui.ctx==="plan"?((planById(ui.ctxId)||{}).ym||PL.curYm):PL.curYm;
+  var y=+ym.slice(0,4),m=+ym.slice(5,7)-1,first=new Date(y,m,1),last=new Date(y,m+1,0),today=startOfDay(new Date()),from=first;
+  if(ui.ctx!=="plan"&&today>=first) from=addDays(today,1);
+  return {ym:ym,y:y,m:m,first:first,last:last,from:from,cur:ui.ctx!=="plan"};
+}
+function pqCap(code,P){
+  var pr=PQ.prem,tecs=PQ_TEC[code]||[],days=[],wk={},d;
+  for(d=P.from;d<=P.last;d=addDays(d,1)) if(isBizDay(d)) days.push(d);
+  var monthBiz=bizCount(P.first,P.last),tot={days:days.length,raw:0,byTec:{}};
+  tecs.forEach(function(t){tot.byTec[t]={pct:pr.tec[t]||0,days:0,aus:0,cap:0};});
+  days.forEach(function(x){
+    var k=kOf(x),w=weekOfMonth(x),W=wk[w]=wk[w]||{w:w,days:0,raw:0,aus:{}};
+    W.days++;
+    tecs.forEach(function(t){
+      var f=(pr.tec[t]||0)/100;
+      if(auOn(t,k)){tot.byTec[t].aus++;W.aus[t]=(W.aus[t]||0)+1;return;}
+      tot.byTec[t].days++;tot.byTec[t].cap+=f;W.raw+=f;tot.raw+=f;
+    });
+  });
+  var corrM=(pr.corr[code]||0)*pr.corrDia,keep=1-Math.min(90,Math.max(0,pr.marg))/100;
+  Object.keys(wk).forEach(function(w){var W=wk[w];W.corr=monthBiz?corrM*W.days/monthBiz:0;W.net=Math.max(0,(W.raw-W.corr)*keep);});
+  tot.corr=monthBiz?corrM*days.length/monthBiz:0;
+  tot.free=Math.max(0,tot.raw-tot.corr);tot.net=tot.free*keep;tot.corrM=corrM;
+  return {tot:tot,wk:wk,monthBiz:monthBiz};
+}
+function pqBand(km){
+  if(km==null) return null;
+  var r=km*PQ.prem.fat;
+  for(var i=0;i<PQ_BANDS.length;i++){if(r<=PQ_BANDS[i][0]) return PQ_BANDS[i];}
+  return PQ_BANDS[PQ_BANDS.length-1];
+}
+function pqItems(){
+  var code=curCode(),out={plan:[],blk:[],nr:0,ret:0,done:0};
+  cur().items.forEach(function(it){
+    if(it.removido) return;
+    if(it.realizado==="Sim"){out.done++;return;}
+    if(isRet(it)){out.ret++;return;}
+    if(isNR(it)){out.nr++;return;}
+    if(inOf(it.cliente,code)) out.blk.push(it); else out.plan.push(it);
+  });
+  return out;
+}
+function pqLocal(it){var g=lkGroupOf(ui.filial,it.cliente);return g?"g"+g.id:"c"+norm(it.cliente);}
+/* dias-técnico: perto, cada máquina pesa 1/ritmo (mesmo local rende mais); longe, cada dia de viagem faz até N máquinas */
+function pqCost(items){
+  var cities={},cap=PQ.prem.cap,total=0;
+  items.forEach(function(it){
+    var c=fmtCidade(it.cidadeEstado)||"Sem cidade",C=cities[c]=cities[c]||{name:c,n:0,bl:0,loc:{}};
+    C.n++;if(it.status==="Backlog") C.bl++;
+    var l=pqLocal(it);C.loc[l]=(C.loc[l]||0)+1;
+  });
+  var list=Object.keys(cities).map(function(k){
+    var C=cities[k],km=cityKm(C.name),b=pqBand(km),bk=b?b[1]:"b",days=0;
+    if(bk==="a"||bk==="b"){
+      var S=Math.max(1,bk==="a"?cap.aS:cap.bS),D=Math.max(1,bk==="a"?cap.aD:cap.bD);
+      Object.keys(C.loc).forEach(function(l){var n=C.loc[l];days+=n/(n>=2?S:D);});
+    }else days=Math.ceil(C.n/Math.max(1,cap.far));
+    C.km=km;C.band=b;C.bk=bk;C.days=days;C.locs=Object.keys(C.loc).length;
+    C.trip=km==null?null:km*PQ.prem.fat/Math.max(1,PQ.prem.vel);
+    total+=days;return C;
+  });
+  return {cities:list,days:total};
+}
+function pqClients(items){
+  var by={};
+  items.forEach(function(it){
+    var n=String(it.cliente||"").trim()||"(sem cliente)",k=norm(n),c=by[k]=by[k]||{name:n,n:0,city:{},bl:0};
+    c.n++;if(it.status==="Backlog") c.bl++;
+    var ci=fmtCidade(it.cidadeEstado)||"Sem cidade";c.city[ci]=(c.city[ci]||0)+1;
+  });
+  return Object.keys(by).map(function(k){
+    var c=by[k],best="",bn=-1;Object.keys(c.city).forEach(function(x){if(c.city[x]>bn){bn=c.city[x];best=x;}});
+    c.cityName=best;c.km=cityKm(best);return c;
+  });
+}
+function pqTok(c){var w=norm(c).replace(/[^a-z0-9 ]+/g," ").split(/\s+/);for(var i=0;i<w.length;i++){if(w[i].length>=4&&PQ_STOP.indexOf(w[i])<0) return w[i];}return "";}
+function pqSugs(cl){
+  var by={},out=[];
+  cl.forEach(function(c){var t=pqTok(c.name);if(!t) return;var k=c.cityName+"|"+t;(by[k]=by[k]||[]).push(c);});
+  Object.keys(by).forEach(function(k){
+    var a=by[k];if(a.length<2) return;
+    var g0=lkGroupOf(ui.filial,a[0].name);
+    if(g0&&a.every(function(x){var g=lkGroupOf(ui.filial,x.name);return g&&g.id===g0.id;})) return;
+    out.push(a.map(function(x){return x.name;}));
+  });
+  return out.slice(0,8);
+}
+function pqRevKey(){return pqPeriod().ym+"|"+curCode();}
+function pqRev(s){var r=PQ.rev[pqRevKey()];return !!(r&&r[s]);}
+function pqDays(v){return nf(v,1)+(Math.abs(v-1)<.05?" dia-técnico":" dias-técnico");}
+function pqHrs(h){var m=Math.round(h*60);return m<60?m+" min":Math.floor(m/60)+"h"+(m%60?p2(m%60):"");}
+function pqStep(id,n,title,sum,body){
+  var rv=pqRev(id),o=ui.pqOpen||{},open=o[id]!=null?o[id]:!rv;
+  return '<details class="pq-step'+(rv?" rv":"")+'" data-pq-step="'+id+'"'+(open?" open":"")+'><summary><span class="pq-num" aria-hidden="true">'+(rv?"✓":n)+'</span><span class="pq-tt"><b>'+title+'</b><small>'+sum+'</small></span><span class="pq-chev" aria-hidden="true"></span></summary>'+
+    '<div class="pq-body">'+body+'<div class="pq-foot"><button type="button" class="btn sm'+(rv?"":" primary")+'" data-pq-rev="'+id+'">'+(rv?"Revisado ✓ · desfazer":"Marcar como revisado")+'</button></div></div></details>';
+}
+function pqLinksHTML(all){
+  var groups=LK.groups.filter(function(g){return g.filial===ui.filial;}),h="";
+  h+='<p class="pq-note">Clientes linkados contam como o <b>mesmo local</b>: o técnico faz mais máquinas no dia. Revise os grupos antes de seguir.</p>';
+  h+=groups.length?groups.map(function(g){
+    var cs=g.clients.slice().sort(function(a,b){return coll.compare(a,b);});
+    return '<div class="pq-grp" style="--lc:'+lkColor(g)+'"><div class="pq-grp-h">'+lkI(cs[0])+'<b>'+esc(g.name||"Clientes linkados")+'</b><button type="button" class="btn sm" data-lk-edit="'+esc(cs[0])+'">Editar</button></div><div class="pq-chips">'+
+      cs.map(function(c){var p=lkPend(g.filial,c);return '<span class="pq-chip">'+esc(c)+' <small>'+p.n+(p.n===1?" pendente":" pendentes")+'</small></span>';}).join("")+'</div></div>';
+  }).join(""):'<p class="pq-none">Nenhum grupo de clientes linkados nesta filial.</p>';
+  var sg=pqSugs(all);ui.pqSugs=sg;
+  if(sg.length){
+    h+='<div class="pq-h4">Possíveis links (nomes parecidos na mesma cidade)</div>'+sg.map(function(a,i){
+      var c=all.filter(function(x){return norm(x.name)===norm(a[0]);})[0];
+      return '<div class="pq-row"><span class="pq-rt"><b>'+a.map(esc).join(" + ")+'</b><small>'+esc(c?c.cityName:"")+'</small></span><button type="button" class="btn sm" data-pq-sug="'+i+'">'+LK_SVG+'Linkar</button></div>';
+    }).join("");
+  }
+  var srt=all.slice().sort(function(a,b){return coll.compare(a.cityName,b.cityName)||coll.compare(a.name,b.name);});
+  h+='<details class="pq-more"><summary>Todos os clientes com pendências ('+all.length+')</summary>'+srt.map(function(c){
+    return '<div class="pq-row"><span class="pq-rt"><b>'+esc(c.name)+lkI(c.name)+inChip(c.name)+'</b><small>'+esc(c.cityName)+' · '+c.n+(c.n===1?" pendente":" pendentes")+'</small></span><button type="button" class="btn sm" data-lk-edit="'+esc(c.name)+'">'+LK_SVG+'Linkar</button></div>';
+  }).join("")+'</details>';
+  return h;
+}
+function pqAusHTML(P,C,code){
+  var a=kOf(P.first),b=kOf(P.last);
+  var L=auList().filter(function(p){return p.to>=a&&p.from<=b;}).sort(function(x,z){return x.from<z.from?-1:1;});
+  var h='<p class="pq-note">Férias, folgas e atestados tiram o técnico da capacidade nesses dias úteis. A Agenda também mostra a ausência no resumo do dia.</p>';
+  h+=L.length?L.map(function(p){
+    var n=auBiz(p.from>a?p.from:a,p.to<b?p.to:b),eq=(PQ_TEC[code]||[]).indexOf(p.tec)>=0;
+    return '<div class="pq-row"><i class="pq-dot" style="--pc:'+(AGTC[p.tec]||"#8A96AB")+'"></i><span class="pq-rt"><b>'+esc(p.tec)+' · '+esc(p.why)+(eq?"":'<span class="pq-tag">outra filial</span>')+'</b><small>'+fmtISO(p.from)+' a '+fmtISO(p.to)+' · '+n+(n===1?" dia útil":" dias úteis")+' neste mês</small></span></div>';
+  }).join(""):'<p class="pq-none">Nenhuma ausência informada para '+esc(ymLabel(P.ym))+'.</p>';
+  h+='<div class="pq-foot" style="justify-content:flex-start"><button type="button" class="btn sm" data-pq-au="1">'+agIc("users",1)+'Ausências</button></div>';
+  return h;
+}
+function pqInListHTML(all,q){
+  q=norm(q||"");
+  var L=all.filter(function(c){return !inOf(c.name)&&(!q||norm(c.name).indexOf(q)>=0||norm(c.cityName).indexOf(q)>=0);}).sort(function(a,b){return coll.compare(a.name,b.name);}).slice(0,80);
+  return L.length?L.map(function(c){
+    return '<div class="pq-row"><span class="pq-rt"><b>'+esc(c.name)+'</b><small>'+esc(c.cityName)+' · '+c.n+(c.n===1?" máquina pendente":" máquinas pendentes")+'</small></span><button type="button" class="btn sm" data-pq-in="'+esc(c.name)+'">INTEGRAÇÃO</button></div>';
+  }).join(""):'<p class="pq-none">Nenhum cliente encontrado.</p>';
+}
+function pqInHTML(all){
+  var code=curCode(),fl=all.filter(function(c){return inOf(c.name);}),nm=0;
+  fl.forEach(function(c){nm+=c.n;});
+  var h='<p class="pq-note">Clientes que exigem <b>integração do técnico</b> para liberar o acesso ficam fora do planejamento até você liberar. Use a observação para lembrar o que cobrar do time de integração.</p>';
+  if(fl.length){
+    h+='<div class="pq-h4">Aguardando integração · '+fl.length+(fl.length===1?" cliente":" clientes")+' · '+nm+(nm===1?" máquina":" máquinas")+'</div>';
+    h+=fl.sort(function(a,b){return b.n-a.n||coll.compare(a.name,b.name);}).map(function(c){
+      var o=inOf(c.name,code);
+      return '<div class="pq-blk"><div class="pq-blk-h"><span class="pq-rt"><b>'+esc(c.name)+'</b><small>'+esc(c.cityName)+' · '+c.n+(c.n===1?" máquina pendente":" máquinas pendentes")+(c.bl?' ('+c.bl+' em backlog)':'')+' · desde '+fmtDM(new Date(o.ts||Date.now()))+'</small></span><button type="button" class="btn sm" data-pq-in="'+esc(c.name)+'">Liberar</button></div>'+
+        '<input class="pq-obs" type="text" maxlength="160" data-pq-obs="'+esc(c.name)+'" value="'+esc(o.obs||"")+'" placeholder="Observação: com quem cobrar, prazo, documentos…" aria-label="Observação da integração de '+esc(c.name)+'"></div>';
+    }).join("");
+    h+='<div class="pq-foot" style="justify-content:flex-start"><button type="button" class="btn sm" data-pq-copy="1">Copiar lista para cobrança</button></div>';
+  }else h+='<p class="pq-none">Nenhum cliente marcado como INTEGRAÇÃO nesta filial.</p>';
+  h+='<details class="pq-more"'+(ui.pqInQ?" open":"")+'><summary>Marcar cliente como INTEGRAÇÃO</summary><input class="pq-q" id="pqInQ" type="search" placeholder="Buscar cliente ou cidade" value="'+esc(ui.pqInQ||"")+'" autocomplete="off" aria-label="Buscar cliente"><div id="pqInList">'+pqInListHTML(all,ui.pqInQ)+'</div></details>';
+  return h;
+}
+function pqPremHTML(code,C){
+  var pr=PQ.prem,tecs=PQ_TEC[code]||[];
+  function inp(path,v,step,lab,sub){return '<label class="pq-in"><span>'+lab+(sub?'<small>'+sub+'</small>':'')+'</span><input type="number" inputmode="decimal" step="'+step+'" min="0" data-pq-p="'+path+'" value="'+v+'"></label>';}
+  var h='<div class="pq-h4">Equipe da filial (% do tempo para o site; o resto é interno)</div><div class="pq-grid">';
+  h+=tecs.map(function(t){
+    var b=C.tot.byTec[t]||{days:0,aus:0,cap:0};
+    return inp("tec."+t,pr.tec[t],5,'<i class="pq-dot" style="--pc:'+(AGTC[t]||"#8A96AB")+';display:inline-block;margin-right:6px"></i>'+esc(t)+' (%)',b.days+" dias úteis"+(b.aus?" · "+b.aus+" ausente":"")+" = "+pqDays(b.cap));
+  }).join("")+'</div>';
+  h+='<div class="pq-h4">Folga e corretivas</div><div class="pq-grid">'+
+    inp("corr."+code,pr.corr[code],1,"Corretivas por mês ("+code+")","× meio turno = "+pqDays(C.tot.corrM)+" no mês · "+pqDays(C.tot.corr)+" no período")+
+    inp("marg",pr.marg,5,"Margem de segurança (%)","Reserva para desvios e novas prioridades")+'</div>';
+  h+='<div class="pq-h4">Produtividade por dia de um técnico</div><div class="pq-grid">'+
+    inp("cap.aS",pr.cap.aS,1,"Perto · mesmo local","Até 35 km de estrada, cliente ou link com 2+")+
+    inp("cap.aD",pr.cap.aD,1,"Perto · clientes diferentes","Até 35 km, na mesma cidade")+
+    inp("cap.bS",pr.cap.bS,1,"Até 70 km · mesmo local","")+
+    inp("cap.bD",pr.cap.bD,1,"Até 70 km · clientes diferentes","")+
+    inp("cap.far",pr.cap.far,1,"Mais de 70 km · por dia de viagem","Meio turno, quase um dia ou dia inteiro de estrada")+'</div>';
+  h+='<div class="pq-h4">Deslocamento</div><div class="pq-grid">'+
+    inp("vel",pr.vel,5,"Velocidade média (km/h)","Estradas ruins pesam; máximo legal 100")+
+    inp("fat",pr.fat,0.1,"Fator de estrada","Distância em linha reta × fator")+'</div>';
+  h+='<p class="pq-note">Jornada: 8h às 18h, almoço de 12h a 13h12 = <b>8h48 por dia</b>. Cada preventiva leva até 1 h. Só dias úteis (feriados nacionais fora); nada passa das 18h.</p>';
+  h+='<div class="pq-foot" style="justify-content:flex-start"><button type="button" class="btn sm" data-pq-reset="1">Restaurar padrões</button></div>';
+  return h;
+}
+function pqWeeksHTML(P,C,I){
+  var weeks={},d;
+  for(d=new Date(P.first);d<=P.last;d=addDays(d,1)){
+    if(!isBizDay(d)) continue;
+    var w=weekOfMonth(d),W=weeks[w]=weeks[w]||{w:w,a:d,b:d};W.b=d;
+  }
+  var by={},rest=[];
+  I.plan.forEach(function(it){
+    var m=/^(\d)ª semana$/.exec(it.previsaoSemanal||""),w=m?+m[1]:0;
+    if(w&&C.wk[w]){(by[w]=by[w]||[]).push(it);} else rest.push(it);
+  });
+  var h='',ks=Object.keys(weeks).map(Number).sort();
+  h+=ks.map(function(w){
+    var W=weeks[w],cw=C.wk[w],L=by[w]||[],dem=pqCost(L).days;
+    var rg=fmtDM(W.a)+" a "+fmtDM(W.b);
+    if(!cw) return '<div class="pq-wk past"><span><b>'+w+'ª semana</b><small>'+rg+' · encerrada</small></span><span></span><span class="pq-sal">—</span></div>';
+    var pct=cw.net?dem/cw.net:(dem?2:0),sal=cw.net-dem,aus=Object.keys(cw.aus);
+    return '<div class="pq-wk"><span><b>'+w+'ª semana</b><small>'+rg+' · '+cw.days+(cw.days===1?" dia útil":" dias úteis")+(aus.length?' · ausentes: '+aus.map(function(t){return esc(t)+" "+cw.aus[t]+"d";}).join(", "):"")+'</small></span>'+
+      '<span><small>'+L.length+(L.length===1?" máquina":" máquinas")+' = '+pqDays(dem)+' de '+pqDays(cw.net)+'</small><span class="pq-bar"><i'+(pct>1?' class="over"':'')+' style="width:'+Math.min(100,pct*100).toFixed(1)+'%"></i></span></span>'+
+      '<span class="pq-sal '+(sal>=0?"ok":"bad")+'">'+(sal>=0?"folga ":"excesso ")+nf(Math.abs(sal),1)+'</span></div>';
+  }).join("");
+  var rd=pqCost(rest).days;
+  h+='<div class="pq-wk"><span><b>Sem semana</b><small>Sem previsão semanal ou com semana já encerrada</small></span><span><small>'+rest.length+(rest.length===1?" máquina":" máquinas")+' = '+pqDays(rd)+' a distribuir</small></span><span class="pq-sal">'+(rest.length?"a distribuir":"—")+'</span></div>';
+  return h;
+}
+function pqCitiesHTML(D){
+  var L=D.cities.slice().sort(function(a,b){return b.days-a.days||b.n-a.n;});
+  if(!L.length) return '<p class="pq-none">Nenhuma máquina para planejar.</p>';
+  return L.map(function(c){
+    var dist=c.km==null?"distância indisponível":"≈ "+nf(c.km*PQ.prem.fat,0)+" km de estrada · "+pqHrs(c.trip)+" de viagem (ida)";
+    return '<div class="pq-cty"><b>'+esc(c.name)+'<span class="pq-tag">'+esc(c.band?c.band[2]:"Sem coordenada · tratada como até 70 km")+'</span></b><em>'+pqDays(c.days)+'</em><small>'+c.n+(c.n===1?" máquina":" máquinas")+(c.bl?" ("+c.bl+" em backlog)":"")+' · '+c.locs+(c.locs===1?" local":" locais")+' · '+dist+'</small></div>';
+  }).join("");
+}
+function renderPlanejar(){
+  var box=$("list");
+  if(ui.ctx==="bk"){box.innerHTML='<div class="empty">O planejamento existe para o <b>mês atual</b> e para os <b>planejamentos</b> de meses futuros. Cópias de segurança são somente leitura.</div>';return;}
+  if(DB.sample){box.innerHTML='<div class="empty">Importe a exportação do sistema (ou copie os pendentes ao criar o planejamento) para planejar o mês.</div>';return;}
+  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),D=pqCost(I.plan),all=pqClients(I.plan.concat(I.blk));
+  var cli={},cid={};I.plan.forEach(function(it){cli[norm(it.cliente)]=1;cid[fmtCidade(it.cidadeEstado)]=1;});
+  var net=C.tot.net,occ=net?D.days/net:(D.days?9:0),tone=occ<=1?"ok":(D.days<=C.tot.free?"warn":"bad");
+  var perDay=C.tot.days?I.plan.length/C.tot.days:0;
+  var head='<div class="rt-head"><div><h2>Planejar</h2><p>'+(P.cur?'Mês atual · <b>'+esc(ymLabel(P.ym))+'</b> · a partir de '+fmtDM(P.from):'Planejamento de <b>'+esc(ymLabel(P.ym))+'</b>')+' · '+C.tot.days+(C.tot.days===1?" dia útil":" dias úteis")+' · '+esc(ui.filial)+'</p></div></div>';
+  var hero='<div class="pq-hero">'+
+    '<div class="pq-st"><small>A planejar</small><b>'+I.plan.length+'</b><span>'+Object.keys(cli).length+' clientes · '+Object.keys(cid).length+' cidades'+(I.blk.length?' · <b style="display:inline;font-size:inherit;color:var(--nr-ink)">'+I.blk.length+' em integração</b>':'')+(I.nr?' · '+I.nr+' NÃO REALIZAR':'')+'</span></div>'+
+    '<div class="pq-st"><small>Capacidade líquida</small><b>'+nf(net,1)+'</b><span>dias-técnico · '+nf(C.tot.raw,1)+' brutos − '+nf(C.tot.corr,1)+' corretivas − '+nf(PQ.prem.marg,0)+'% de margem</span></div>'+
+    '<div class="pq-st"><small>Carga estimada</small><b>'+nf(D.days,1)+'</b><span>dias-técnico · ≈ '+nf(perDay,1)+' máquinas por dia útil</span></div>'+
+    '<div class="pq-st '+tone+'"><small>Ocupação</small><b>'+(net?Math.round(occ*100)+"%":"—")+'</b><span>da capacidade líquida</span></div></div>';
+  var say;
+  if(!C.tot.days) say='<div class="pq-say bad">Não há dias úteis restantes neste mês para planejar.</div>';
+  else if(tone==="ok") say='<div class="pq-say ok"><b>Cabe com folga.</b> A carga usa '+Math.round(occ*100)+'% da capacidade líquida, que já desconta as corretivas e a margem de '+nf(PQ.prem.marg,0)+'%. Sobram '+pqDays(net-D.days)+'.</div>';
+  else if(tone==="warn") say='<div class="pq-say warn"><b>Apertado.</b> A carga passa da capacidade líquida em '+pqDays(D.days-net)+' e consome parte da margem de segurança. Considere antecipar, linkar clientes do mesmo local ou rever ausências.</div>';
+  else say='<div class="pq-say bad"><b>Não cabe.</b> Faltam '+pqDays(D.days-C.tot.free)+' mesmo sem margem. Priorize backlog e clientes com mais máquinas, e veja o que pode ficar para o próximo mês.</div>';
+  var revN=["lk","au","in","pr"].filter(pqRev).length;
+  var gN=LK.groups.filter(function(g){return g.filial===ui.filial;}).length;
+  var aA=kOf(P.first),aB=kOf(P.last),aL=auList().filter(function(p){return p.to>=aA&&p.from<=aB;}),aD=0;
+  aL.forEach(function(p){aD+=auBiz(p.from>aA?p.from:aA,p.to<aB?p.to:aB);});
+  var inN=all.filter(function(c){return inOf(c.name);}).length;
+  var steps='<div class="pq-h4" style="margin-top:4px">Antes de planejar · '+revN+' de 4 revisados</div>'+
+    pqStep("lk",1,"Links de clientes",gN+(gN===1?" grupo":" grupos")+" nesta filial · "+all.length+" clientes com pendências",pqLinksHTML(all))+
+    pqStep("au",2,"Ausências",aL.length?aL.length+(aL.length===1?" período":" períodos")+" · "+aD+(aD===1?" dia útil":" dias úteis")+" de ausência em "+ymName(P.ym).toLowerCase():"Nenhuma ausência em "+ymName(P.ym).toLowerCase(),pqAusHTML(P,C,code))+
+    pqStep("in",3,"Integração",inN?inN+(inN===1?" cliente bloqueado":" clientes bloqueados")+" · "+I.blk.length+(I.blk.length===1?" máquina fora do plano":" máquinas fora do plano"):"Nenhum cliente bloqueado",pqInHTML(all))+
+    pqStep("pr",4,"Premissas","Equipe, corretivas ("+(PQ.prem.corr[code]||0)+"/mês), margem de "+nf(PQ.prem.marg,0)+"%, produtividade e deslocamento",pqPremHTML(code,C));
+  var load='<div class="pq-card"><h3>Carga por semana</h3><p class="pq-sub">Máquinas pela previsão semanal atual contra a capacidade líquida de cada semana (dias-técnico).</p>'+pqWeeksHTML(P,C,I)+'</div>'+
+    '<div class="pq-card"><h3>Carga por cidade</h3><p class="pq-sub">Estimativa pela distância da filial ('+esc(code)+'), faixa de deslocamento e máquinas no mesmo local.</p>'+pqCitiesHTML(D)+'</div>';
+  box.innerHTML='<div class="pq">'+head+hero+say+steps+load+'</div>';
+}
+function pqSetP(path,v){
+  var pr=PQ.prem,a=path.split("."),x=parseFloat(String(v).replace(",","."));
+  if(!isFinite(x)||x<0){pqRefresh();return;}
+  if(a[0]==="tec"||a[0]==="marg") x=Math.min(100,x);
+  if(a[0]==="vel") x=Math.max(10,Math.min(120,x));
+  if(a[0]==="fat") x=Math.max(1,Math.min(3,x));
+  if(a[0]==="cap") x=Math.max(1,Math.min(12,x));
+  if(a.length===2) pr[a[0]][a[1]]=x; else pr[a[0]]=x;
+  savePQ();pqRefresh();
+}
+function pqCopyList(){
+  var I=pqItems(),all=pqClients(I.blk),code=curCode();
+  var t="Clientes aguardando integração ("+ui.filial+"):\n"+all.sort(function(a,b){return b.n-a.n;}).map(function(c){var o=inOf(c.name,code)||{};return "- "+c.name+" ("+c.cityName+") · "+c.n+(c.n===1?" máquina":" máquinas")+(o.obs?" · "+o.obs:"");}).join("\n");
+  ui.copyTxt=t;copiar();
+}
+document.addEventListener("click",function(e){
+  var t=e.target,b;if(!t.closest||!t.closest(".pq")) return;
+  if((b=t.closest("[data-pq-rev]"))){
+    if(ui.ctx==="bk"){roBlock();return;}
+    var s=b.getAttribute("data-pq-rev"),k=pqRevKey(),r=PQ.rev[k]=PQ.rev[k]||{};
+    ui.pqOpen=ui.pqOpen||{};
+    if(r[s]){delete r[s];ui.pqOpen[s]=true;}
+    else{
+      r[s]=1;ui.pqOpen[s]=false;
+      var nx=["lk","au","in","pr"].filter(function(x){return !r[x];})[0];if(nx) ui.pqOpen[nx]=true;
+    }
+    savePQ();pqRefresh();return;
+  }
+  if((b=t.closest("[data-pq-au]"))){auOpen();return;}
+  if((b=t.closest("[data-pq-in]"))){inToggle(b.getAttribute("data-pq-in"));return;}
+  if((b=t.closest("[data-pq-copy]"))){pqCopyList();return;}
+  if((b=t.closest("[data-pq-reset]"))){plAsk("Voltar todas as premissas para os valores padrão? (Jairo e Rafael 80%, Gercelino 25%, Éder 75%, corretivas SSF 23 e LDM 4, margem 15%.)","Restaurar",function(){PQ.prem=pqMerge(null);savePQ();pqRefresh();},false);return;}
+  if((b=t.closest("[data-pq-sug]"))){
+    var a=(ui.pqSugs||[])[+b.getAttribute("data-pq-sug")];if(!a) return;
+    lkOpen(a[0]);
+    if(LKD){a.slice(1).forEach(function(c){var og=lkGroupOf(LKD.filial,c);if((!og||og.id===LKD.gid)&&LKD.members.map(norm).indexOf(norm(c))<0) LKD.members.push(c);});lkRender();}
+    return;
+  }
+});
+document.addEventListener("change",function(e){
+  var t=e.target;if(!t.closest||!t.closest(".pq")) return;
+  if(t.hasAttribute("data-pq-p")){if(ui.ctx==="bk"){roBlock();return;}pqSetP(t.getAttribute("data-pq-p"),t.value);return;}
+  if(t.hasAttribute("data-pq-obs")){
+    var o=inOf(t.getAttribute("data-pq-obs"));if(!o) return;
+    o.obs=t.value.trim().slice(0,160);savePQ();toast("Observação salva.");
+  }
+});
+document.addEventListener("input",function(e){
+  var t=e.target;if(!t||t.id!=="pqInQ") return;
+  ui.pqInQ=t.value;
+  var I=pqItems(),l=$("pqInList");if(l) l.innerHTML=pqInListHTML(pqClients(I.plan.concat(I.blk)),ui.pqInQ);
+});
+document.addEventListener("toggle",function(e){
+  var d=e.target;if(!d||!d.getAttribute||!d.hasAttribute("data-pq-step")) return;
+  ui.pqOpen=ui.pqOpen||{};ui.pqOpen[d.getAttribute("data-pq-step")]=d.open;
+},true);
+
 /* ---------- eventos ---------- */
 document.addEventListener("click",function(e){
   var t=e.target.closest(".tab");
@@ -6983,7 +7507,7 @@ function persistMigration(){
 }
 loadRefs();
 TEC_MIGRATED=false;
-loadPlans();loadRace();loadLinks();pmInit();
+loadPlans();loadRace();loadLinks();loadPQ();pmInit();
 DB=loadDB();
 persistMigration();
 loadMeta();
@@ -6991,7 +7515,7 @@ loadAg();
 loadCh();
 initDP();
 renderAll();
-window.__appReload=function(){loadRefs();TEC_MIGRATED=false;loadPlans();loadRace();loadLinks();ctxValidate();DB=loadDB();persistMigration();loadMeta();loadAg();loadCh();renderAll();};
+window.__appReload=function(){loadRefs();TEC_MIGRATED=false;loadPlans();loadRace();loadLinks();loadPQ();ctxValidate();DB=loadDB();persistMigration();loadMeta();loadAg();loadCh();renderAll();};
 })();
 </script>
 
@@ -7008,7 +7532,7 @@ const firebaseConfig = {
 };
 
 const V = "10.14.1";
-const KEYS = ["prev_db_v1", "prev_refs_v1", "prev_meta_v1", "prev_ag_v1", "prev_ch_v1", "prev_plans_v1", "prev_race_v1", "prev_links_v1"];
+const KEYS = ["prev_db_v1", "prev_refs_v1", "prev_meta_v1", "prev_ag_v1", "prev_ch_v1", "prev_plans_v1", "prev_race_v1", "prev_links_v1", "prev_pq_v1"];
 const DYN = /^prev_(pl|bk)_/;
 function dynLocal(){ const out = []; try{ for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if(DYN.test(k)) out.push(k); } }catch(e){} return out; }
 const CHUNK = 200000;
