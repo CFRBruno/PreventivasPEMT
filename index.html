@@ -1464,6 +1464,30 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .pq-cty small{color:var(--muted);font-size:12.5px;grid-column:1/-1}
 .pq-cty em{font-style:normal;font-weight:800;font-size:13.5px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pq-tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle;white-space:nowrap}
+.pqi{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pqi li{position:relative;padding:8px 10px 8px 26px;border-radius:10px;background:var(--bg);font-size:13.5px;line-height:1.45}
+.pqi li::before{content:"";position:absolute;left:10px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--f)}
+.pqi li.pqi-ok::before{background:#2EA043}.pqi li.pqi-warn::before{background:#F2B01E}.pqi li.pqi-bad::before{background:#E5484D}
+.pqp-h{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px}
+.pqp-h h3{margin:0;font-size:15.5px}
+.pqp-act{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pqp-act .seg button{min-height:34px;font-size:13px}
+.pqp-team{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pqp-team .pq-chip b{font-size:12.5px}
+.pqp-day{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.pqp-day:last-child{border-bottom:0}
+.pqp-dl{font-weight:800;font-size:13.5px;padding-top:8px;text-transform:capitalize}
+.pqp-dr{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pqp-slot{border:1px solid var(--line);border-left:4px solid var(--pc);border-radius:10px;padding:7px 10px;background:var(--bg);min-width:0}
+.pqp-sh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.pqp-t{font-size:13.5px}
+.pqp-c{font-size:13.5px;font-weight:600}
+.pqp-sh small{color:var(--muted);font-size:12.5px;margin-left:auto}
+.pqp-stops{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.pqp-stop{font-size:13px;line-height:1.35;min-width:0}
+.pqp-stop small{display:block;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.pqp .pq-h4{margin-top:14px}
+@media (max-width:539px){.pqp-day{grid-template-columns:1fr}.pqp-dl{padding-top:0}}
 .au-row .au-d{min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 10px;font-size:15px;font-weight:600}
 .au-warn{color:var(--muted)}
 :root[data-theme="dark"] .au-warn{color:var(--muted)}
@@ -7271,9 +7295,11 @@ function renderPlanejar(){
     pqStep("au",2,"Ausências",aL.length?aL.length+(aL.length===1?" período":" períodos")+" · "+aD+(aD===1?" dia útil":" dias úteis")+" de ausência em "+ymName(P.ym).toLowerCase():"Nenhuma ausência em "+ymName(P.ym).toLowerCase(),pqAusHTML(P,C,code))+
     pqStep("in",3,"Integração",inN?inN+(inN===1?" cliente bloqueado":" clientes bloqueados")+" · "+I.blk.length+(I.blk.length===1?" máquina fora do plano":" máquinas fora do plano"):"Nenhum cliente bloqueado",pqInHTML(all))+
     pqStep("pr",4,"Premissas","Equipe, corretivas ("+(PQ.prem.corr[code]||0)+"/mês), margem de "+nf(PQ.prem.marg,0)+"%, produtividade e deslocamento",pqPremHTML(code,C));
-  var load='<div class="pq-card"><h3>Carga por semana</h3><p class="pq-sub">Máquinas pela previsão semanal atual contra a capacidade líquida de cada semana (dias-técnico).</p>'+pqWeeksHTML(P,C,I)+'</div>'+
+  var R=pqPlan(code,P,I,C);
+  var prop=(revN<4?'<p class="pq-note" style="margin:4px 2px 10px">Revisados '+revN+' de 4 passos. A proposta já usa o que está acima; revise tudo para ela ficar confiável.</p>':'')+pqInsHTML(pqInsights(code,P,I,C,R))+pqPropHTML(code,P,I,C,R);
+  var load='<div class="pq-h4" style="margin-top:16px">Detalhe da carga</div><div class="pq-card"><h3>Carga por semana</h3><p class="pq-sub">Máquinas pela previsão semanal atual contra a capacidade líquida de cada semana (dias-técnico).</p>'+pqWeeksHTML(P,C,I)+'</div>'+
     '<div class="pq-card"><h3>Carga por cidade</h3><p class="pq-sub">Estimativa pela distância da filial ('+esc(code)+'), faixa de deslocamento e máquinas no mesmo local.</p>'+pqCitiesHTML(D)+'</div>';
-  box.innerHTML='<div class="pq">'+head+hero+say+steps+load+'</div>';
+  box.innerHTML='<div class="pq">'+head+hero+say+steps+'<div class="pq-h4" style="margin-top:16px">Proposta</div>'+prop+load+'</div>';
 }
 function pqSetP(path,v){
   var pr=PQ.prem,a=path.split("."),x=parseFloat(String(v).replace(",","."));
@@ -7331,6 +7357,229 @@ document.addEventListener("toggle",function(e){
   var d=e.target;if(!d||!d.getAttribute||!d.hasAttribute("data-pq-step")) return;
   ui.pqOpen=ui.pqOpen||{};ui.pqOpen[d.getAttribute("data-pq-step")]=d.open;
 },true);
+
+/* ---------- Planejar fase 2: proposta por dia e por técnico + leitura do planejador ---------- */
+var PQ_WD=["dom","seg","ter","qua","qui","sex","sáb"];
+function pqTecShort(n){
+  var k=norm(n||""),r="";if(!k) return "";
+  AGTEC.forEach(function(t){if(!r&&k.indexOf(norm(t))===0) r=t;});
+  return r;
+}
+function pqFar(bk){return bk==="c"||bk==="d"||bk==="e";}
+function pqDp(it){return String(it.dataPrevista||"9999-99-99");}
+/* backlog no período: já está em backlog ou venceu antes do primeiro dia planejado */
+var PQ_KA="";
+function pqBl(it){return it.status==="Backlog"||(!!it.dataPrevista&&!!PQ_KA&&it.dataPrevista<PQ_KA);}
+function pqItemCmp(a,b){
+  var ba=pqBl(a)?0:1,bb=pqBl(b)?0:1;
+  return ba-bb||(pqDp(a)<pqDp(b)?-1:pqDp(a)>pqDp(b)?1:0)||coll.compare(a.patrimonio,b.patrimonio);
+}
+/* dias de campo de cada técnico: % do tempo − parte das corretivas − margem, espalhados no período */
+function pqTechDays(code,P,C,days){
+  var pr=PQ.prem,tecs=PQ_TEC[code]||[],T={},sum=0,keep=1-Math.min(90,Math.max(0,pr.marg))/100;
+  tecs.forEach(function(t){sum+=(C.tot.byTec[t]||{cap:0}).cap;});
+  tecs.forEach(function(t){
+    var b=C.tot.byTec[t]||{cap:0},av=days.filter(function(k){return !auOn(t,k);});
+    var net=Math.max(0,(b.cap-(sum?C.tot.corr*b.cap/sum:0))*keep),n=Math.min(av.length,Math.round(net)),pick=[];
+    for(var i=0;i<n;i++) pick.push(av[Math.floor(i*av.length/n)]);
+    T[t]={t:t,pct:pr.tec[t]||0,av:av.length,n:n,net:net,days:pick};
+  });
+  return T;
+}
+function pqPlan(code,P,I,C){
+  var pr=PQ.prem,cap=pr.cap,tecs=(PQ_TEC[code]||[]).slice(),days=[],d,cityInfo={};
+  for(d=new Date(P.from);d<=P.last;d=addDays(d,1)) if(isBizDay(d)) days.push(kOf(d));
+  var kA=kOf(P.from),kB=kOf(P.last);PQ_KA=kA;
+  function city(it){return fmtCidade(it.cidadeEstado)||"Sem cidade";}
+  function info(c){
+    if(!cityInfo[c]){var km=cityKm(c),b=pqBand(km);cityInfo[c]={km:km,band:b,bk:b?b[1]:"b",trip:km==null?null:km*pr.fat/Math.max(1,pr.vel)};}
+    return cityInfo[c];
+  }
+  function rate(bk,same){return Math.max(1,bk==="a"?(same?cap.aS:cap.aD):(same?cap.bS:cap.bD));}
+  var T=pqTechDays(code,P,C,days);
+  tecs.sort(function(a,b){return (T[b].pct-T[a].pct)||coll.compare(a,b);});
+  var slots=[],byKey={};
+  function slot(k,t,extra){
+    var key=k+"|"+t;if(byKey[key]) return byKey[key];
+    var s={k:k,t:t,used:0,city:null,bk:null,stops:[],n:0,extra:!!extra,trip:null};
+    byKey[key]=s;slots.push(s);return s;
+  }
+  tecs.forEach(function(t){T[t].days.forEach(function(k){slot(k,t);});});
+  /* agendadas no período ficam na data (com o técnico informado, se for da equipe) */
+  var free=[],fixedN=0,stale=0;
+  I.plan.forEach(function(it){
+    var ad=parseAg(it.dataAgendada),k=ad&&ad.getMonth()===P.m?sbKey(P.y,P.m,ad.getDate()):"";
+    if(!k||k>kB){free.push(it);return;}
+    if(k<kA){stale++;free.push(it);return;}
+    var c=city(it),ci=info(c),t=pqTecShort(it.tecnico);
+    if(tecs.indexOf(t)<0||auOn(t,k)){t="";tecs.forEach(function(x){if(!t&&byKey[k+"|"+x]) t=x;});}
+    if(!t) tecs.forEach(function(x){if(!t&&!auOn(x,k)) t=x;});
+    if(!t) t=tecs[0]||"Equipe";
+    var s=slot(k,t,!byKey[k+"|"+t]);
+    s.used+=pqFar(ci.bk)?1/Math.max(1,cap.far):1/rate(ci.bk,false);
+    if(!s.city){s.city=c;s.bk=ci.bk;s.trip=ci.trip;}
+    s.stops.push({it:it,fixed:true,city:c});s.n++;fixedN++;
+  });
+  /* locais (cliente ou grupo linkado, por cidade) em ordem de prioridade: backlog, mais máquinas, vencimento mais antigo */
+  var LM={};
+  free.forEach(function(it){
+    var c=city(it),key=pqLocal(it)+"|"+c,o=LM[key]=LM[key]||{key:key,city:c,items:[]};
+    o.items.push(it);
+  });
+  var locals=Object.keys(LM).map(function(k){
+    var o=LM[k];o.items.sort(pqItemCmp);o.n=o.items.length;o.same=o.n>=2;
+    o.bl=o.items.filter(pqBl).length;
+    o.dp=o.items.map(pqDp).sort()[0];o.bk=info(o.city).bk;return o;
+  }).sort(function(a,b){return ((b.bl>0)-(a.bl>0))||(b.n-a.n)||(a.dp<b.dp?-1:a.dp>b.dp?1:0)||coll.compare(a.city,b.city);});
+  /* monta cargas de um dia: perto, até completar o dia; longe, até N máquinas por viagem */
+  var loads=[];
+  while(locals.length){
+    var l0=locals[0],c0=l0.city,bk=l0.bk,far=pqFar(bk),ld={city:c0,bk:bk,trip:info(c0).trip,items:[],cost:0};
+    var order=[l0].concat(locals.slice(1).filter(function(l){return l.city===c0;}));
+    if(bk==="a") order=order.concat(locals.slice(1).filter(function(l){return l.city!==c0&&l.bk==="a";}));
+    for(var oi=0;oi<order.length;oi++){
+      var l=order[oi];
+      while(l.items.length){
+        var c=far?1/Math.max(1,cap.far):1/rate(l.bk,l.same);
+        if(ld.items.length&&ld.cost+c>1+1e-9) break;
+        ld.items.push(l.items.shift());ld.cost+=c;
+      }
+      if(ld.cost>=1-1e-9) break;
+    }
+    if(far) ld.cost=1;
+    locals=locals.filter(function(l){return l.items.length;});
+    loads.push(ld);
+  }
+  /* distribui as cargas nos dias de campo, do mais cedo para o mais tarde; viagens longas preferem quem é mais externo */
+  slots.sort(function(a,b){return a.k<b.k?-1:a.k>b.k?1:tecs.indexOf(a.t)-tecs.indexOf(b.t);});
+  var out=[];
+  loads.forEach(function(ld){
+    function fits(s){
+      if(s.used+ld.cost>1+1e-9) return false;
+      if(pqFar(ld.bk)&&slots.some(function(o){return o!==s&&o.k===s.k&&o.city===ld.city;})) return false;
+      if(!s.city) return true;
+      if(pqFar(ld.bk)||pqFar(s.bk)) return false;
+      return s.city===ld.city||(s.bk==="a"&&ld.bk==="a");
+    }
+    var cand=slots.filter(fits),pick=cand[0];
+    if(pick&&pqFar(ld.bk)){var ext=cand.filter(function(s){return (T[s.t]||{pct:100}).pct>=50;})[0];if(ext) pick=ext;}
+    if(!pick){out=out.concat(ld.items);return;}
+    pick.used+=ld.cost;
+    if(!pick.city){pick.city=ld.city;pick.bk=ld.bk;pick.trip=ld.trip;}
+    ld.items.forEach(function(it){pick.stops.push({it:it,fixed:false,city:fmtCidade(it.cidadeEstado)||"Sem cidade"});pick.n++;});
+  });
+  slots.sort(function(a,b){return a.k<b.k?-1:a.k>b.k?1:tecs.indexOf(a.t)-tecs.indexOf(b.t);});
+  var late=[];
+  slots.forEach(function(s){s.stops.forEach(function(x){var dp=x.it.dataPrevista;if(!pqBl(x.it)&&dp&&dp<s.k&&!x.fixed) late.push({it:x.it,k:s.k});});});
+  return {T:T,tecs:tecs,days:days,slots:slots,out:out,fixedN:fixedN,stale:stale,late:late,cityInfo:cityInfo,loads:loads.length};
+}
+function pqDayLbl(k){var d=dOf(k);return PQ_WD[d.getDay()]+" "+fmtDM(d);}
+function pqStopsTxt(stops,html){
+  var by={},ord=[];
+  stops.forEach(function(x){var c=x.it.cliente||"(sem cliente)";if(!by[c]){by[c]=[];ord.push(c);}by[c].push(x);});
+  return ord.map(function(c){
+    var L=by[c],fx=L.some(function(x){return x.fixed;});
+    var pats=L.map(function(x){return x.it.patrimonio+(pqBl(x.it)?"*":"");}).join(", ");
+    return html?'<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+'<small>'+esc(pats)+'</small></span>':c+" ("+L.length+"): "+pats;
+  }).join(html?"":" · ");
+}
+function pqInsights(code,P,I,C,R){
+  var out=[],used=R.slots.filter(function(s){return s.n;}),nPl=0,blN=0,blLast="",lastK="";
+  used.forEach(function(s){nPl+=s.n;if(s.k>lastK) lastK=s.k;s.stops.forEach(function(x){if(pqBl(x.it)){blN++;if(s.k>blLast) blLast=s.k;}});});
+  var fieldDays=R.slots.length,freeDays=R.slots.filter(function(s){return !s.n;}).length;
+  function add(tone,txt){out.push({tone:tone,txt:txt});}
+  if(!I.plan.length) add("ok","Nenhuma máquina pendente para planejar nesta filial.");
+  else if(R.out.length) add("bad","<b>"+R.out.length+(R.out.length===1?" máquina não cabe":" máquinas não cabem")+"</b> "+(fieldDays===1?"no único dia de campo":"nos "+fieldDays+" dias de campo")+" do período. Ficaram de fora as de menor prioridade (veja no fim da proposta). Reveja ausências, a margem ou o % da equipe.");
+  else add("ok","<b>Todas as "+nPl+" máquinas cabem</b> em "+used.length+" de "+fieldDays+" dias de campo, até <b>"+pqDayLbl(lastK)+"</b>. Sobram "+freeDays+(freeDays===1?" dia de campo livre":" dias de campo livres")+" para desvios e novas prioridades.");
+  var blTot=I.plan.filter(pqBl).length;
+  if(blTot){
+    var allBl=blN===blTot;
+    add(allBl?"ok":"bad",allBl?"Backlog primeiro: "+(blTot===1?"a <b>única máquina em backlog</b> fica programada":"as <b>"+blTot+" máquinas em backlog</b> ficam programadas")+" até <b>"+pqDayLbl(blLast)+"</b>.":"<b>"+(blTot-blN)+" de "+blTot+" máquinas em backlog</b> não couberam na proposta.");
+  }
+  if(R.late.length){
+    var ls=R.late.slice(0,6).map(function(x){return esc(x.it.patrimonio)+" ("+esc(x.it.cliente)+", vence "+fmtDM(dOf(x.it.dataPrevista))+", visita "+fmtDM(dOf(x.k))+")";});
+    add("warn","<b>"+R.late.length+(R.late.length===1?" máquina vai vencer":" máquinas vão vencer")+" antes da visita</b> e entram em backlog: "+ls.join("; ")+(R.late.length>6?"…":"")+". Se der, antecipe ou troque com outro dia.");
+  }
+  if(P.cur){
+    var st=metaState(code);
+    if(st){
+      var np=Math.max(0,st.pend-nPl),pc=(st.L-np)/st.L*100;
+      add(pc+1e-9>=st.goal?"ok":"warn","Cumprindo a proposta, a <b>projeção do mês</b> vai de "+Math.round(st.pct)+"% para <b>"+Math.round(pc)+"%</b> (meta "+nf(st.goal)+"%)"+(pc+1e-9>=st.goal?".":". Mesmo assim faltariam "+Math.max(0,np-st.maxPend)+" para a meta: veja integração e o que não coube."));
+    }
+  }
+  var trips={};
+  used.forEach(function(s){if(pqFar(s.bk)){var t=trips[s.city]=trips[s.city]||{n:0,m:0,one:0,trip:s.trip,tecs:{}};t.n++;t.m+=s.n;if(s.n===1) t.one++;t.tecs[s.t]=1;}});
+  var tk=Object.keys(trips).sort(function(a,b){return trips[b].m-trips[a].m;});
+  if(tk.length) add("info","<b>Viagens</b>: "+tk.map(function(c){var t=trips[c];return esc(c)+" · "+t.m+(t.m===1?" máquina":" máquinas")+" em "+t.n+(t.n===1?" viagem":" viagens")+(t.trip!=null?" de "+pqHrs(t.trip)+" (ida)":"");}).join("; ")+". Vale combinar cada viagem com corretivas da mesma região.");
+  var ones=tk.filter(function(c){return trips[c].one;});
+  if(ones.length) add("warn","Viagem para <b>1 máquina só</b> em "+ones.map(esc).join(", ")+": confira se dá para juntar com outra demanda na região ou com a próxima visita.");
+  var cl=pqClients(I.plan).filter(function(c){return c.n>=3;}).sort(function(a,b){return b.n-a.n;}).slice(0,4);
+  if(cl.length) add("info","<b>Clientes com mais máquinas</b>: "+cl.map(function(c){return esc(c.name)+" ("+c.n+")";}).join(", ")+". Visitas em bloco rendem mais: confirme com o cliente o acesso a todas as máquinas no mesmo dia.");
+  if(I.blk.length){
+    var b2=I.blk.filter(function(i){return i.status==="Backlog";}).length,bc=pqClients(I.blk).map(function(c){return esc(c.name);});
+    add("warn","<b>"+I.blk.length+(I.blk.length===1?" máquina parada":" máquinas paradas")+" por integração</b>"+(b2?" ("+b2+" em backlog)":"")+": "+bc.join(", ")+". Cobre o time de integração para liberar ainda neste mês.");
+  }
+  if(R.fixedN) add("info",R.fixedN+(R.fixedN===1?" máquina já agendada foi mantida":" máquinas já agendadas foram mantidas")+" na data marcada.");
+  if(R.stale) add("warn",R.stale+(R.stale===1?" máquina agendada em data que já passou (e não realizada) voltou":" máquinas agendadas em datas que já passaram (e não realizadas) voltaram")+" para a proposta.");
+  var nc=Object.keys(R.cityInfo).filter(function(c){return R.cityInfo[c].km==null;});
+  if(nc.length) add("info","Sem coordenada (tratadas como até 70 km): "+nc.map(esc).join(", ")+".");
+  var ab=R.tecs.filter(function(t){return R.T[t].av<R.days.length;});
+  if(ab.length) add("info","Ausências consideradas: "+ab.map(function(t){return esc(t)+" fora "+(R.days.length-R.T[t].av)+(R.days.length-R.T[t].av===1?" dia útil":" dias úteis");}).join(", ")+".");
+  return out;
+}
+function pqPropHTML(code,P,I,C,R){
+  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n;});
+  var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>Proposta do mês</h3><p class="pq-sub">Sugestão automática a partir das premissas. É só uma sugestão: nada é gravado nos equipamentos. * = backlog.</p></div>'+
+    '<div class="pqp-act"><div class="seg" role="group" aria-label="Ver a proposta"><button type="button" data-pq-view="dia" aria-pressed="'+(view==="dia")+'">Por dia</button><button type="button" data-pq-view="tec" aria-pressed="'+(view==="tec")+'">Por técnico</button></div><button type="button" class="btn sm" data-pq-cp="1">Copiar</button></div></div>';
+  var tl='<div class="pqp-team">'+R.tecs.map(function(t){
+    var x=R.T[t],ss=R.slots.filter(function(s){return s.t===t&&s.n;}),m=0;ss.forEach(function(s){m+=s.n;});
+    return '<span class="pq-chip"><i class="pq-dot" style="--pc:'+(AGTC[t]||"#8A96AB")+'"></i><b>'+esc(t)+'</b> <small>'+x.n+(x.n===1?" dia de campo":" dias de campo")+' · '+m+(m===1?" máquina":" máquinas")+'</small></span>';
+  }).join("")+'</div>';
+  h+=tl;
+  function slotRow(s,showT){
+    var far=pqFar(s.bk),pct=Math.min(100,Math.round(s.used*100)),cs=[];
+    s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});
+    return '<div class="pqp-slot" style="--pc:'+(AGTC[s.t]||"#8A96AB")+'"><div class="pqp-sh">'+(showT?'<b class="pqp-t">'+esc(s.t)+'</b>':'<b class="pqp-t">'+pqDayLbl(s.k)+'</b>')+
+      '<span class="pqp-c">'+esc(cs.join(" + "))+(far?'<span class="pq-tag">viagem'+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+'</span>':'')+(s.extra?'<span class="pq-tag">fora dos dias de campo</span>':'')+'</span>'+
+      '<small>'+s.n+(s.n===1?" máq.":" máq.")+(far?"":" · "+pct+"% do dia")+'</small></div><div class="pqp-stops">'+pqStopsTxt(s.stops,true)+'</div></div>';
+  }
+  if(!used.length) h+='<p class="pq-none">Nada para propor.</p>';
+  else if(view==="dia"){
+    var wk={};used.forEach(function(s){var w=weekOfMonth(dOf(s.k));(wk[w]=wk[w]||[]).push(s);});
+    h+=Object.keys(wk).map(Number).sort().map(function(w){
+      var L=wk[w],m=0;L.forEach(function(s){m+=s.n;});
+      var byD={},ord=[];L.forEach(function(s){if(!byD[s.k]){byD[s.k]=[];ord.push(s.k);}byD[s.k].push(s);});
+      return '<div class="pq-h4">'+w+'ª semana · '+m+(m===1?" máquina":" máquinas")+'</div>'+ord.map(function(k){
+        return '<div class="pqp-day"><div class="pqp-dl">'+pqDayLbl(k)+'</div><div class="pqp-dr">'+byD[k].map(function(s){return slotRow(s,true);}).join("")+'</div></div>';
+      }).join("");
+    }).join("");
+  }else{
+    h+=R.tecs.map(function(t){
+      var L=used.filter(function(s){return s.t===t;});
+      return '<div class="pq-h4">'+esc(t)+' · '+L.length+(L.length===1?" dia":" dias")+'</div>'+(L.length?L.map(function(s){return slotRow(s,false);}).join(""):'<p class="pq-none">Sem dias de campo propostos.</p>');
+    }).join("");
+  }
+  if(R.out.length){
+    var cs=pqClients(R.out).sort(function(a,b){return b.n-a.n;});
+    h+='<div class="pq-h4" style="color:var(--nr-ink)">Não couberam · '+R.out.length+(R.out.length===1?" máquina":" máquinas")+'</div>'+cs.map(function(c){return '<div class="pq-row"><span class="pq-rt"><b>'+esc(c.name)+'</b><small>'+esc(c.cityName)+' · '+c.n+(c.n===1?" máquina":" máquinas")+(c.bl?" ("+c.bl+" em backlog)":"")+'</small></span></div>';}).join("");
+  }
+  return h+'</div>';
+}
+function pqInsHTML(list){
+  return '<div class="pq-card"><h3>Leitura do planejador</h3><p class="pq-sub">O que chama atenção nesta proposta.</p><ul class="pqi">'+list.map(function(x){return '<li class="pqi-'+x.tone+'">'+x.txt+'</li>';}).join("")+'</ul></div>';
+}
+function pqCopyPlan(){
+  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqPlan(code,P,I,C);
+  var t="Proposta de preventivas · "+ui.filial+" · "+ymLabel(P.ym)+"\n";
+  R.slots.filter(function(s){return s.n;}).forEach(function(s){var cs=[];s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});t+="\n"+pqDayLbl(s.k)+" · "+s.t+" · "+cs.join(" + ")+" · "+s.n+(s.n===1?" máquina":" máquinas")+"\n  "+pqStopsTxt(s.stops,false);});
+  if(R.out.length) t+="\n\nNão couberam: "+R.out.map(function(i){return i.patrimonio+" ("+i.cliente+")";}).join(", ");
+  ui.copyTxt=t;copiar();
+}
+document.addEventListener("click",function(e){
+  var t=e.target,b;if(!t.closest||!t.closest(".pq")) return;
+  if((b=t.closest("[data-pq-view]"))){var v=b.getAttribute("data-pq-view");if(ui.pqView!==v){ui.pqView=v;pqRefresh();}return;}
+  if(t.closest("[data-pq-cp]")){pqCopyPlan();return;}
+});
 
 /* ---------- eventos ---------- */
 document.addEventListener("click",function(e){

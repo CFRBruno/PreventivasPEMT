@@ -130,18 +130,27 @@ Ajuda a montar um plano **factível, só em dias úteis, com folga**, para bater
      - Deslocamento: **75 km/h**, estrada = linha reta × **1,3**.
 - **Fórmulas:** capacidade = Σ técnicos × % × dias úteis sem ausência − corretivas; líquida = × (1 − margem). Carga (dias-técnico): perto e até 70 km, cada máquina pesa 1/ritmo (local com 2+ máquinas usa o ritmo de "mesmo local"); acima de 70 km, `ceil(máquinas da cidade ÷ 2)`. Entram: não realizadas, não retorno, não NÃO REALIZAR, não bloqueadas. Cidade sem coordenada = tratada como até 70 km.
 - **Prioridade (para a fase 2):** backlog → **mais máquinas do cliente** → data prevista mais antiga. Sem "peso do cliente".
-- **Próximas fases (combinadas, não feitas):** fase 2 = proposta por dia e técnico + insights; fase 3 = "Plano" guardado **separado** (não sobrescreve os equipamentos), com "planejado × agendado/realizado", **"Aplicar" por semana ou cliente** (grava só previsão semanal e técnico) com **Desfazer**; no planejamento de mês futuro, "Aplicar tudo" direto.
+- **Fase 2 (proposta + leitura do planejador, `pqPlan/pqInsights/pqPropHTML`):** só sugestão, **não grava nada**.
+  - **Dias de campo por técnico** (`pqTechDays`): (% × dias úteis sem ausência − parte das corretivas proporcional) × (1 − margem), arredondado; espalhados no período começando no 1º dia útil disponível.
+  - **Agendadas** dentro do período ficam na data (técnico informado, se for da equipe; senão o primeiro disponível; pode criar dia "fora dos dias de campo"). Agendadas em data passada e não realizadas voltam para a proposta.
+  - **Backlog no período** (`pqBl`) = status Backlog **ou** data prevista anterior ao 1º dia planejado (num planejamento futuro, o que vencia no mês anterior já é backlog).
+  - Locais (cliente ou link, por cidade) em ordem: backlog → mais máquinas → vencimento mais antigo. Carga de um dia: perto/até 70 km enche o dia (1/ritmo por máquina; cidades "perto" podem se juntar no mesmo dia); acima de 70 km = 1 viagem com até N máquinas da mesma cidade.
+  - Cargas vão para o dia de campo mais cedo que couber; viagens longas preferem técnico com % ≥ 50; **nunca a mesma cidade distante para dois técnicos no mesmo dia**. O que não cabe aparece em "Não couberam".
+  - **Leitura do planejador:** cobertura e folga, backlog até quando, máquinas que vão vencer antes da visita, projeção do mês se cumprir a proposta (mês atual com BI), viagens e viagens de 1 máquina só, clientes com 3+ máquinas, integração, agendadas mantidas/voltaram, cidades sem coordenada, ausências.
+  - Telas "Por dia" (por semana) e "Por técnico", chips da equipe, "Copiar" (texto plano). `*` = backlog. Classes `pqp-*` e `pqi-*` (não usar `.info`/`.ok` soltos: `.info` já existe nos cartões).
+- **Próxima fase (combinada, não feita):** fase 3 = "Plano" guardado **separado** (não sobrescreve os equipamentos), com "planejado × agendado/realizado", **"Aplicar" por semana ou cliente** (grava só previsão semanal e técnico) com **Desfazer**; no planejamento de mês futuro, "Aplicar tudo" direto.
 
 ## 6. Status do projeto
 **Implementado e testado em Chromium headless** (nunca com o Firebase real):
 - Tudo das seções 4 e 5: login/sincronização, importação do Excel, base de referência, edição, Feito (com data), agendamento por cliente, filtros, Retornos/NR, Kanban, Clientes (distância, links, nomes, Feito), meta/BI, Semana, Grafo (cidade→cliente), Mapa, **Ritmo**, Agenda (técnicos, atividades vinculadas, plantão + PNG), Chamados, relatórios, **planejamento de meses** (sidebar, cópias, virar o mês), faixa fixa, layout compacto e largura 1120.
 - Padronização de técnicos, autocomplete novo, "Agendadas" sem realizadas.
 
-- **Aba Planejar, fase 1** (03/11/2026, testada no navegador do app; **ainda não subiu**): ver 5.11.
+- **Aba Planejar, fase 1** (03/11/2026, testada no navegador do app; subiu no commit `d1f016c`): ver 5.11.
+
+- **Aba Planejar, fase 2** (03/11/2026, testada no navegador do app; subiu): ver 5.11.
 
 **Fila pendente:**
-1. **Planejar fase 2:** proposta por dia e por técnico (agrupando cliente/link → cidade → região, prioridade da 5.11) + insights (viagens dedicadas, clientes com muitas máquinas, riscos de prazo, o que antecipar).
-2. **Planejar fase 3:** Plano separado, aderência, Aplicar por partes com Desfazer.
+1. **Planejar fase 3:** Plano separado, aderência, Aplicar por partes com Desfazer.
 
 **Decisões em aberto / limites conhecidos:**
 - **Firebase real nunca foi testado.** Na primeira subida conferir: login, sincronização PC↔celular, status "Sincronizado", e as **chaves novas** (`prev_plans_v1`, `prev_race_v1`, `prev_links_v1`, `prev_pq_v1`, `prev_pl_*`, `prev_bk_*`, `prev_ag_v1` com plantão/vínculos/ausências).
