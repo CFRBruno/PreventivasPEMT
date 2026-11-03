@@ -1390,6 +1390,30 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .pl-tip.on{opacity:1}
 @media (prefers-reduced-motion: no-preference){.pl-tip{transition:opacity .15s}}
 
+/* ---------- treinamentos operacionais (Agenda) ---------- */
+.cx-tr{position:absolute;top:3px;left:5px;font-size:11px;line-height:1}
+.tr-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;margin-top:8px;border:1px solid var(--line);border-left:6px solid var(--pc);border-radius:14px;background:var(--bg);color:var(--ink)}
+.tr-item.cx{opacity:.55}.tr-item.cx .tr-tx b{text-decoration:line-through}
+.tr-d{flex:none;width:74px;display:flex;flex-direction:column}
+.tr-d b{font-size:14px;text-transform:capitalize}
+.tr-d small,.tr-tx small{color:var(--muted);font-size:12.5px}
+.tr-tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.tr-tx b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr-st{flex:none;font-size:11.5px;font-weight:800;padding:2px 9px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--muted)}
+.tr-st.st-ok{background:var(--ok-bg);color:var(--ok-ink);border-color:transparent}
+.tr-st.st-cx{background:var(--bad-bg);color:var(--bad-ink);border-color:transparent}
+.tr-g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 10px}
+.tr-g2[hidden]{display:none}
+.tr-date{width:100%;min-height:46px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:15px;text-align:left}
+.tr-date::first-letter{text-transform:uppercase}
+.tr-del{color:#E5484D;margin-right:auto}
+.tr-sum{cursor:pointer;border-radius:8px}
+.tr-sum:hover{background:color-mix(in srgb,var(--f) 8%,transparent)}
+.tr-sum.cx{opacity:.55}
+.pqp-trs{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.pq-tag.pq-trt{margin-left:0;color:var(--ft);border-color:color-mix(in srgb,var(--f) 40%,transparent);background:color-mix(in srgb,var(--f) 10%,transparent)}
+@media (max-width:479px){.tr-g2{grid-template-columns:1fr}}
+
 /* ---------- aba Planejar ---------- */
 #app[data-sec="planejar"] .search,#app[data-sec="planejar"] .tb-row,#app[data-sec="planejar"] .filters{display:none}
 .pq{max-width:1120px}
@@ -1752,6 +1776,9 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
     <div class="sb-btns"><button type="button" class="btn" id="auAdd">+ Adicionar período</button></div>
     <div class="sheet-actions"><button type="button" class="btn primary" id="auClose">Concluir</button></div>
   </div>
+</div>
+<div class="modal" id="trModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="Treinamentos operacionais de PEMT"><div id="trBody"></div></div>
 </div>
 <div class="modal" id="pxModal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pxTitle">
@@ -3886,9 +3913,9 @@ function renderCal(anim0){
     var dots=tt.map(function(n){return '<i style="background:'+AGTC[n]+'"></i>';}).join("");
     var lab=longDay(k)+(H?", "+H.name:"")+(AG.notes[k]?", com observação":"")+(ev.length?", com compromisso":"")+(tt.length?", técnicos: "+tt.join(", "):"")+(pl?", sobreaviso: "+pl.tec:"");
     cells+='<button type="button" class="'+cls+'" data-day="'+k+'" style="--n:'+i+'" aria-label="'+esc(lab)+'">'+d.getDate()+
-      (dots?'<span class="cx-dots">'+dots+'</span>':'')+(AG.notes[k]?'<span class="cx-ul"></span>':'')+(ev.length?'<span class="cx-cp"></span>':'')+bar+'</button>';
+      (dots?'<span class="cx-dots">'+dots+'</span>':'')+(AG.notes[k]?'<span class="cx-ul"></span>':'')+(ev.length?'<span class="cx-cp"></span>':'')+(trOn(k).some(function(t){return t.st!=="cx";})?'<span class="cx-tr" aria-hidden="true">🎓</span>':'')+bar+'</button>';
   }
-  var h='<div class="cx"><div class="cx-h"><h2>Agenda</h2><div class="cx-chips"><button type="button" class="cx-chip sel" data-cal="tech">'+agIc("users",1)+'Técnicos</button><button type="button" class="cx-chip" data-cal="plantao">'+agIc("moon",1)+'Plantão</button><label class="cx-chip cx-chk"><input type="checkbox" id="plVis"'+(ui.plShow?" checked":"")+'>Plantão PEMT</label><button type="button" class="cx-chip" data-cal="today">Hoje</button></div></div>'+
+  var h='<div class="cx"><div class="cx-h"><h2>Agenda</h2><div class="cx-chips"><button type="button" class="cx-chip sel" data-cal="tech">'+agIc("users",1)+'Técnicos</button><button type="button" class="cx-chip" data-cal="plantao">'+agIc("moon",1)+'Plantão</button><button type="button" class="cx-chip" data-cal="trein"><span aria-hidden="true">🎓</span>Treinamentos</button><label class="cx-chip cx-chk"><input type="checkbox" id="plVis"'+(ui.plShow?" checked":"")+'>Plantão PEMT</label><button type="button" class="cx-chip" data-cal="today">Hoje</button></div></div>'+
     '<div class="cx-nav"><button type="button" class="cx-nb" data-cal="prev" aria-label="Mês anterior">'+agIc("l")+'</button><b>'+MES_PT[m]+' de '+y+'</b><button type="button" class="cx-nb" data-cal="next" aria-label="Próximo mês">'+agIc("r")+'</button></div>'+
     '<div class="cx-cal'+(anim?" cx-anim":"")+(dir>0?" cx-slide-next":dir<0?" cx-slide-prev":"")+'"><div class="cx-wd">'+"DSTQQSS".split("").map(function(x){return '<div>'+x+'</div>';}).join("")+'</div><div class="cx-grid"><div class="cx-hl" id="cxHL"></div>'+cells+'</div></div>'+
     '<div class="cx-legend"><span><i class="cx-lh"></i>Feriado</span><span><i class="cx-lf"></i>Ponto facultativo</span><span><i class="cx-lu"></i>Observação</span><span><i class="cx-lc"></i>Compromisso</span>'+
@@ -3905,6 +3932,7 @@ function daySummary(k,anim){
   if(pl0) rows+='<div class="cx-row"><i class="cx-ld" style="background:'+(AGTC[pl0.tec]||"#8A96AB")+';margin-top:6px"></i><span><span class="tn">Sobreaviso</span><small> · '+esc(pl0.tec)+'</small></span></div>';
   ausOnDay(k).forEach(function(a){rows+='<div class="cx-row"><i class="cx-ld" style="background:'+(AGTC[a.tec]||"#8A96AB")+';margin-top:6px;opacity:.45"></i><span><span class="tn">Ausente</span><small> · '+esc(a.tec)+' ('+esc(a.why)+')</small></span></div>';});
   if(obs) rows+='<div class="cx-row">'+agIc("note",1)+'<span>'+esc(obs)+'</span></div>';
+  trOn(k).forEach(function(t){rows+=trRowHTML(t);});
   tt.forEach(function(n){
     var m=String(r[n].m||"").trim(),t=String(r[n].t||"").trim();
     rows+='<div class="cx-row"><i class="cx-ld" style="background:'+AGTC[n]+';margin-top:6px"></i><span><span class="tn">'+n+'</span><small>'+(m?" · Manhã: "+esc(m):"")+(t?" · Tarde: "+esc(t):"")+'</small></span></div>'+lvLinesHTML(r[n],k);
@@ -3932,6 +3960,7 @@ function pickDay(k){
 function calAct(a){
   if(a==="tech"){openTech({});return;}
   if(a==="plantao"){sbOpen();return;}
+  if(a==="trein"){trOpen();return;}
   if(a==="edit"){openDay(ui.csel);return;}
   if(a==="today"){
     var n=new Date(),t=new Date(ui.cy,ui.cm,1);
@@ -3961,6 +3990,10 @@ function renderDay(){
     h+='<div class="cx-it">'+agIc("cal",1)+'<b>'+(e.time||"dia todo")+'</b><span class="sp">'+esc(e.title)+'</span>'+
       '<button type="button" data-ev-edit="'+e.id+'" aria-label="Editar compromisso">'+agIc("pen",1)+'</button><button type="button" data-ev-del="'+e.id+'" aria-label="Excluir compromisso">'+agIc("tr",1)+'</button></div>';
   });
+  h+='</div><div class="cx-sec"><h4><span>Treinamentos</span><button type="button" class="cx-chip sel" data-tr-new="'+k+'" style="min-height:32px;padding:3px 10px">'+agIc("plus",1)+'Adicionar</button></h4>';
+  var trs=trOn(k);
+  if(!trs.length) h+='<div class="cx-empty">Nenhum treinamento neste dia.</div>';
+  trs.forEach(function(t){h+='<div class="cx-it"><i class="dot" style="background:'+(AGTC[t.tec]||"#8A96AB")+'"></i><span class="sp"><span class="tn">🎓 '+esc(t.tec)+' · '+TR_TURNO[t.turno]+'</span><small>'+esc(trDesc(t))+' · '+TR_ST[t.st||"ag"]+'</small></span><button type="button" data-tr-edit="'+t.id+'" aria-label="Editar treinamento">'+agIc("pen",1)+'</button></div>';});
   h+='</div><div class="cx-sec"><h4><span>Técnicos</span></h4>';
   if(!tt.length) h+='<div class="cx-empty">Sem registro neste dia.</div>';
   tt.forEach(function(n){
@@ -4977,7 +5010,7 @@ function acMark(name,q){
   return out;
 }
 function acItems(kind,q){
-  var nq=norm(q),qs=nq.split(/\s+/).filter(Boolean),list=kind==="city"?cityList():kind==="tec"?tecList().map(function(n){return {name:n};}):modelList();
+  var nq=norm(q),qs=nq.split(/\s+/).filter(Boolean),list=kind==="city"?cityList():kind==="tec"?tecList().map(function(n){return {name:n};}):kind==="cli"?lkClients(ui.filial).map(function(n){return {name:n};}):modelList();
   var out=list.filter(function(o){var s=norm(o.name);return qs.every(function(t){return s.indexOf(t)>=0;});});
   out.sort(function(a,b){var x=norm(a.name).indexOf(nq)===0?0:1,y=norm(b.name).indexOf(nq)===0?0:1;return x-y||coll.compare(a.name,b.name);});
   out=out.slice(0,10);
@@ -4991,7 +5024,7 @@ function acRender(inp){
   box.innerHTML=AC.items.map(function(o,i){
     var ic,l1,l2="";
     if(o.use){ic=AC_IC.use;l1='Usar "'+esc(o.name)+'"';l2="Cidade fora da lista";}
-    else if(AC.kind==="tec"){ic=esc(tecInicial(o.name));l1=acMark(o.name,AC.q);}
+    else if(AC.kind==="tec"||AC.kind==="cli"){ic=esc(tecInicial(o.name));l1=acMark(o.name,AC.q);}
     else if(AC.kind==="city"){ic=AC_IC.city;l1=acMark(o.name,AC.q);l2=[o.uf,o.reg?titulo(o.reg):""].filter(Boolean).join(" · ");}
     else{ic=AC_IC.model;l1=acMark(o.name,AC.q);}
     return '<div class="ac-it'+(o.use?" use":"")+'" role="option" data-ac-i="'+i+'"><span class="ac-ic">'+ic+'</span><span class="ac-tx"><span class="n">'+l1+'</span>'+(l2?'<small>'+l2+'</small>':'')+'</span></div>';
@@ -5013,6 +5046,7 @@ function acPick(i){
   inp.value=o.name;
   var k=inp.getAttribute("data-cf");if(k&&CF) CF[k]=o.name;
   if(AC.kind==="city"&&o.uf&&UFS.indexOf(o.uf)>=0&&CF){CF.uf=o.uf;var s=$("cf_uf");if(s) s.value=o.uf;}
+  if(inp.id==="trCli"||inp.id==="trCid") trPicked(inp.id,o);
   acClose();
 }
 function acMove(d){
@@ -6968,6 +7002,128 @@ document.addEventListener("change",function(e){
   }
 });
 
+/* ---------- treinamentos operacionais de PEMT (Agenda: um instrutor, 4 h, no cliente ou na filial) ---------- */
+var TR_TURNO={m:"manhã (8h–12h)",t:"tarde (14h–18h)"},TR_ST={ag:"Agendado",ok:"Realizado",cx:"Cancelado"};
+var TR_FIL={SSF:"Simões Filho - BA",LDM:"Luís Eduardo Magalhães - BA"};
+var TR={y:0,m:0,ed:null};
+function trList(){AG.trein=Array.isArray(AG.trein)?AG.trein:[];return AG.trein;}
+function trOn(k){return trList().filter(function(t){return t.date===k;}).sort(function(a,b){return a.turno<b.turno?-1:a.turno>b.turno?1:a.id-b.id;});}
+function trNextId(){var mx=0;trList().forEach(function(t){if(t.id>mx) mx=t.id;});return mx+1;}
+function trCity(t){return t.local==="fil"?(TR_FIL[t.fil]||TR_FIL.SSF):(t.cidade?fmtCidade(t.cidade+(t.uf?" - "+t.uf:"")):"");}
+function trDesc(t){return (t.cli||"(sem cliente)")+" · "+(t.local==="fil"?"na filial":trCity(t))+(t.hora?" · início "+t.hora:"")+(t.part?" · "+t.part+" participantes":"");}
+function trRowHTML(t){
+  return '<div class="cx-row tr-sum'+(t.st==="cx"?" cx":"")+'" data-tr-edit="'+t.id+'" role="button" tabindex="0"><i class="cx-ld" style="background:'+(AGTC[t.tec]||"#8A96AB")+';margin-top:6px"></i><span><span class="tn">🎓 Treinamento</span><small> · '+esc(t.tec)+' · '+TR_TURNO[t.turno]+' · '+esc(trDesc(t))+' · '+TR_ST[t.st||"ag"]+'</small></span></div>';
+}
+function trOpen(k){
+  var d=k?dOf(k):new Date(ui.cy,ui.cm,1);TR.y=d.getFullYear();TR.m=d.getMonth();TR.ed=null;
+  if(k) trNew(k);else trRender();
+  $("trModal").setAttribute("data-filial",curCode());
+  $("trModal").hidden=false;document.body.style.overflow="hidden";
+}
+function trClose(){acClose();$("trModal").hidden=true;TR.ed=null;document.body.style.overflow="";}
+function trRender(){if(TR.ed) trRenderForm();else trRenderList();}
+function trRenderList(){
+  var y=TR.y,m=TR.m,a=sbKey(y,m,1),b=sbKey(y,m,sbDays(y,m));
+  var L=trList().filter(function(t){return t.date>=a&&t.date<=b;}).sort(function(x,z){return x.date<z.date?-1:x.date>z.date?1:x.turno<z.turno?-1:1;});
+  $("trBody").innerHTML='<h2>Treinamentos operacionais de PEMT</h2><p class="ed-sub">Um instrutor por treinamento, 4 h (meio turno). Entram no planejamento das preventivas.</p>'+
+    '<div class="sb-nav"><button type="button" class="cx-nb" data-tr-nav="-1" aria-label="Mês anterior">'+agIc("l")+'</button><b>'+MES_PT[m].charAt(0).toUpperCase()+MES_PT[m].slice(1)+' de '+y+'</b><button type="button" class="cx-nb" data-tr-nav="1" aria-label="Próximo mês">'+agIc("r")+'</button></div>'+
+    (L.length?L.map(function(t){
+      return '<button type="button" class="tr-item'+(t.st==="cx"?" cx":"")+'" data-tr-edit="'+t.id+'" style="--pc:'+(AGTC[t.tec]||"#8A96AB")+'"><span class="tr-d"><b>'+PQ_WD[dOf(t.date).getDay()]+' '+fmtDM(dOf(t.date))+'</b><small>'+(t.turno==="m"?"manhã":"tarde")+'</small></span><span class="tr-tx"><b>'+esc(t.cli||"(sem cliente)")+'</b><small>'+esc(t.tec)+' · '+esc(t.local==="fil"?"na filial":trCity(t))+(t.hora?" · início "+esc(t.hora):"")+'</small></span><span class="tr-st st-'+(t.st||"ag")+'">'+TR_ST[t.st||"ag"]+'</span></button>';
+    }).join(""):'<p class="sb-empty">Nenhum treinamento neste mês. Use <b>+ Novo treinamento</b>.</p>')+
+    '<div class="sb-btns"><button type="button" class="btn" data-tr-new="">+ Novo treinamento</button></div>'+
+    '<div class="sheet-actions"><button type="button" class="btn primary" data-tr-close="1">Concluir</button></div>';
+}
+function trNew(k){
+  var td=todayK(),code=curCode(),tec=(PQ_TEC[code]||AGTEC)[0]||AGTEC[0];
+  if(!k){k=sbKey(TR.y,TR.m,1);if(td.slice(0,7)===k.slice(0,7)) k=td;}
+  TR.ed={id:0,date:k,tec:tec,turno:"m",hora:"",cli:"",local:"cli",cidade:"",uf:"BA",part:"",obs:"",st:"ag",fil:code};
+  trRenderForm();
+}
+function trEdit(id){var t=null;trList().forEach(function(x){if(x.id===id) t=x;});if(!t) return;TR.ed=JSON.parse(JSON.stringify(t));var d=dOf(t.date);TR.y=d.getFullYear();TR.m=d.getMonth();trRenderForm();}
+function trRenderForm(){
+  var t=TR.ed,fil=t.local==="fil";
+  function rad(name,v,cur,lab){return '<label><input type="radio" name="'+name+'" value="'+v+'"'+(v===cur?" checked":"")+'>'+lab+'</label>';}
+  $("trBody").innerHTML='<h2>'+(t.id?"Editar treinamento":"Novo treinamento")+'</h2><p class="ed-sub">Treinamento operacional de PEMT para o cliente. O técnico é o instrutor.</p>'+
+    '<div class="tr-g2"><label class="fld"><span>Data</span><button type="button" class="tr-date" id="trDate">'+(t.date?esc(longDay(t.date)):"Escolha a data")+'</button></label>'+
+    '<label class="fld"><span>Instrutor (técnico)</span><select id="trTec">'+AGTEC.map(function(x){return '<option'+(x===t.tec?" selected":"")+'>'+x+'</option>';}).join("")+'</select></label></div>'+
+    '<div class="fld"><span>Turno</span><div class="px-opt">'+rad("trTurno","m",t.turno,"Manhã · 8h às 12h")+rad("trTurno","t",t.turno,"Tarde · 14h às 18h")+'</div></div>'+
+    '<label class="fld"><span>Horário de início (opcional, se o cliente pedir outro)</span><input id="trHora" type="time" value="'+esc(t.hora||"")+'"></label>'+
+    '<label class="fld"><span>Cliente</span><input id="trCli" data-ac="cli" autocomplete="off" value="'+esc(t.cli||"")+'" placeholder="Nome do cliente"></label>'+
+    '<div class="fld"><span>Local</span><div class="px-opt">'+rad("trLocal","cli",t.local,"No cliente")+rad("trLocal","fil",t.local,"Na filial")+'</div></div>'+
+    '<div class="tr-g2"'+(fil?' hidden':'')+' id="trCityBox"><label class="fld"><span>Cidade</span><input id="trCid" data-ac="city" autocomplete="off" value="'+esc(t.cidade||"")+'" placeholder="Cidade do treinamento"></label>'+
+    '<label class="fld"><span>UF</span><select id="trUf">'+UFS.map(function(u){return '<option'+(u===t.uf?" selected":"")+'>'+u+'</option>';}).join("")+'</select></label></div>'+
+    '<div class="tr-g2"><label class="fld"><span>Participantes (opcional)</span><input id="trPart" type="number" min="0" inputmode="numeric" value="'+esc(t.part||"")+'"></label>'+
+    '<label class="fld"><span>Situação</span><select id="trSt">'+["ag","ok","cx"].map(function(s){return '<option value="'+s+'"'+(s===(t.st||"ag")?" selected":"")+'>'+TR_ST[s]+'</option>';}).join("")+'</select></label></div>'+
+    '<label class="fld"><span>Observação</span><textarea id="trObs" maxlength="300" placeholder="Contato, endereço, quantidade de máquinas…">'+esc(t.obs||"")+'</textarea></label>'+
+    '<div class="sheet-actions">'+(t.id?'<button type="button" class="btn tr-del" data-tr-del="1">Excluir</button>':'')+'<button type="button" class="btn" data-tr-back="1">Voltar</button><button type="button" class="btn primary" data-tr-save="1">Salvar</button></div>';
+}
+function trRead(){
+  var t=TR.ed;if(!t||!$("trTec")) return;
+  t.tec=$("trTec").value;t.hora=$("trHora").value;t.cli=$("trCli").value.trim().slice(0,80);
+  var tu=document.querySelector('input[name="trTurno"]:checked'),lo=document.querySelector('input[name="trLocal"]:checked');
+  t.turno=tu?tu.value:"m";t.local=lo?lo.value:"cli";
+  t.cidade=$("trCid").value.trim().slice(0,60);t.uf=$("trUf").value;
+  t.part=$("trPart").value?Math.max(0,parseInt($("trPart").value,10)||0):"";t.obs=$("trObs").value.trim().slice(0,300);t.st=$("trSt").value;
+}
+function trPicked(id,o){
+  if(!TR.ed) return;
+  if(id==="trCid"&&o.uf&&UFS.indexOf(o.uf)>=0){$("trUf").value=o.uf;return;}
+  if(id==="trCli"&&!$("trCid").value.trim()){
+    var c=pqClients(cur().items.filter(function(i){return norm(i.cliente)===norm(o.name);}))[0];
+    if(c&&c.cityName&&c.cityName!=="Sem cidade"){var p=c.cityName.split(" - ");$("trCid").value=p[0];if(p[1]&&UFS.indexOf(p[1])>=0) $("trUf").value=p[1];}
+  }
+}
+function trSave(){
+  trRead();var t=TR.ed;if(!t) return;
+  if(!t.date){toast("Escolha a data do treinamento.");return;}
+  if(!t.cli){toast("Informe o cliente do treinamento.");return;}
+  if(t.local!=="fil"&&!t.cidade){toast("Informe a cidade do treinamento.");return;}
+  var c=t.cidade&&CIDADES_FIXAS.filter(function(x){return norm(x[0])===norm(t.cidade);})[0];
+  if(c){t.cidade=c[0];if(UFS.indexOf(c[1])>=0) t.uf=c[1];}
+  if(t.st!=="cx"){
+    var dup=trList().filter(function(x){return x.id!==t.id&&x.st!=="cx"&&x.tec===t.tec&&x.date===t.date&&x.turno===t.turno;})[0];
+    if(dup){toast(t.tec+" já tem treinamento nesse turno ("+dup.cli+").");return;}
+    var a=auOn(t.tec,t.date);
+    if(a){toast(t.tec+" está ausente nesse dia ("+a.why+"). Escolha outro instrutor ou outra data.");return;}
+  }
+  var nb=nonBizWhy(dOf(t.date));
+  if(t.id){trList().forEach(function(x,i){if(x.id===t.id) AG.trein[i]=t;});}
+  else{t.id=trNextId();t.fil=t.fil||curCode();trList().push(t);}
+  saveAg();agRefresh();pqRefresh();
+  var d=dOf(t.date);TR.y=d.getFullYear();TR.m=d.getMonth();TR.ed=null;trRenderList();
+  toast(nb?"Treinamento salvo. Atenção: "+nb+".":"Treinamento salvo.");
+}
+function trDel(){
+  var t=TR.ed;if(!t||!t.id) return;
+  plAsk("Excluir o treinamento de "+(t.cli||"cliente")+" em "+fmtDM(dOf(t.date))+"?","Excluir",function(){
+    AG.trein=trList().filter(function(x){return x.id!==t.id;});saveAg();agRefresh();pqRefresh();TR.ed=null;trRenderList();toast("Treinamento excluído.");
+  },true);
+}
+$("trModal").addEventListener("click",function(e){
+  var t=e.target,b;
+  if(t===$("trModal")||t.closest("[data-tr-close]")){trClose();return;}
+  if((b=t.closest("[data-tr-nav]"))){var d=new Date(TR.y,TR.m+(+b.getAttribute("data-tr-nav")),1);TR.y=d.getFullYear();TR.m=d.getMonth();trRenderList();return;}
+  if(t.closest("[data-tr-back]")){TR.ed=null;trRenderList();return;}
+  if(t.closest("[data-tr-save]")){trSave();return;}
+  if(t.closest("[data-tr-del]")){trDel();return;}
+  if(t.closest("#trDate")){trRead();openDatePicker({value:TR.ed.date,title:"Data do treinamento",warn:true,onPick:function(k){TR.ed.date=k;trRenderForm();}});return;}
+});
+$("trModal").addEventListener("change",function(e){
+  if(e.target.name==="trLocal"){var box=$("trCityBox");if(box) box.hidden=e.target.value==="fil";}
+});
+document.addEventListener("click",function(e){
+  var b=e.target.closest&&e.target.closest("[data-tr-edit],[data-tr-new]");if(!b) return;
+  var inModal=!!b.closest("#trModal");
+  if(!inModal&&$("dayModal")&&!$("dayModal").hidden) closeDay();
+  if(b.hasAttribute("data-tr-edit")){var id=+b.getAttribute("data-tr-edit");if(!inModal) trOpen();trEdit(id);return;}
+  var k=b.getAttribute("data-tr-new")||"";
+  if(!inModal) trOpen(k||ui.csel);else trNew(k);
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&e.target.classList&&e.target.classList.contains("tr-sum")){e.target.click();return;}
+  if(e.key==="Escape"&&!$("trModal").hidden&&$("dpModal").hidden&&$("cfModal").hidden&&$("acBox").hidden) trClose();
+});
+
 /* ---------- aba Planejar (fase 1: links, ausências, integração, premissas e carga) ---------- */
 var PQ={integ:{},rev:{},prem:null};
 var PQ_TEC={SSF:["Jairo","Rafael","Gercelino"],LDM:["Eder"]};
@@ -7111,9 +7267,11 @@ function pqCap(code,P){
     });
   });
   var corrM=(pr.corr[code]||0)*pr.corrDia,keep=1-Math.min(90,Math.max(0,pr.marg))/100;
-  Object.keys(wk).forEach(function(w){var W=wk[w];W.corr=monthBiz?corrM*W.days/monthBiz:0;W.net=Math.max(0,(W.raw-W.corr)*keep);});
+  tot.trein=0;tot.trN=0;
+  pqTrList(code,P).forEach(function(t){var W=wk[weekOfMonth(dOf(t.date))],c=pqTrCost(t);tot.trein+=c;tot.trN++;if(W) W.trein=(W.trein||0)+c;});
+  Object.keys(wk).forEach(function(w){var W=wk[w];W.corr=monthBiz?corrM*W.days/monthBiz:0;W.net=Math.max(0,(W.raw-W.corr-(W.trein||0))*keep);});
   tot.corr=monthBiz?corrM*days.length/monthBiz:0;
-  tot.free=Math.max(0,tot.raw-tot.corr);tot.net=tot.free*keep;tot.corrM=corrM;
+  tot.free=Math.max(0,tot.raw-tot.corr-tot.trein);tot.net=tot.free*keep;tot.corrM=corrM;
   return {tot:tot,wk:wk,monthBiz:monthBiz};
 }
 function pqBand(km){
@@ -7318,7 +7476,7 @@ function renderPlanejar(){
   var head='<div class="rt-head"><div><h2>Planejar</h2><p>'+(P.cur?'Mês atual · <b>'+esc(ymLabel(P.ym))+'</b> · a partir de '+fmtDM(P.from):'Planejamento de <b>'+esc(ymLabel(P.ym))+'</b>')+' · '+C.tot.days+(C.tot.days===1?" dia útil":" dias úteis")+' · '+esc(ui.filial)+'</p></div></div>';
   var hero='<div class="pq-hero">'+
     '<div class="pq-st"><small>A planejar</small><b>'+I.plan.length+'</b><span>'+Object.keys(cli).length+' clientes · '+Object.keys(cid).length+' cidades'+(I.blk.length?' · <b style="display:inline;font-size:inherit;color:var(--nr-ink)">'+I.blk.length+' em integração</b>':'')+(I.nr?' · '+I.nr+' NÃO REALIZAR':'')+'</span></div>'+
-    '<div class="pq-st"><small>Capacidade líquida</small><b>'+nf(net,1)+'</b><span>dias-técnico · '+nf(C.tot.raw,1)+' brutos − '+nf(C.tot.corr,1)+' corretivas − '+nf(PQ.prem.marg,0)+'% de margem</span></div>'+
+    '<div class="pq-st"><small>Capacidade líquida</small><b>'+nf(net,1)+'</b><span>dias-técnico · '+nf(C.tot.raw,1)+' brutos − '+nf(C.tot.corr,1)+' corretivas'+(C.tot.trN?' − '+nf(C.tot.trein,1)+' em '+C.tot.trN+(C.tot.trN===1?' treinamento':' treinamentos'):'')+' − '+nf(PQ.prem.marg,0)+'% de margem</span></div>'+
     '<div class="pq-st"><small>Carga estimada</small><b>'+nf(D.days,1)+'</b><span>dias-técnico · ≈ '+nf(perDay,1)+' máquinas por dia útil</span></div>'+
     '<div class="pq-st '+tone+'"><small>Ocupação</small><b>'+(net?Math.round(occ*100)+"%":"—")+'</b><span>da capacidade líquida</span></div></div>';
   var V=pqVerdict(C,D),say='<div class="pq-say '+V.tone+'">'+V.html+'</div>';
@@ -7419,9 +7577,29 @@ function pqTechDays(code,P,C,days){
     var b=C.tot.byTec[t]||{cap:0},av=days.filter(function(k){return !auOn(t,k);});
     var net=Math.max(0,(b.cap-(sum?C.tot.corr*b.cap/sum:0))*keep),n=Math.min(av.length,Math.round(net)),pick=[];
     for(var i=0;i<n;i++) pick.push(av[Math.floor(i*av.length/n)]);
+    /* o dia do treinamento vira dia de campo (troca pelo dia de campo mais próximo) */
+    var trd=[];pqTrList(code,P).forEach(function(x){if(x.tec===t&&av.indexOf(x.date)>=0&&trd.indexOf(x.date)<0) trd.push(x.date);});
+    trd.forEach(function(k){
+      if(pick.indexOf(k)>=0||!pick.length) return;
+      var best=-1,bd=1e15,tk=dOf(k).getTime();
+      pick.forEach(function(p,j){if(trd.indexOf(p)>=0) return;var df=Math.abs(dOf(p).getTime()-tk);if(df<bd){bd=df;best=j;}});
+      if(best>=0) pick[best]=k;
+    });
+    pick.sort();
     T[t]={t:t,pct:pr.tec[t]||0,av:av.length,n:n,net:net,days:pick};
   });
   return T;
+}
+/* treinamentos do período que pesam na equipe da filial (cancelados não contam) */
+function pqTrList(code,P){
+  var a=kOf(P.from),b=kOf(P.last),tecs=PQ_TEC[code]||[];
+  return trList().filter(function(t){return t.st!=="cx"&&t.date>=a&&t.date<=b&&tecs.indexOf(t.tec)>=0;});
+}
+/* meio turno + deslocamento: perto 0,5 dia; até 70 km 0,65; mais longe, o dia inteiro */
+function pqTrCost(t){
+  if(t.local==="fil") return 0.5;
+  var b=pqBand(cityKm(trCity(t))),bk=b?b[1]:"b";
+  return bk==="a"?0.5:bk==="b"?0.65:1;
 }
 /* regra B por semana: vencem na semana primeiro (para não nascer backlog novo); o backlog fica com pelo menos 30% da semana
    e com toda a sobra, do mais antigo para o mais novo; o que não cabe na semana em que vence vira backlog e entra na fila */
@@ -7527,6 +7705,13 @@ function pqPlan(code,P,I,C){
     byKey[key]=s;slots.push(s);return s;
   }
   tecs.forEach(function(t){T[t].days.forEach(function(k){slot(k,t);});});
+  /* treinamentos ocupam o dia do instrutor: meio turno + deslocamento */
+  var trs=pqTrList(code,P).map(function(tr){
+    var c=trCity(tr),ci=info(c),s=slot(tr.date,tr.tec,!byKey[tr.date+"|"+tr.tec]);
+    s.used+=pqTrCost(tr);s.trein=(s.trein||[]).concat([tr]);
+    if(!s.city){s.city=c;s.bk=tr.local==="fil"?"a":ci.bk;s.trip=tr.local==="fil"?null:ci.trip;}
+    return {tr:tr,s:s,city:c,n:0};
+  });
   /* agendadas no período ficam na data (com o técnico informado, se for da equipe) */
   var free=[],fixedN=0,stale=0;
   I.plan.forEach(function(it){
@@ -7541,6 +7726,20 @@ function pqPlan(code,P,I,C){
     s.used+=pqFar(ci.bk)?1/Math.max(1,cap.far):1/rate(ci.bk,false);
     if(!s.city){s.city=c;s.bk=ci.bk;s.trip=ci.trip;}
     s.stops.push({it:it,fixed:true,city:c});s.n++;fixedN++;
+  });
+  /* aproveitar a visita do treinamento: preventivas do mesmo cliente (ou link) no mesmo dia, no outro turno */
+  trs.forEach(function(o){
+    if(o.tr.local==="fil") return;
+    var g=lkGroupOf(ui.filial,o.tr.cli),far=pqFar(o.s.bk),n=0,maxN=far?Math.max(0,cap.far-1):99;
+    var cand=free.filter(function(it){return city(it)===o.city&&(norm(it.cliente)===norm(o.tr.cli)||(g&&lkGroupOf(ui.filial,it.cliente)===g));}).sort(pqItemCmp);
+    cand.forEach(function(it){
+      if(n>=maxN) return;
+      var c=far?0:1/rate(info(city(it)).bk,cand.length>=2);
+      if(!far&&o.s.used+c>1+1e-9) return;
+      o.s.used+=c;o.s.stops.push({it:it,fixed:false,city:city(it),trein:true});o.s.n++;n++;
+      free.splice(free.indexOf(it),1);
+    });
+    o.n=n;
   });
   /* regra B, semana a semana (pqAlloc): primeiro as que vencem na semana, depois o backlog (≥30% da semana, mais antigo primeiro) */
   var A=pqAlloc(P,{plan:free},C),passes=A.wks.concat([99]);
@@ -7602,7 +7801,7 @@ function pqPlan(code,P,I,C){
   slots.sort(function(a,b){return a.k<b.k?-1:a.k>b.k?1:tecs.indexOf(a.t)-tecs.indexOf(b.t);});
   var late=[];
   slots.forEach(function(s){s.stops.forEach(function(x){var dp=x.it.dataPrevista;if(!pqBl(x.it)&&dp&&dp<s.k&&!x.fixed) late.push({it:x.it,k:s.k});});});
-  return {T:T,tecs:tecs,days:days,slots:slots,out:out,fixedN:fixedN,stale:stale,late:late,cityInfo:cityInfo,loads:loads,A:A};
+  return {T:T,tecs:tecs,days:days,slots:slots,out:out,fixedN:fixedN,stale:stale,late:late,cityInfo:cityInfo,loads:loads,A:A,trs:trs};
 }
 function pqDayLbl(k){var d=dOf(k);return PQ_WD[d.getDay()]+" "+fmtDM(d);}
 /* "TPTA0026 · Genie GS-1932 · vence 09/11" (backlog leva etiqueta à parte) */
@@ -7657,6 +7856,11 @@ function pqInsights(code,P,I,C,R){
   }
   if(R.fixedN) add("info",R.fixedN+(R.fixedN===1?" máquina já agendada foi mantida":" máquinas já agendadas foram mantidas")+" na data marcada.");
   if(R.stale) add("warn",R.stale+(R.stale===1?" máquina agendada em data que já passou (e não realizada) voltou":" máquinas agendadas em datas que já passaram (e não realizadas) voltaram")+" para a proposta.");
+  if(R.trs&&R.trs.length){
+    var tn=R.trs.filter(function(o){return o.n;}).length;
+    add("info","<b>"+R.trs.length+(R.trs.length===1?" treinamento":" treinamentos")+"</b> no período: cada um ocupa meio turno do instrutor, mais o deslocamento"+(tn?". Onde o cliente tem preventivas pendentes, elas foram para o mesmo dia, no outro turno.":"."),
+      R.trs.map(function(o){var tr=o.tr;return "<b>"+pqDayLbl(tr.date)+"</b> · "+esc(tr.tec)+" · "+(tr.turno==="m"?"manhã":"tarde")+" · "+esc(tr.cli)+" · "+(tr.local==="fil"?"na filial":esc(o.city))+(o.n?" · <b>"+o.n+(o.n===1?" preventiva":" preventivas")+" no mesmo dia</b>":"");}));
+  }
   var nc=Object.keys(R.cityInfo).filter(function(c){return R.cityInfo[c].km==null;});
   if(nc.length) add("info","Cidades <b>sem coordenada</b> (tratadas como até 70 km).",nc.map(esc));
   var ab=R.tecs.filter(function(t){return R.T[t].av<R.days.length;});
@@ -7664,7 +7868,7 @@ function pqInsights(code,P,I,C,R){
   return out;
 }
 function pqPropHTML(code,P,I,C,R){
-  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n;});
+  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n||s.trein;});
   var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>Proposta do mês</h3><p class="pq-sub">Sugestão automática a partir das premissas. É só uma sugestão: nada é gravado nos equipamentos.</p></div>'+
     '<div class="pqp-act"><div class="seg" role="group" aria-label="Ver a proposta"><button type="button" data-pq-view="dia" aria-pressed="'+(view==="dia")+'">Por dia</button><button type="button" data-pq-view="tec" aria-pressed="'+(view==="tec")+'">Por técnico</button></div><button type="button" class="btn sm" data-pq-cp="1">Copiar texto</button><button type="button" class="btn sm" data-pq-exp="prop">Exportar</button></div></div>';
   var tl='<div class="pqp-team">'+R.tecs.map(function(t){
@@ -7675,9 +7879,11 @@ function pqPropHTML(code,P,I,C,R){
   function slotRow(s,showT){
     var far=pqFar(s.bk),pct=Math.min(100,Math.round(s.used*100)),cs=[];
     s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});
+    if(!cs.length&&s.city) cs.push(s.city);
+    var trT=(s.trein||[]).map(function(tr){return '<span class="pq-tag pq-trt">🎓 treinamento '+(tr.turno==="m"?"manhã":"tarde")+' · '+esc(tr.cli)+(tr.local==="fil"?" (na filial)":"")+'</span>';}).join("");
     return '<div class="pqp-slot" style="--pc:'+(AGTC[s.t]||"#8A96AB")+'"><div class="pqp-sh">'+(showT?'<b class="pqp-t">'+esc(s.t)+'</b>':'<b class="pqp-t">'+pqDayLbl(s.k)+'</b>')+
-      '<span class="pqp-c">'+esc(cs.join(" + "))+(far?'<span class="pq-tag">viagem'+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+'</span>':'')+(s.extra?'<span class="pq-tag">fora dos dias de campo</span>':'')+'</span>'+
-      '<small>'+s.n+(s.n===1?" máq.":" máq.")+(far?"":" · "+pct+"% do dia")+'</small></div><div class="pqp-stops">'+pqStopsTxt(s.stops,true)+'</div></div>';
+      '<span class="pqp-c">'+esc(cs.join(" + "))+(far?'<span class="pq-tag">viagem'+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+'</span>':'')+(s.extra?'<span class="pq-tag">'+(s.trein?"dia do treinamento":"fora dos dias de campo")+'</span>':'')+'</span>'+
+      '<small>'+s.n+(s.n===1?" máq.":" máq.")+(far?"":" · "+pct+"% do dia")+'</small></div>'+(trT?'<div class="pqp-trs">'+trT+'</div>':'')+'<div class="pqp-stops">'+pqStopsTxt(s.stops,true)+'</div></div>';
   }
   if(!used.length) h+='<p class="pq-none">Nada para propor.</p>';
   else if(view==="dia"){
@@ -7712,7 +7918,7 @@ function pqInsHTML(list){
 function pqCopyPlan(){
   var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqPlan(code,P,I,C);
   var t="Proposta de preventivas · "+ui.filial+" · "+ymLabel(P.ym)+"\n";
-  R.slots.filter(function(s){return s.n;}).forEach(function(s){var cs=[];s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});t+="\n"+pqDayLbl(s.k)+" · "+s.t+" · "+cs.join(" + ")+" · "+s.n+(s.n===1?" máquina":" máquinas")+"\n  "+pqStopsTxt(s.stops,false);});
+  R.slots.filter(function(s){return s.n||s.trein;}).forEach(function(s){var cs=[];s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});if(!cs.length&&s.city) cs.push(s.city);t+="\n"+pqDayLbl(s.k)+" · "+s.t+" · "+cs.join(" + ")+" · "+s.n+(s.n===1?" máquina":" máquinas");(s.trein||[]).forEach(function(tr){t+="\n  Treinamento "+(tr.turno==="m"?"manhã (8h-12h)":"tarde (14h-18h)")+": "+tr.cli+(tr.local==="fil"?" (na filial)":"");});if(s.n) t+="\n  "+pqStopsTxt(s.stops,false);});
   if(R.out.length) t+="\n\nNão couberam: "+R.out.map(function(i){return i.patrimonio+" ("+i.cliente+")";}).join(", ");
   ui.copyTxt=t;copiar();
 }
@@ -7753,7 +7959,7 @@ function pqDoc(what){
   var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),D=pqCost(I.plan),R=pqPlan(code,P,I,C),ins=pqInsights(code,P,I,C,R),V=pqVerdict(C,D);
   var cli={},cid={},now=new Date();
   I.plan.forEach(function(it){cli[norm(it.cliente)]=1;cid[fmtCidade(it.cidadeEstado)]=1;});
-  var used=R.slots.filter(function(s){return s.n;}),wk={},ord=[];
+  var used=R.slots.filter(function(s){return s.n||s.trein;}),wk={},ord=[];
   used.forEach(function(s){
     var w=weekOfMonth(dOf(s.k));if(!wk[w]){wk[w]={w:w,n:0,days:{},ord:[]};ord.push(w);}
     var W=wk[w];W.n+=s.n;if(!W.days[s.k]){W.days[s.k]=[];W.ord.push(s.k);}
@@ -7761,7 +7967,9 @@ function pqDoc(what){
     s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);var c=x.it.cliente||"(sem cliente)";if(!by[c]){by[c]=[];bo.push(c);}by[c].push(x);});
     var far=pqFar(s.bk),tags=[s.n+(s.n===1?" máquina":" máquinas")];
     if(far) tags.unshift("viagem"+(s.trip!=null?" · "+pqHrs(s.trip)+" de ida":""));else tags.push(Math.min(100,Math.round(s.used*100))+"% do dia");
-    if(s.extra) tags.push("fora dos dias de campo");
+    if(s.extra) tags.push(s.trein?"dia do treinamento":"fora dos dias de campo");
+    (s.trein||[]).forEach(function(tr){tags.unshift("🎓 treinamento "+(tr.turno==="m"?"manhã":"tarde")+" · "+tr.cli+(tr.local==="fil"?" (na filial)":""));});
+    if(!cs.length&&s.city) cs.push(s.city);
     W.days[s.k].push({t:s.t,col:AGTC[s.t]||"#8A96AB",head:s.t+" · "+cs.join(" + "),tags:tags,
       clients:bo.map(function(c){var L=by[c];return {name:c,n:L.length,fixed:L.some(function(x){return x.fixed;}),ms:L.map(function(x){return {txt:pqMach(x.it),bl:pqBl(x.it)};})};})});
   });
@@ -7950,7 +8158,7 @@ function pqPdf(doc){
     return pqWrapRich(tok,maxW,function(s,b){return pdfW(s,size,b);});
   }
   function rich(L,x,yy,size,lh,col){L.forEach(function(ln,i){ln.forEach(function(t){txt(x+t.x,yy+size+i*lh,t.w,size,t.b,col);});});return L.length*lh;}
-  function pill(s,x,yy,size,bg,col){s=cl(s);var w=pdfW(s,size,true)+8;rect(x,yy,w,size+4,bg);txt(x+4,yy+size+0.6,s,size,true,col);return w;}
+  function pill(s,x,yy,size,bg,col){s=cl(s).trim();var w=pdfW(s,size,true)+8;rect(x,yy,w,size+4,bg);txt(x+4,yy+size+0.6,s,size,true,col);return w;}
   function np(first){
     cmds=[];pages.push(cmds);
     if(first){
