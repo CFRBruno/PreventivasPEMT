@@ -1,0 +1,136 @@
+# CLAUDE.md — Site "Preventivas da semana"
+
+> Leia tudo antes de agir. Trabalhe **sempre a partir do `index.html` que está na pasta do projeto** (o Bruno pode ter editado). Nunca recrie o site do zero. Este arquivo é a memória do projeto: se uma decisão nova for tomada, **atualize a seção 6 (status) antes de encerrar**.
+
+## 1. Quem é o usuário e como trabalhar com ele
+- **Bruno**, 24 anos, Analista de **PCM** (Planejamento e Controle de Manutenção) na **Tecnogera**, setor de manutenção de **plataformas elevatórias** (tesoura e articulada). Mora em Salvador. Usa um computador corporativo (resolução **1366×768**, quase sempre no **desktop**, pouco no celular).
+- Idioma: **pt-BR**, direto e enxuto. Respostas curtas, com tópicos, sem enrolação.
+- **Regra de ouro:** ele manda ideias e você **só anota e resume como entendeu**, sem mexer no código. **Só mexe no código quando ele disser "pode implementar" (ou parecido).** Não perguntar a cada ideia: anotar, manter a **fila pendente** no fim de cada resposta e aguardar. Ele prefere acumular várias ideias e implementar de uma vez.
+- Ao anotar uma ideia: resumir como entendeu, listar o que muda, fazer **no máximo 2 a 4 perguntas objetivas** (com a sua sugestão em cada uma) e fechar com "Fila pendente".
+- **Git (Claude Code):** **nunca** fazer `commit` nem `push` sem ele dizer **"pode subir"**. Mostrar o resumo das mudanças (`git status`/`git diff --stat`) antes de pedir o sinal verde. Mensagens de commit em pt-BR, curtas (ex.: `feat: aba Ritmo com corrida do mês`). Nunca usar `--force`. Perguntar em qual branch o GitHub Pages publica (provavelmente `main`) se não estiver claro.
+- Quando ele mandar um bug: investigar **sem alterar** (só leitura), explicar a causa, propor a correção e esperar o sinal verde.
+- Depois de implementar: testar de verdade (seção 7), validar a sintaxe e fechar com um resumo curto + **"O que assumi"** (decisões que você tomou sozinho) + lembrete de **Ctrl+F5** depois de subir.
+- Ele **não quer** lembretes/notificações nem "prévia do documento" nos relatórios.
+- Respeitar `prefers-reduced-motion` em toda animação.
+- Texto para campos de ordem de serviço (Problema, Observações, Solução): texto plano, sem bullets/negrito, enxuto.
+- Não mencionar no site regras de remuneração do plantão (são só contexto).
+
+## 2. Visão geral do projeto
+- **Um único arquivo `index.html`** (~750 KB; ~190 KB são os contornos do mapa, o bloco `var GEO=`) hospedado no **GitHub Pages** (repositório **público**, sem dados dentro).
+- Dados no **Firebase**: login **Google** + **Firestore** (plano gratuito). Projeto `preventivas-pemt`. A `firebaseConfig` está no módulo no fim do arquivo (não é segredo). Sem login o site roda em **modo local**.
+- Fonte: Bricolage Grotesque (Google Fonts). Lib externa: **SheetJS (XLSX)** (importar/exportar Excel). PDF por **escritor próprio**. Imagens (relatórios, escala de plantão) por **canvas**.
+- **Filiais:** `BA - SSF` (Tecnogera Simões Filho, código `SSF`) e `BA - LDM` (Tecnogera Luís Eduardo Magalhães, código `LDM`). A NSS (SE) só aparece em Chamados.
+- **Técnicos por filial** (fórmula do planejamento): SSF = 2, LDM = 1 (`TEC_FILIAL`). **Éder** fica nos 30 dias de sobreaviso na LDM (não entra na escala de plantão).
+
+## 3. Arquitetura e padrões de código
+- **JS vanilla estilo ES5** (`var`, funções declaradas/hoisted, sem build). Um `<script>` clássico com uma IIFE gigante + um `<script type="module">` para o Firebase.
+- **Ponto de inserção:** blocos novos entram **antes** do marcador `/* ---------- eventos ---------- */`. O `renderAll()` e as cargas (`loadRefs/loadPlans/loadRace/loadLinks/loadDB/loadMeta/loadAg/loadCh`) ficam no fim da IIFE. `window.__appReload` refaz tudo quando a nuvem traz dados (e chama as mesmas cargas).
+- **Edição de código:** o `index.html` é grande. Use **buscas pontuais** (`grep -n`, `cut -c1-200`) e edições cirúrgicas. **Nunca imprima o bloco `var GEO=`** (~190 KB). Ao editar por script, conferir que o trecho procurado aparece **exatamente 1 vez** (`</header>` aparece também dentro de uma string JS do Kanban; use a 1ª ocorrência).
+- **Persistência:** tudo passa por `safeGet/safeSet/safeDel`. `safeSet` dispara `window.__cloudPush` quando `isSyncKey(k)` é verdadeiro.
+  - **Sincronizadas** (`KEYS` no módulo + `isSyncKey`): `prev_db_v1` (preventivas do mês atual), `prev_refs_v1` (base de referência), `prev_meta_v1` (meta/BI por filial), `prev_ag_v1` (Agenda, **inclui** plantão e vínculos de atividades), `prev_ch_v1` (Chamados), `prev_plans_v1` (índice de meses/planejamentos/cópias), `prev_race_v1` (corrida do Ritmo), `prev_links_v1` (clientes linkados).
+  - **Dinâmicas e sincronizadas** (regex `DYN = /^prev_(pl|bk)_/` no módulo): `prev_pl_<id>` (dados de cada planejamento) e `prev_bk_<id>` (cópias de segurança).
+  - **Só locais:** `prev_filial`, `prev_layout`, `prev_theme`, `prev_uid`, `prev_pm_pin`.
+  - **Para criar um dado sincronizado novo:** acrescentar a chave em `KEYS` (módulo) **e** em `isSyncKey`, e chamar o `loadX()` no início e no `__appReload`.
+- **Nuvem:** Firestore `users/{uid}/store/{chave}__meta` + `{chave}__{i}` (JSON em pedaços de 200 mil caracteres). Regras: só o `uid` dono **e** o e-mail do Bruno, e-mail verificado. Conta sem permissão → `denied()` desloga e apaga o cache. Troca de usuário apaga o cache. Sair apaga os dados locais (inclui chaves dinâmicas, `wipeLocal`).
+- **Contextos de dados (planejamento de meses):** `ui.ctx` = `"cur"` (mês atual) · `"plan"` (planejamento) · `"bk"` (cópia, **somente leitura**). `DB` e `META` são **trocados** ao mudar de contexto (`setCtx(kind,id)`). **Nunca grave em `prev_db_v1` diretamente:** use `saveDB()` (escolhe a chave por `ctxKey()` e atualiza o resumo do mês). Em `"bk"` as ações de edição são bloqueadas (`roBlock()`); `saveDB()` devolve `false`. `parseDBStr(s)` normaliza um banco lido do storage.
+- **CSS:** variáveis de tema (`--bg --surface --line --ink --muted --f --fl --ft --fon --navy`), `[data-filial="SSF|LDM"]` define a cor de destaque, claro/escuro por `prefers-color-scheme` + `data-theme`. Modais precisam de `data-filial` no elemento para usar `var(--f)`. `[hidden]{display:none!important}`. O bloco **"layout compacto"** (`@media (min-width:820px)`) e o de **largura 1120** ficam no fim do `<style>` e sobrescrevem os anteriores.
+- **Camadas (z-index):** sidebar 36 · modais `.modal` 60 · `.cx-modal` 70 · `.cx-fs` 75 · confirmação `cfModal` 90 · seletor de atividades `lvModal` 95 · popup de link `lk-tip` 130 · autocomplete `acBox` 120.
+- **Prefixos de classe (conferir antes de criar):** `cx-*` (Agenda/modais), `pk-*`/`dp-*` (datas), `ch-*` (Chamados), `mp-*` (Mapa), `kb-*` (Kanban), `map-*`/`mi-*` (Grafo), `pm-*`/`pmr-*` (sidebar e planejamento), `rt-*` (Ritmo), `sb-*` (plantão), `lk-*`/`lk` (links de clientes), `lv-*` (atividades vinculadas), `fx`/`fxbar` (faixa do cabeçalho), `ac-*` (autocomplete), `bk-*` (janela do cliente), `tile`, `card`, `lrow`, `crow`/`cgrid`. Já houve colisão (`.cx-in`, `.chip`, `.card`, `.bk-*`).
+- **Confirmação genérica:** `plAsk(msg, rotuloSim, fn, perigoso)` (usa o `cfModal`). `cfAsk` é a antiga, vermelha.
+- **Animações de mola:** `cubic-bezier(.34,1.56,.64,1)`; helpers `cxBounce`, `cxPlaceHL`, `swapAnim`, `slideToggle`, `burst`. Dentro de `@media (prefers-reduced-motion: no-preference)` ou com a flag `REDUCE`.
+- Evitar escapes octais em strings; usar o caractere direto. Conteúdo do usuário sempre com `esc()`. Datas da agenda/chamados em **ISO `YYYY-MM-DD`** (`kOf`, `dOf`); datas das preventivas em **`dd/mm` sem ano** (`parseAg`, `toAg`).
+- **Mapa de funções úteis:** `fin(it)` (calcula `tom`/ação), `metrics(items)`, `metaState(code)`, `refCount()`, `renderFx()`, `renderMetrics()`, `renderBody()`, `renderClientes`, `renderList`, `renderKanban`, `renderAgenda` (Semana), `renderMapa/buildMap/mapDraw/orgOn/orgOff` (Grafo), `renderRitmo/raceCalc/raceStart`, `renderCal/openDay/openTech/tfSave` (Agenda), `sbOpen/sbDraw/sbExport` (plantão), `lkOpen/lkI` (links), `lvOpen/lvAdd` (vínculos), `openBulk/applyBulk` (janela do cliente), `acRender/acItems/cityList` (autocomplete), `pmRender/pmLayout/setCtx/pmTurn` (meses), `makeBackup`.
+
+## 4. Estrutura da interface (`ui.section`)
+**Oito abas** (no celular em 2 linhas de 4; no desktop em uma): `equip` (Grade/Lista/**Kanban**) · `clientes` · `semana` · `grafo` · `mapa` · **`ritmo`** · `agenda` · `chamados`. `renderBody()` despacha.
+- **Cabeçalho:** título + botão do mês (☰ com o mês ativo) + sincronização/sair/tema. **Rola junto com a página.** Só a **faixa de resumo `#fx`** (dentro de `.fxbar`, `position:sticky`) fica fixa no topo, em **uma linha**. Subtítulo = mês exibido (mês atual, planejamento ou cópia), **nunca** o período do Excel.
+- **Sem abas de filial no cabeçalho:** a filial se escolhe na **sidebar** (botões SSF/LDM; na faixa lateral recolhida também). `ui.filial` guarda a escolha (`prev_filial`).
+- **Largura:** conteúdo (cabeçalho, faixa, aviso, meta, indicadores, abas) em **1120 px**, centralizado; a área `#list` (listas, Grafo, Kanban...) fica em até **1280 px**. `main > :not(#list):not(#removed)` recebe a regra de 1120.
+- **Escala compacta (~12%)** em ≥820 px: ver bloco "layout compacto" no fim do CSS.
+- **Sidebar de meses (`#pmSide`):** no desktop com mouse (`(hover:hover) and (pointer:fine) and (min-width:820px)`): **faixa fina de 64 px** (☰, SSF, LDM, "+", chips dos meses) que **expande ao passar o mouse** (288 px) **sobrepondo** o site, com **escurecimento animado** (`#pmBack`); alfinete (`#pmPin`/☰) **fixa aberta** (então empurra o conteúdo; `prev_pm_pin`). Não recolhe com menu "⋯" ou modal abertos. Em toque ou <820 px é **gaveta** aberta pelo ☰.
+- **Topo de Equipamentos:** aviso de importação, **bloco da meta**, indicadores (Total, Com/Sem previsão semanal, Backlog, Agendadas, % agendado, **Realizadas e % realizado em verde**, **Retornos em marrom**, **NÃO REALIZAR**), busca e filtros.
+- **Semana:** gráfico por dia/técnico, lista "Programação da semana", relatório em imagem (canvas PNG, por dia ou por semana).
+- **Chamados:** corretivas (calendário, lista, detalhe, visitas, relatório PDF/Excel/CSV).
+
+## 5. Regras de negócio (o que mais importa)
+### 5.1 Preventivas
+- `tom`: `rem` · `sim` (realizada) · `nr` (NÃO REALIZAR) · `ret` (retorno) · `nao` · `ag` (tem data) · `neu`.
+- **Retorno** = "Data agendada" contém "RETORNO": a máquina voltou para a filial (vira **interna**) e a preventiva no cliente deixa de ser necessária. Tem indicador próprio e a cor **marrom** (`--c-ret`, `--ret-ink`, `TOMC.ret = #A9683A`). **Decidido (03/11/2026):** retorno = uma máquina locada a menos. Em `metaState`/`retAdj`, cada retorno marcado **depois da última atualização do BI** (patrimônio fora de `META[code].retBase`), não realizado e do mês de referência, faz **locados −1** e **−1 na situação da máquina**: `Backlog` → a executar −1; `Em dia` com data prevista no mês de referência (= a vencer) → a executar −1 e a vencer −1; demais → só locados. Desmarcar devolve os números. Ao salvar "Atualizar BI", `retBase` guarda os retornos existentes (não descontam de novo); dados antigos sem `retBase` descontam todos os retornos. O Total de equipamentos da lista **não** mudou (o retorno continua nos indicadores).
+- **NÃO REALIZAR** = previsão semanal "NÃO REALIZAR"; **não** sai dos pendentes da meta.
+- **Agendadas** = com data, **não realizada**, não retorno, não NR (vale em Equip., Semana — tile, lista e gráfico — e no relatório por semana; o relatório por dia mostra realizadas nas linhas, mas o tile conta só pendentes).
+- **Agendamento pendente** = sem data, não realizada, não retorno, não NR.
+- **`realizadoEm`** (timestamp): gravado ao marcar "Feito" (`stampReal`) em cartão, lista, Kanban, edição, janela do cliente e painel do Grafo; apagado ao desmarcar. O cartão mostra **"Realizada em DD/MM"** (`realFoot`). Realizadas antigas sem data **não** mostram rodapé.
+
+### 5.2 Meta de preventivas em dia (por filial, `META`)
+- **A meta vale sempre até o último dia útil do mês de referência** (`metaMonth()`: mês atual do site, ou o mês da cópia). **Não há campo de prazo.**
+- Campos do "Atualizar BI": **Locados**, **Equipamentos com planos a executar** (= card do BI com esse mesmo nome; já inclui os a vencer), **A vencer no mês** (já incluído) e **Meta (%)**.
+- taxa = (locados − pendentes) ÷ locados; pendentes = valor do BI − feitas no site desde a atualização (`baseDone`) − retornos ainda não realizados. Máx. de pendentes = `floor(L×(1−meta))`. Mostra "faltam N" e "≈ X por dia útil até dd/mm (N dias úteis, sem contar hoje)".
+- **`refCount()`:** dias úteis restantes **só do mês de referência, sem contar hoje** (antes do mês: a partir do dia 1) e semanas restantes (segunda a sexta) **do mês, contando a atual**. Novembro/2026 tem 19 dias úteis (Finados 2/11 e Consciência Negra 20/11 são feriados).
+- **Dias úteis (regra rígida, contra hora extra):** segunda a sexta **menos feriado nacional**. Pontos facultativos contam como dia útil. Sábado/domingo/feriado: o site avisa mas deixa salvar e não preenche a semana. Feriados por ano (Páscoa).
+- **Semana do mês (1ª–5ª):** conta se tiver ao menos um dia útil; `weekOfMonth(d)`.
+
+### 5.3 Faixa de resumo (`renderFx`, texto curto)
+- **Mês atual:** `BA - SSF · 63 previstas · 04 realizadas, 59 pendentes · 5 semanas (com a atual) · 19 dias úteis (sem hoje) · taxa 56% · faltam 49 para a meta`.
+- **Planejamento:** `BA - SSF · 63 previstas · 44 clientes, 14 cidades · 1,7 equip. por técnico / dia` (fórmula: total ÷ dias úteis do mês ÷ técnicos da filial).
+- **Cópia:** `BA - SSF · 63 no total · 3 pendentes no mês · taxa alcançada 88%`.
+
+### 5.4 Planejamento de meses
+- Estrutura em `PL = {curYm, curSum, plans:[{id,ym,name,goal,bi,sum,from}], backups:[{id,ym,label,ts,sum}]}` (`prev_plans_v1`). `PL.curYm` = mês atual (muda só por **Virar o mês** ou **Restaurar**, e pelo **período do Excel** ao importar no mês atual, se não houver planejamento daquele mês: `ymFromText`).
+- **+ Novo planejamento:** mês/ano (sugere o próximo), ponto de partida (em branco / **copiar pendentes** do mês atual / de outro planejamento), nome opcional, meta e BI por filial. **Copiar pendentes** = não realizadas, não retorno, não removidas; limpa data, semana e realizado; mantém técnico e observações. Só meses depois do mês atual; um planejamento por mês.
+- **Virar o mês atual:** guarda o atual como **cópia de segurança** (inclui meta e a corrida do Ritmo; **não** inclui Agenda/plantão/links), promove o planejamento (dados + meta do BI com `baseDone:null`) e apaga o planejamento. Máx. **12 cópias**. Restaurar guarda antes o mês atual. Cópias abrem em somente leitura; "Baixar/Exportar" geram `.xlsx`.
+- Em planejamento: indicadores de "quanto está planejado", sem botão Feito nem bloco da meta, Semana abre na 1ª semana do mês, **Kanban por semana (1ª–5ª)**, Ritmo indisponível. **Agenda e Chamados são únicos.**
+
+### 5.5 Ritmo (corrida do mês) — `prev_race_v1`
+- **Iniciar corrida:** fixa, por filial, `ritmo = necessário para a meta ÷ dias úteis do início ao último dia útil` (conta o dia do início se for útil e antes das 19h). **Atualizar corrida** = checkpoint (novo trecho, ritmo recalculado e fixo; histórico guardado; mesmo dia substitui). **Reiniciar** apaga.
+- Meta diária **arredondada para cima** acumulada: `meta(d) = ceil(ritmo·d) − ceil(ritmo·(d−1))` (ritmo 1,3 → 2,1,1,2,1 = 7 na semana).
+- **Cobrança às 19h:** o dia só é cobrado a partir das 19h; antes, só soma o que passou da meta. Fim de semana/feriado não têm meta; o que se faz neles entra como "fora do expediente" na semana.
+- **Dívida:** o saldo negativo da semana vira dívida **inteira** na semana seguinte (continua passando adiante se não cobrir); excesso positivo **não abate**.
+- **Dois saldos:** do **trecho atual** e do **mês**, em preventivas e em dias (`saldo ÷ ritmo`). Hero: 🐇 acelerado (≥ +0,5 dia), 🐢 atrasado (≤ −0,5), 🚶 no ritmo; setas animadas (verdes/vermelhas). Semanas com quadradinhos (verde/cinza/vermelho), saldo semanal, gráfico acumulado, "necessário daqui para frente". Cópias mostram a corrida em leitura.
+
+### 5.6 Técnicos e Agenda
+- `TECS` (preventivas): Anderson Santos, Gercelino Mascarenhas, Jairo Alves, Rafael Torres, **Éder Anunciação**. `tecAlias()` padroniza caixa/acento e "Marivaldo Pimentel" → Éder; nomes fora da lista em MAIÚSCULAS viram "Nome Próprio".
+- **Agenda (4 técnicos):** Eder (vermelho), Gercelino (amarelo), Jairo (azul), Rafael (verde). Registros diários: manhã/tarde (texto) + **atividades vinculadas** (`AG.tech[dia][tec] = {m,t,mi[],ti[]}`).
+- **Atividades vinculadas** (botão "+ Vincular" no passo 1 do fluxo "Técnicos", que agora mostra a **data dos registros** no passo 1): aba **Preventivas** (máquinas da **filial atual** agendadas para aquele dia, agrupadas por cliente, já marcadas → `2x Preventivas Cliente X (TPTA…, TPTA…)`) e aba **Corretivas** (chamados **abertos da filial atual** → `1x Corretiva Cliente X (TAG, Chamado nº N)`). Grava o **técnico nas máquinas** (caixa marcada por padrão; `lvApplyTec`). Duplicata no mesmo dia bloqueada ("já vinculado a Jairo, manhã"). Aviso **"⚠ reagendada"** se a máquina mudar de dia; "✓ resolvido"/"chamado excluído" para chamados. Aparecem no resumo do dia e na janela do dia.
+- **Plantão de sobreaviso** (botão "Plantão" na Agenda; `AG.plantao = [{id,from,to,tec}]`): técnicos **Rafael, Jairo, Gercelino** (rodízio nessa ordem; nomes completos na imagem: Rafael Torres Sales, Jairo Conceição Alves, Gercelino Mascarenhas dos Santos Junior). **Um técnico por período**, **dentro de um único mês**, sobreposição **bloqueada**, dias sem plantão **avisados**. "Gerar escala" divide o mês em blocos de 10 dias (o último leva o resto). Barras coloridas contínuas no calendário; resumo do dia mostra o sobreaviso. **Exportar imagem** = PNG "liquid glass" (`sbDraw`, 1080 px de largura, prévia + baixar/compartilhar), uma por mês. **Fora das cópias de segurança.**
+
+### 5.7 Clientes
+- **Ordenar:** A–Z, Mais máquinas, **Mais perto da filial** (linha reta; `CID_XY` com 25 cidades, `FIL_XY`: SSF −12,82815/−38,405885; LDM −12,0819764/−45,7308899; cidade sem coordenada = "distância indisponível", no fim).
+- **Nome do cliente em uma linha** (coluna `--cw` por cidade, até 46%; corta com "…" e `title`). **Clicar no patrimônio abre a edição** (`data-edit`).
+- **Janela "Agendar" do cliente:** previsão semanal, técnico, data para todas, **Realizado?** (Não alterar/Sim/Não/limpar) + botão **Feito** (preenche Sim), botão **Feito por máquina**, RETORNO, lista de máquinas com datas.
+- **Linkar clientes** (`prev_links_v1`: `{groups:[{id,filial,name,clients[]}]}`): grupos **por filial**, vários grupos (cor própria). Ícone de **corrente** ao lado do cliente e dos equipamentos (Clientes, cartões, lista, Kanban), com **popup** (nome do grupo, clientes, cidade, pendentes). Na janela "Agendar", caixa **"Aplicar também aos clientes linkados"** (marcada) com as **máquinas pendentes** de cada um (desmarcáveis). **Espalha só previsão semanal, técnico e data, substituindo**; **não** espalha Realizado, RETORNO nem observações; **vale só pela janela Agendar**; depois cada máquina é **independente**. Resumo no fim ("Aplicado também a 5 máquinas de B e 2 de C"). Link fora das cópias.
+
+### 5.8 Grafo (aba `grafo`)
+- **Cidade (roxo `#7B3FE4`) → Cliente.** Sem nós de equipamento. **Tamanho do cliente ∝ nº de equipamentos**; **anel** por situação (realizado, agendado, não realizado, backlog laranja, retorno, não realizar, sem status).
+- **Clicar na cidade** organiza os clientes dela em **coluna A–Z** com animação (2 colunas se for alta) e enquadra a câmera; clicar fora ou na cidade de novo **desfaz** (`orgOn/orgOff`).
+- **Painel lateral** (desktop, ao lado do grafo): resumo; ao clicar num cliente lista os equipamentos com **Feito** e **Editar**. **Nomes curtos** (`cliShort`: sem LTDA/S/A, até 18 letras, caixa de nome próprio, siglas sem vogal em maiúsculas), sem sobreposição (rótulo no mouse + colisão); cidades sempre com nome.
+
+### 5.9 Mapa (BA, PE, PI, SE, TO)
+SVG embutido (`GEO`, 1.038 municípios, regiões consolidadas). Só cidades com máquinas ganham cor (mais escuro = mais). **Clusters** por zoom (<2,4 regiões; acima cidades; nomes a partir de 4). Filtros: Todos, Agendamento pendente, Agendadas, Realizadas, Em dia, Backlog. **Território LDM** = Extremo Oeste Baiano, Vale São-Franciscano, PI e TO; SSF = resto (**suposição**). Aliases de município em `MPALIAS`.
+
+### 5.10 Chamados (corretivas)
+Campos: N° do chamado, **N° da OM (6 números)**, abertura/resolução com horário, causa, **TAG `TPTA0`+4 números (obrigatória)**, modelo, cliente, responsável, telefone `(00) 90000-0000`, contato alternativo, consultor(a), **cidade**, UF (BA, PE, PI, SE, TO; padrão SE), **filial obrigatória (SSF/LDM/NSS)**, distância, peça substituída (+ doadora), cobrança, observações. Visitas com 5 resultados. "dias" de chamado = **dias corridos**. Relatório com filtros, 15 estatísticas, PDF/Excel/CSV (`;` + BOM).
+- **Cidade (e Modelo/Técnico) com autocomplete novo:** cartão com ícones, trecho digitado em negrito na cor da filial, setas+Enter, linha **"Usar 'texto'"** (cidade fora da lista é sempre permitida), abre para cima se faltar espaço. **A lista de cidades dos chamados é fixa** (`CIDADES_FIXAS`, 25 cidades da carteira: Alagoinhas, Barreiras, Camaçari, Conceição do Jacuípe, Cruz das Almas, Feira de Santana, Guanambi, Ibirapitanga, Iraquara, Irecê, Itagibá, Itapetinga, Lauro de Freitas, Luís Eduardo Magalhães, Maracás, Salvador, São Desidério, São Francisco do Conde, Simões Filho, Vera Cruz, Vitória da Conquista, Santa Filomena-PI, Urucuí-PI, Almas-TO, Arraias-TO). Se surgir cidade nova, acrescentar em `CIDADES_FIXAS` e em `CID_XY`.
+
+## 6. Status do projeto
+**Implementado e testado em Chromium headless** (nunca com o Firebase real):
+- Tudo das seções 4 e 5: login/sincronização, importação do Excel, base de referência, edição, Feito (com data), agendamento por cliente, filtros, Retornos/NR, Kanban, Clientes (distância, links, nomes, Feito), meta/BI, Semana, Grafo (cidade→cliente), Mapa, **Ritmo**, Agenda (técnicos, atividades vinculadas, plantão + PNG), Chamados, relatórios, **planejamento de meses** (sidebar, cópias, virar o mês), faixa fixa, layout compacto e largura 1120.
+- Padronização de técnicos, autocomplete novo, "Agendadas" sem realizadas.
+
+**Fila pendente:** vazia. (Retorno reduz locados e a situação da máquina no BI: implementado em 03/11/2026, testado em Chromium; ver 5.1.)
+
+**Decisões em aberto / limites conhecidos:**
+- **Firebase real nunca foi testado.** Na primeira subida conferir: login, sincronização PC↔celular, status "Sincronizado", e as **chaves novas** (`prev_plans_v1`, `prev_race_v1`, `prev_links_v1`, `prev_pl_*`, `prev_bk_*`, `prev_ag_v1` com plantão/vínculos).
+- **Território da LDM** e **cidades sem coordenada** (`CID_XY`) são suposições; coordenadas das 25 cidades vêm de conhecimento geral (erro de poucos km).
+- **BI da LDM:** o Bruno só conferiu os números da SSF (Novembro/2026: 135 locados, **62** a executar, 47 a vencer, meta 92%). Para a LDM usar sempre os números do BI **com o filtro da LDM**.
+- **Chamados: tempo em horas** (oferecido, não pedido). **Backup/exportação JSON de Agenda e Chamados:** não implementado.
+- A regra de **dias úteis** só conhece feriados **nacionais**; Pontos facultativos contam como dia útil.
+- Ideia descartada: trocar "a executar" por "Backlog" na janela do BI (o card do BI já tem o mesmo nome do campo).
+
+## 7. Como testar e entregar
+- **Fluxo no Claude Code (app Desktop, pasta clonada do repositório):** 1) ler este arquivo e o `index.html`; 2) anotar a ideia e esperar **"pode implementar"**; 3) alterar; 4) validar a sintaxe e testar; 5) mostrar o resumo + `git diff --stat`; 6) esperar **"pode subir"**; 7) `git add`, `git commit`, `git push`; 8) lembrar de **Ctrl+F5** e de aguardar ~1–2 min do GitHub Pages.
+- **Validar sintaxe:** extrair os `<script>` do HTML e rodar `node --check` (o módulo como `.mjs`).
+- **Testar no navegador:** abrir o `index.html` direto (`file://`); sem internet o Firebase falha e o app roda em **modo local** (o erro "Failed to fetch dynamically imported module" é esperado). Semear dados gravando `prev_db_v1`, `prev_ch_v1`, `prev_meta_v1`, `prev_plans_v1` etc. no `localStorage` **antes** de carregar. Se houver Node/Playwright/Puppeteer, usar Chromium headless com `--no-sandbox` e `page.evaluateOnNewDocument` para semear dados e **simular o relógio** (sobrescrever `Date`; para avançar o tempo entre recargas, guardar o "agora" em `sessionStorage`).
+- **Hover não é emulado no Chromium headless:** a sidebar de faixa fina só aparece com `(hover:hover) and (pointer:fine)`. Para testar o comportamento de desktop, gere uma **cópia de teste** do HTML removendo `(hover:hover) and (pointer:fine) and ` do CSS e do JS.
+- **Excel offline:** injetar `xlsx.full.min.js` com `addScriptTag`. **PDF:** conferir com `pdftotext`/`pdftoppm`. **Downloads:** sobrescrever `URL.createObjectURL`/`HTMLAnchorElement.prototype.click`.
+- **Regressão mínima a cada mudança:** abrir sem erros de JS; marcar/desmarcar Feito; importar/semear dados; criar e virar um planejamento; abrir Ritmo; calendário da Agenda; janela do cliente (Agendar/Linkar); autocomplete de cidade; Grafo (organizar cidade); faixa fixa ao rolar.
+- Fechar sempre com um resumo curto, **"O que assumi"**, limites e a fila pendente.
