@@ -98,6 +98,7 @@
 - **Plantão de sobreaviso** (botão "Plantão" na Agenda; `AG.plantao = [{id,from,to,tec}]`): técnicos **Rafael, Jairo, Gercelino** (rodízio nessa ordem; nomes completos na imagem: Rafael Torres Sales, Jairo Conceição Alves, Gercelino Mascarenhas dos Santos Junior). **Um técnico por período**, **dentro de um único mês**, sobreposição **bloqueada**, dias sem plantão **avisados**. "Gerar escala" divide o mês em blocos de 10 dias (o último leva o resto). No calendário, linha **fina (3 px) e suave** na base de cada célula (sem cobrir os números), só mostrada se a caixa **"Plantão PEMT"** (cabeçalho da Agenda) estiver marcada (**desligada por padrão**; escolha em `prev_agpl`, só local, **não** usar prefixo `prev_pl_`, que é sincronizado); hover (ou toque no celular) mostra balão "Técnico · dd/mm a dd/mm" (`plTip`). Legenda "Sobreaviso" só aparece com a caixa ligada; o resumo do dia sempre mostra o sobreaviso. **Exportar imagem** = PNG "liquid glass" (`sbDraw`, 1080 px de largura, prévia + baixar/compartilhar), uma por mês. **Fora das cópias de segurança.**
 
 - **Treinamentos operacionais de PEMT** (botão "🎓 Treinamentos" na Agenda; `AG.trein=[{id,date,tec,turno:"m"|"t",hora,cli,local:"cli"|"fil",cidade,uf,part,obs,st:"ag"|"ok"|"cx",fil}]`, dentro do `prev_ag_v1`): treinamento para o cliente, **um instrutor** (técnico), **4 h** — manhã **8h–12h** ou tarde **14h–18h** (horário de início opcional). No cliente (~95%) ou na filial (`TR_FIL`). Cliente com autocomplete (`data-ac="cli"`, preenche a cidade do cliente), cidade com o autocomplete de cidades. Bloqueia o mesmo técnico no mesmo turno/dia e técnico ausente; fim de semana/feriado só avisa. Calendário mostra 🎓; resumo do dia e janela do dia (seção "Treinamentos") listam e editam. **Sem reserva mensal**: o planejamento conta só os agendados (cancelados não contam).
+  - **Bloqueio na Agenda:** no fluxo "Técnicos", o **campo de texto** do turno do treinamento daquele técnico fica travado (`tfTurnoHTML`, id `tfMLock`/`tfTLock` — não usar `tfM`/`tfT`, que são copiados para o rascunho); o texto que já existia fica guardado e volta se o treinamento for cancelado/excluído. "+ Vincular" e o outro turno seguem normais. O resumo do dia mostra a linha própria do treinamento **e** o item na linha do técnico ("Manhã: 🎓 Treinamento CLIENTE"). Avisos (não impedem): preventiva agendada para o técnico no dia (`trWarnTxt` em `saveEdit`/`applyBulk`) e visita de chamado no dia (`trDayWarn`; chamado não tem técnico, o aviso é geral).
   - **No Planejar:** custo = meio turno + deslocamento (`pqTrCost`: perto ou na filial 0,5 dia; até 70 km 0,65; mais longe, dia inteiro); sai da capacidade (`pqCap`, aparece no resumo "− X em N treinamentos"); o dia do treinamento vira dia de campo do instrutor (`pqTechDays` troca pelo dia de campo mais próximo); na proposta o dia aparece com a etiqueta "🎓 treinamento manhã · CLIENTE". **Aproveitar a visita:** preventivas pendentes do mesmo cliente (ou link) na mesma cidade vão para o mesmo dia, no outro turno (longe: até `cap.far − 1` máquina). A leitura do planejador lista os treinamentos e quantas preventivas foram juntas.
 
 ### 5.7 Clientes
@@ -147,7 +148,14 @@ Ajuda a montar um plano **factível, só em dias úteis, com folga**, para bater
   - Plantão: o botão "Compartilhar" da prévia da escala virou **"Copiar"** (`copyImg`).
   - **Carga por semana** com seletor (`ui.pqWk`): **"Pela proposta"** (padrão: máquinas na semana em que a proposta as colocou, contra os dias de campo da semana; backlog, viagens, % ocupado, folga e "Não couberam"), **"Por vencimento"** ( linha "Backlog (já vencidas)" com quando zera; cada semana mostra "vencem" + "backlog atacado" em barra azul/laranja, folga e **saldo acumulado** = capacidade até a semana − o que vence até ela − todo o backlog) ou **"Pela previsão semanal"** (vista antiga).
   - Telas "Por dia" (por semana) e "Por técnico", chips da equipe, "Copiar" (texto plano). `*` = backlog. Classes `pqp-*` e `pqi-*` (não usar `.info`/`.ok` soltos: `.info` já existe nos cartões).
-- **Próxima fase (combinada, não feita):** fase 3 = "Plano" guardado **separado** (não sobrescreve os equipamentos), com "planejado × agendado/realizado", **"Aplicar" por semana ou cliente** (grava só previsão semanal e técnico) com **Desfazer**; no planejamento de mês futuro, "Aplicar tudo" direto.
+- **Fase 3 (feita em 03/11/2026):** "Salvar como plano" grava a proposta em `PQ.saved["ym|filial"]` (`pqSaveFromR`: slots com `pats`, `st`, `why`, `moved`, `trIds`, `T`, `out`, `undo`). Com plano salvo, a tela, a carga "Pela proposta", o texto e a exportação usam o plano (`pqSavedR`/`pqCurR`); a **leitura do planejador continua ao vivo**. Ações:
+  - **Confirmar** visita (`pqConfirm`): grava nas máquinas **semana, técnico e data** (vira agendamento) e marca "✓ Confirmado".
+  - **Não deu** (motivos em `PQ_ND`) (`pqNoGo`): só essa visita sai; as máquinas pendentes são reencaixadas no próximo dia de campo do plano que couber (mesmas regras de cidade/distância; nunca a mesma cidade distante para dois técnicos no mesmo dia); sem vaga → "sem vaga no mês". Máquinas que já tinham data nos equipamentos ficam com a data antiga até confirmar o novo dia.
+  - **Aplicar** por semana (`data-pq-apw`) ou por cliente da visita (`data-pq-apc`): grava **previsão semanal e técnico**; a caixa "Ao aplicar, gravar também o dia sugerido" (`ui.pqDay`, desligada por padrão) inclui a data. **Aplicar tudo** só em planejamento de mês futuro.
+  - **Desfazer** (pilha de 10 em `sp.undo`): volta campos das máquinas, status da visita e o reencaixe do "Não deu".
+  - **Refazer plano** (nova proposta, mantém a pilha de desfazer) e **Descartar plano**.
+  - **Planejado × realizado** (`pqAdhHTML`): por semana, planejadas, realizadas, agendadas, a agendar, confirmadas e "não deu"; aderência = realizadas ÷ planejadas.
+- **Antes (referência):** fase 3 = "Plano" guardado **separado** (não sobrescreve os equipamentos), com "planejado × agendado/realizado", **"Aplicar" por semana ou cliente** (grava só previsão semanal e técnico) com **Desfazer**; no planejamento de mês futuro, "Aplicar tudo" direto.
 
 ## 6. Status do projeto
 **Implementado e testado em Chromium headless** (nunca com o Firebase real):
@@ -158,8 +166,12 @@ Ajuda a montar um plano **factível, só em dias úteis, com folga**, para bater
 
 - **Aba Planejar, fase 2** (03/11/2026, testada no navegador do app; subiu): ver 5.11.
 
-**Fila pendente:**
-1. **Planejar fase 3:** Plano separado, aderência, Aplicar por partes com Desfazer.
+- **Aba Planejar, fase 3** e **bloqueio do turno pelo treinamento** (03/11/2026, testados no navegador do app; subiram): ver 5.6 e 5.11.
+
+**Fila pendente:** vazia.
+
+**Histórico da fila:**
+1. ~~**Planejar fase 3:** Plano separado, aderência, Aplicar por partes com Desfazer.~~ Feito (03/11/2026).
 
 **Decisões em aberto / limites conhecidos:**
 - **Firebase real nunca foi testado.** Na primeira subida conferir: login, sincronização PC↔celular, status "Sincronizado", e as **chaves novas** (`prev_plans_v1`, `prev_race_v1`, `prev_links_v1`, `prev_pq_v1`, `prev_pl_*`, `prev_bk_*`, `prev_ag_v1` com plantão/vínculos/ausências).

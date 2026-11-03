@@ -1410,6 +1410,26 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .tr-sum{cursor:pointer;border-radius:8px}
 .tr-sum:hover{background:color-mix(in srgb,var(--f) 8%,transparent)}
 .tr-sum.cx{opacity:.55}
+.pqs-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:12px;background:var(--bg)}
+.pqs-sp{flex:1}
+.pqs-day{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.pqs-day input{accent-color:var(--f)}
+.pqs-wh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pqs-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.pqs-ctl .btn.sm{min-height:30px;padding:0 10px;font-size:12.5px}
+.pqs-st{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px}
+.pqs-st.ok{background:var(--ok-bg);color:var(--ok-ink)}
+.pqs-st.nd{background:var(--bad-bg);color:var(--bad-ink)}
+.pqs-nd{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pqs-nd select{min-height:34px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:0 8px;font-size:13.5px}
+.pqs-mv{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:12.5px;color:var(--muted)}
+.pqs-apc{margin-left:8px;font-size:11.5px;font-weight:700;padding:1px 9px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ft)}
+.pqs-tg{font-style:normal;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:99px;margin-left:5px}
+.pqs-tg.ok{background:var(--ok-bg);color:var(--ok-ink)}
+.pqs-tg.ag{background:color-mix(in srgb,var(--f) 16%,transparent);color:var(--ft)}
+.pq-bar2 i.rz,.pq-lg i.rz{background:#2EA043}
+.pq-bar2 i.ag,.pq-lg i.ag{background:var(--f)}
+.cx-ta.tr-lock{background:color-mix(in srgb,var(--f) 8%,var(--bg));color:var(--ft);font-weight:600;cursor:not-allowed;border-style:dashed}
 .pqp-trs{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .pq-tag.pq-trt{margin-left:0;color:var(--ft);border-color:color-mix(in srgb,var(--f) 40%,transparent);background:color-mix(in srgb,var(--f) 10%,transparent)}
 @media (max-width:479px){.tr-g2{grid-template-columns:1fr}}
@@ -2588,7 +2608,8 @@ function saveEdit(){
   DB.editedAt=Date.now();
   var ok=saveDB();
   closeEdit();renderAll();
-  toast(ok?"Alterações salvas.":"Não foi possível guardar neste aparelho.");
+  var tw=it.dataAgendada?trWarnTxt(it.tecnico,(parseAg(it.dataAgendada)?kOf(parseAg(it.dataAgendada)):"")):"";
+  toast(ok?"Alterações salvas."+(tw?" "+tw:""):"Não foi possível guardar neste aparelho.");
 }
 function copiar(){
   var t=ui.copyTxt||"";if(!t) return;
@@ -3128,7 +3149,7 @@ function bkRowSync(pat){
 }
 function applyBulk(){
   if(!BK) return;
-  var prev=$("bkPrev").value,tec=$("bkTec").value.trim(),real=$("bkReal").value,n=0,nbN=0;
+  var prev=$("bkPrev").value,tec=$("bkTec").value.trim(),real=$("bkReal").value,n=0,nbN=0,trW=[];
   BK.items.forEach(function(it,i){
     var ck=document.querySelector('[data-bk="'+i+'"]');if(!ck||!ck.checked) return;
     var d=toAg(document.querySelector('[data-bkd="'+i+'"]').value.trim()),ch=false;
@@ -3142,6 +3163,8 @@ function applyBulk(){
       if(!prev&&pd&&!nonBizWhy(pd)&&it.previsaoSemanal!=="NÃO REALIZAR") it.previsaoSemanal=weekLabel(pd);
     }
     if(ch){fin(it);n++;}
+    var pdw=parseAg(it.dataAgendada),tw=pdw?trWarnTxt(it.tecnico,kOf(pdw)):"";
+    if(tw&&trW.indexOf(tw)<0) trW.push(tw);
   });
   var cli=BK.cli,sp=lkSpread(prev,tec);
   nbN+=sp.nb;
@@ -3153,6 +3176,7 @@ function applyBulk(){
   var also=lkSpreadTxt(sp.per);
   if(also) msg+=(msg?" · ":"")+also;
   if(nbN) msg+=" ("+nbN+" em dia não útil: evite hora extra)";
+  if(trW.length) msg+=" "+trW.join(" ");
   toast(ok?msg:"Não foi possível guardar neste aparelho.");
 }
 
@@ -3932,10 +3956,12 @@ function daySummary(k,anim){
   if(pl0) rows+='<div class="cx-row"><i class="cx-ld" style="background:'+(AGTC[pl0.tec]||"#8A96AB")+';margin-top:6px"></i><span><span class="tn">Sobreaviso</span><small> · '+esc(pl0.tec)+'</small></span></div>';
   ausOnDay(k).forEach(function(a){rows+='<div class="cx-row"><i class="cx-ld" style="background:'+(AGTC[a.tec]||"#8A96AB")+';margin-top:6px;opacity:.45"></i><span><span class="tn">Ausente</span><small> · '+esc(a.tec)+' ('+esc(a.why)+')</small></span></div>';});
   if(obs) rows+='<div class="cx-row">'+agIc("note",1)+'<span>'+esc(obs)+'</span></div>';
-  trOn(k).forEach(function(t){rows+=trRowHTML(t);});
-  tt.forEach(function(n){
-    var m=String(r[n].m||"").trim(),t=String(r[n].t||"").trim();
-    rows+='<div class="cx-row"><i class="cx-ld" style="background:'+AGTC[n]+';margin-top:6px"></i><span><span class="tn">'+n+'</span><small>'+(m?" · Manhã: "+esc(m):"")+(t?" · Tarde: "+esc(t):"")+'</small></span></div>'+lvLinesHTML(r[n],k);
+  var trk=trOn(k);
+  trk.forEach(function(t){rows+=trRowHTML(t);});
+  AGTEC.filter(function(n){return tt.indexOf(n)>=0||trk.some(function(x){return x.tec===n&&x.st!=="cx";});}).forEach(function(n){
+    var rr=r[n]||{},trM=trk.filter(function(x){return x.tec===n&&x.turno==="m"&&x.st!=="cx";})[0],trT=trk.filter(function(x){return x.tec===n&&x.turno==="t"&&x.st!=="cx";})[0];
+    var m=trM?"🎓 Treinamento "+trM.cli:String(rr.m||"").trim(),t=trT?"🎓 Treinamento "+trT.cli:String(rr.t||"").trim();
+    rows+='<div class="cx-row"><i class="cx-ld" style="background:'+AGTC[n]+';margin-top:6px"></i><span><span class="tn">'+n+'</span><small>'+(m?" · Manhã: "+esc(m):"")+(t?" · Tarde: "+esc(t):"")+'</small></span></div>'+(r[n]?lvLinesHTML(r[n],k):"");
   });
   ev.forEach(function(e){
     rows+='<div class="cx-row">'+agIc("cal",1)+'<span><b>'+(e.time||"o dia todo")+'</b> · '+esc(e.title)+'</span></div>';
@@ -4072,13 +4098,18 @@ function tfDateRow(){
   var td=new Date(),ontem=new Date(td.getFullYear(),td.getMonth(),td.getDate()-1),hk=todayK(),ok_=kOf(ontem);
   return '<div class="cx-chips"><button type="button" class="cx-chip'+(TF.mode==="hoje"?" sel":"")+'" data-tf-d="hoje">Hoje · '+shortDM(hk)+'</button><button type="button" class="cx-chip'+(TF.mode==="ontem"?" sel":"")+'" data-tf-d="ontem">Ontem · '+shortDM(ok_)+'</button><span class="cx-tdate"><button type="button" class="cx-chip'+(TF.mode==="outra"?" sel":"")+'" data-tf-d="outra">'+(TF.mode==="outra"?"Outra · "+shortDM(TF.date):"Outra data")+'</button></span></div>';
 }
+/* turno com treinamento: o texto fica travado (o que já estava escrito é guardado e volta se o treinamento sair) */
+function tfTurnoHTML(tu,d){
+  var lab=tu==="m"?"Manhã":"Tarde",tr=trOn(TF.date).filter(function(x){return x.tec===TF.sel&&x.turno===tu&&x.st!=="cx";})[0];
+  if(tr) return '<div class="cx-fld"><span>'+lab+' · treinamento</span><textarea class="cx-ta tr-lock" id="tf'+tu.toUpperCase()+'Lock" style="min-height:96px" readonly aria-readonly="true" title="Turno ocupado pelo treinamento. Edite pelo botão Treinamentos.">'+esc(trLockTxt(tr))+'</textarea>'+lvBox(tu)+'</div>';
+  return '<div class="cx-fld"><span>'+lab+'</span><textarea class="cx-ta" id="tf'+(tu==="m"?"M":"T")+'" style="min-height:96px" placeholder="O que '+TF.sel+' fez '+(tu==="m"?"de manhã":"à tarde")+'">'+esc(tu==="m"?d.m:d.t)+'</textarea>'+lvBox(tu)+'</div>';
+}
 function renderTech(){
   var s=TF.step,h='<div class="cx-fshd"><button type="button" class="cx-x" data-tf="close" aria-label="Fechar">'+agIc("x")+'</button><div><h3>Técnicos</h3><small>Passo '+s+' de 2 · '+(s===1?"o que cada um fez":"confirmar a data")+'</small></div></div><div class="cx-fsb">';
   if(s===1){
     var d=TF.draft[TF.sel];
     h+='<div class="cx-fld"><span>Data dos registros</span>'+tfDateRow()+'</div><div class="cx-chips" id="tfChips">'+tfChips()+'</div>'+
-      '<div class="cx-fld"><span>Manhã</span><textarea class="cx-ta" id="tfM" style="min-height:96px" placeholder="O que '+TF.sel+' fez de manhã">'+esc(d.m)+'</textarea>'+lvBox("m")+'</div>'+
-      '<div class="cx-fld"><span>Tarde</span><textarea class="cx-ta" id="tfT" style="min-height:96px" placeholder="O que '+TF.sel+' fez à tarde">'+esc(d.t)+'</textarea>'+lvBox("t")+'</div>'+
+      tfTurnoHTML("m",d)+tfTurnoHTML("t",d)+
       '<div class="cx-fld"><small>A data é confirmada no próximo passo.</small></div>'+
       '<div class="cx-bs"><button type="button" class="cx-btn p" style="flex:1" data-tf="next">Continuar</button></div>';
   }else{
@@ -4537,7 +4568,7 @@ function saveVisit(){
   t.visits.push({id:CH.next.visit++,d:d,r:VS.r,note:($("vs_note").value||"").trim()});
   t.visits.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.id-b.id;});
   if(VS.r==="ok"&&chIsOpen(t)){t.res=d;t.resTime="";}
-  saveCh();$("vsModal").hidden=true;chRefresh();toast("Visita salva.");
+  saveCh();$("vsModal").hidden=true;chRefresh();var tw=trDayWarn(d);toast("Visita salva."+(tw?" "+tw:""));
 }
 function openResolve(){
   var t=chById(CHD);if(!t) return;
@@ -7011,6 +7042,17 @@ function trOn(k){return trList().filter(function(t){return t.date===k;}).sort(fu
 function trNextId(){var mx=0;trList().forEach(function(t){if(t.id>mx) mx=t.id;});return mx+1;}
 function trCity(t){return t.local==="fil"?(TR_FIL[t.fil]||TR_FIL.SSF):(t.cidade?fmtCidade(t.cidade+(t.uf?" - "+t.uf:"")):"");}
 function trDesc(t){return (t.cli||"(sem cliente)")+" · "+(t.local==="fil"?"na filial":trCity(t))+(t.hora?" · início "+t.hora:"")+(t.part?" · "+t.part+" participantes":"");}
+function trLockTxt(t){return "🎓 Treinamento operacional · "+(t.cli||"cliente")+" ("+(t.turno==="m"?"8h–12h":"14h–18h")+(t.hora?", início "+t.hora:"")+") · "+(t.local==="fil"?"na filial":trCity(t));}
+/* aviso (não impede) quando o técnico tem treinamento no dia */
+function trWarnTxt(tec,k){
+  var t=pqTecShort(tec);if(!t||!k) return "";
+  var L=trOn(k).filter(function(x){return x.tec===t&&x.st!=="cx";});if(!L.length) return "";
+  return "Atenção: "+t+" tem treinamento na "+L.map(function(x){return (x.turno==="m"?"manhã":"tarde")+" ("+x.cli+")";}).join(" e ")+" de "+fmtDM(dOf(k))+".";
+}
+function trDayWarn(k){
+  var L=trOn(k).filter(function(x){return x.st!=="cx";});if(!L.length) return "";
+  return "Atenção: nesse dia há treinamento: "+L.map(function(x){return x.tec+" ("+(x.turno==="m"?"manhã":"tarde")+", "+x.cli+")";}).join("; ")+".";
+}
 function trRowHTML(t){
   return '<div class="cx-row tr-sum'+(t.st==="cx"?" cx":"")+'" data-tr-edit="'+t.id+'" role="button" tabindex="0"><i class="cx-ld" style="background:'+(AGTC[t.tec]||"#8A96AB")+';margin-top:6px"></i><span><span class="tn">🎓 Treinamento</span><small> · '+esc(t.tec)+' · '+TR_TURNO[t.turno]+' · '+esc(trDesc(t))+' · '+TR_ST[t.st||"ag"]+'</small></span></div>';
 }
@@ -7139,6 +7181,7 @@ function loadPQ(){
   PQ=(o&&typeof o==="object"&&!Array.isArray(o))?o:{};
   PQ.integ=PQ.integ&&typeof PQ.integ==="object"?PQ.integ:{};
   PQ.rev=PQ.rev&&typeof PQ.rev==="object"?PQ.rev:{};
+  PQ.saved=PQ.saved&&typeof PQ.saved==="object"?PQ.saved:{};
   PQ.prem=pqMerge(PQ.prem);
 }
 function pqMerge(p){
@@ -7490,9 +7533,9 @@ function renderPlanejar(){
     pqStep("au",2,"Ausências",aL.length?aL.length+(aL.length===1?" período":" períodos")+" · "+aD+(aD===1?" dia útil":" dias úteis")+" de ausência em "+ymName(P.ym).toLowerCase():"Nenhuma ausência em "+ymName(P.ym).toLowerCase(),pqAusHTML(P,C,code))+
     pqStep("in",3,"Integração",inN?inN+(inN===1?" cliente bloqueado":" clientes bloqueados")+" · "+I.blk.length+(I.blk.length===1?" máquina fora do plano":" máquinas fora do plano"):"Nenhum cliente bloqueado",pqInHTML(all))+
     pqStep("pr",4,"Premissas","Equipe, corretivas ("+(PQ.prem.corr[code]||0)+"/mês), margem de "+nf(PQ.prem.marg,0)+"%, produtividade e deslocamento",pqPremHTML(code,C));
-  var R=pqPlan(code,P,I,C);
-  var prop=(revN<4?'<p class="pq-note" style="margin:4px 2px 10px">Revisados '+revN+' de 4 passos. A proposta já usa o que está acima; revise tudo para ela ficar confiável.</p>':'')+pqInsHTML(pqInsights(code,P,I,C,R))+pqPropHTML(code,P,I,C,R);
-  var load='<div class="pq-h4" style="margin-top:16px">Detalhe da carga</div>'+pqWeeksCard(P,C,I,R)+
+  var R=pqPlan(code,P,I,C),sp=pqSaved(),Rv=sp?pqSavedR(sp):R;
+  var prop=(revN<4?'<p class="pq-note" style="margin:4px 2px 10px">Revisados '+revN+' de 4 passos. A proposta já usa o que está acima; revise tudo para ela ficar confiável.</p>':'')+pqInsHTML(pqInsights(code,P,I,C,R))+(sp?pqAdhHTML(sp):'')+pqPropHTML(code,P,I,C,Rv,sp);
+  var load='<div class="pq-h4" style="margin-top:16px">Detalhe da carga</div>'+pqWeeksCard(P,C,I,Rv)+
     '<div class="pq-card"><h3>Carga por cidade</h3><p class="pq-sub">Estimativa pela distância da filial ('+esc(code)+'), faixa de deslocamento e máquinas no mesmo local.</p>'+pqCitiesHTML(D)+'</div>';
   box.innerHTML='<div class="pq">'+head+hero+say+steps+'<div class="pq-h4" style="margin-top:16px">Proposta</div>'+prop+load+'</div>';
 }
@@ -7660,7 +7703,7 @@ function pqWeeksPropHTML(P,C,R){
   for(d=new Date(P.first);d<=P.last;d=addDays(d,1)){if(!isBizDay(d)) continue;var w=weekOfMonth(d),W=weeks[w]=weeks[w]||{a:d,b:d,fd:0,used:0,n:0,bl:0,trips:0};W.b=d;}
   R.slots.forEach(function(s){
     var W=weeks[weekOfMonth(dOf(s.k))];if(!W) return;
-    W.fd++;W.used+=s.used;W.n+=s.n;if(s.n&&pqFar(s.bk)) W.trips++;
+    W.fd++;if(s.st==="nd") return;W.used+=s.used;W.n+=s.n;if(s.n&&pqFar(s.bk)) W.trips++;
     s.stops.forEach(function(x){if(pqBl(x.it)) W.bl++;});
   });
   Object.keys(weeks).map(Number).sort(function(a,b){return a-b;}).forEach(function(w){
@@ -7867,10 +7910,18 @@ function pqInsights(code,P,I,C,R){
   if(ab.length) add("info","<b>Ausências</b> consideradas na capacidade.",ab.map(function(t){var n=R.days.length-R.T[t].av;return "<b>"+esc(t)+"</b> · fora "+n+(n===1?" dia útil":" dias úteis");}));
   return out;
 }
-function pqPropHTML(code,P,I,C,R){
-  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n||s.trein;});
-  var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>Proposta do mês</h3><p class="pq-sub">Sugestão automática a partir das premissas. É só uma sugestão: nada é gravado nos equipamentos.</p></div>'+
-    '<div class="pqp-act"><div class="seg" role="group" aria-label="Ver a proposta"><button type="button" data-pq-view="dia" aria-pressed="'+(view==="dia")+'">Por dia</button><button type="button" data-pq-view="tec" aria-pressed="'+(view==="tec")+'">Por técnico</button></div><button type="button" class="btn sm" data-pq-cp="1">Copiar texto</button><button type="button" class="btn sm" data-pq-exp="prop">Exportar</button></div></div>';
+function pqPropHTML(code,P,I,C,R,sp){
+  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n||s.trein||(sp&&s.st);}),by=sp?pqItemsBy():null;
+  var undo=sp&&sp.undo&&sp.undo.length?sp.undo[sp.undo.length-1]:null,dt=sp?new Date(sp.ts):null;
+  var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>'+(sp?"Plano do mês":"Proposta do mês")+'</h3><p class="pq-sub">'+(sp?'Plano salvo em '+fmtDM(dt)+' às '+p2(dt.getHours())+'h'+p2(dt.getMinutes())+'. Fica <b>fixo</b>: só muda quando você confirma, marca "Não deu" ou refaz.':'Sugestão automática a partir das premissas. Nada é gravado nos equipamentos. <b>Salve como plano</b> para fixar, confirmar visitas e aplicar.')+'</p></div>'+
+    '<div class="pqp-act"><div class="seg" role="group" aria-label="Ver a proposta"><button type="button" data-pq-view="dia" aria-pressed="'+(view==="dia")+'">Por dia</button><button type="button" data-pq-view="tec" aria-pressed="'+(view==="tec")+'">Por técnico</button></div><button type="button" class="btn sm" data-pq-cp="1">Copiar texto</button><button type="button" class="btn sm" data-pq-exp="prop">Exportar</button>'+
+    (sp?'':'<button type="button" class="btn sm primary" data-pq-psave="1">Salvar como plano</button>')+'</div></div>';
+  if(sp){
+    h+='<div class="pqs-bar">'+(undo?'<button type="button" class="btn sm" data-pq-undo="1">↶ Desfazer: '+esc(undo.label)+'</button>':'')+
+      (ui.ctx==="plan"?'<button type="button" class="btn sm primary" data-pq-apall="1">Aplicar tudo</button>':'')+
+      '<label class="pqs-day"><input type="checkbox" id="pqDay"'+(ui.pqDay?" checked":"")+'>Ao aplicar, gravar também o dia sugerido</label>'+
+      '<span class="pqs-sp"></span><button type="button" class="btn sm" data-pq-predo="1">Refazer plano</button><button type="button" class="btn sm tr-del" data-pq-pdrop="1">Descartar plano</button></div>';
+  }
   var tl='<div class="pqp-team">'+R.tecs.map(function(t){
     var x=R.T[t],ss=R.slots.filter(function(s){return s.t===t&&s.n;}),m=0;ss.forEach(function(s){m+=s.n;});
     return '<span class="pq-chip"><i class="pq-dot" style="--pc:'+(AGTC[t]||"#8A96AB")+'"></i><b>'+esc(t)+'</b> <small>'+x.n+(x.n===1?" dia de campo":" dias de campo")+' · '+m+(m===1?" máquina":" máquinas")+'</small></span>';
@@ -7883,7 +7934,8 @@ function pqPropHTML(code,P,I,C,R){
     var trT=(s.trein||[]).map(function(tr){return '<span class="pq-tag pq-trt">🎓 treinamento '+(tr.turno==="m"?"manhã":"tarde")+' · '+esc(tr.cli)+(tr.local==="fil"?" (na filial)":"")+'</span>';}).join("");
     return '<div class="pqp-slot" style="--pc:'+(AGTC[s.t]||"#8A96AB")+'"><div class="pqp-sh">'+(showT?'<b class="pqp-t">'+esc(s.t)+'</b>':'<b class="pqp-t">'+pqDayLbl(s.k)+'</b>')+
       '<span class="pqp-c">'+esc(cs.join(" + "))+(far?'<span class="pq-tag">viagem'+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+'</span>':'')+(s.extra?'<span class="pq-tag">'+(s.trein?"dia do treinamento":"fora dos dias de campo")+'</span>':'')+'</span>'+
-      '<small>'+s.n+(s.n===1?" máq.":" máq.")+(far?"":" · "+pct+"% do dia")+'</small></div>'+(trT?'<div class="pqp-trs">'+trT+'</div>':'')+'<div class="pqp-stops">'+pqStopsTxt(s.stops,true)+'</div></div>';
+      '<small>'+s.n+(s.n===1?" máq.":" máq.")+(far?"":" · "+pct+"% do dia")+'</small></div>'+(trT?'<div class="pqp-trs">'+trT+'</div>':'')+
+      (sp?pqSlotCtl(s)+'<div class="pqp-stops">'+pqStopsSaved(s,by)+'</div>':'<div class="pqp-stops">'+pqStopsTxt(s.stops,true)+'</div>')+'</div>';
   }
   if(!used.length) h+='<p class="pq-none">Nada para propor.</p>';
   else if(view==="dia"){
@@ -7891,7 +7943,7 @@ function pqPropHTML(code,P,I,C,R){
     h+=Object.keys(wk).map(Number).sort().map(function(w){
       var L=wk[w],m=0;L.forEach(function(s){m+=s.n;});
       var byD={},ord=[];L.forEach(function(s){if(!byD[s.k]){byD[s.k]=[];ord.push(s.k);}byD[s.k].push(s);});
-      return '<div class="pq-h4">'+w+'ª semana · '+m+(m===1?" máquina":" máquinas")+'</div>'+ord.map(function(k){
+      return '<div class="pq-h4 pqs-wh"><span>'+w+'ª semana · '+m+(m===1?" máquina":" máquinas")+'</span>'+(sp?'<button type="button" class="btn sm" data-pq-apw="'+w+'">Aplicar semana</button>':'')+'</div>'+ord.map(function(k){
         return '<div class="pqp-day"><div class="pqp-dl">'+pqDayLbl(k)+'</div><div class="pqp-dr">'+byD[k].map(function(s){return slotRow(s,true);}).join("")+'</div></div>';
       }).join("");
     }).join("");
@@ -7916,12 +7968,174 @@ function pqInsHTML(list){
     '<ul class="pqi">'+list.map(function(x){return '<li class="pqi-'+x.tone+'"><span class="pqi-ic" aria-label="'+PQ_CAT[x.tone].nm+'">'+PQ_CAT[x.tone].ic+'</span><span>'+x.txt+(x.items&&x.items.length?'<ul class="pqi-sub">'+x.items.map(function(s){return '<li>'+s+'</li>';}).join("")+'</ul>':'')+'</span></li>';}).join("")+'</ul></div>';
 }
 function pqCopyPlan(){
-  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqPlan(code,P,I,C);
-  var t="Proposta de preventivas · "+ui.filial+" · "+ymLabel(P.ym)+"\n";
+  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqCurR(code,P,I,C);
+  var t=(pqSaved()?"Plano":"Proposta")+" de preventivas · "+ui.filial+" · "+ymLabel(P.ym)+"\n";
   R.slots.filter(function(s){return s.n||s.trein;}).forEach(function(s){var cs=[];s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});if(!cs.length&&s.city) cs.push(s.city);t+="\n"+pqDayLbl(s.k)+" · "+s.t+" · "+cs.join(" + ")+" · "+s.n+(s.n===1?" máquina":" máquinas");(s.trein||[]).forEach(function(tr){t+="\n  Treinamento "+(tr.turno==="m"?"manhã (8h-12h)":"tarde (14h-18h)")+": "+tr.cli+(tr.local==="fil"?" (na filial)":"");});if(s.n) t+="\n  "+pqStopsTxt(s.stops,false);});
   if(R.out.length) t+="\n\nNão couberam: "+R.out.map(function(i){return i.patrimonio+" ("+i.cliente+")";}).join(", ");
   ui.copyTxt=t;copiar();
 }
+/* ---------- Planejar fase 3: plano salvo, confirmar / não deu, aplicar com desfazer, planejado × realizado ---------- */
+var PQ_ND=["Cliente pediu outra data","Sem acesso ou liberação","Técnico indisponível","Máquina parada ou em uso","Outro motivo"];
+function pqSaved(){PQ.saved=PQ.saved||{};return PQ.saved[pqRevKey()]||null;}
+function pqItemsBy(){var by={};cur().items.forEach(function(it){if(!it.removido) by[it.patrimonio]=it;});return by;}
+function pqRate(bk,same){var cap=PQ.prem.cap;return Math.max(1,bk==="a"?(same?cap.aS:cap.aD):(same?cap.bS:cap.bD));}
+function pqCityBk(c){var km=cityKm(c),b=pqBand(km);return {bk:b?b[1]:"b",trip:km==null?null:km*PQ.prem.fat/Math.max(1,PQ.prem.vel)};}
+function pqSaveFromR(R){
+  var T={};R.tecs.forEach(function(t){T[t]={n:R.T[t].n};});
+  return {ts:Date.now(),tecs:R.tecs.slice(),T:T,undo:[],out:R.out.map(function(i){return i.patrimonio;}),
+    slots:R.slots.map(function(s){return {k:s.k,t:s.t,used:s.used,city:s.city,bk:s.bk,trip:s.trip,extra:!!s.extra,trIds:(s.trein||[]).map(function(x){return x.id;}),
+      pats:s.stops.map(function(x){return {pat:x.it.patrimonio,fixed:!!x.fixed};}),st:"",why:"",moved:[]};})};
+}
+/* plano salvo no formato da proposta (para a tela, a carga, o texto e a exportação) */
+function pqSavedR(sp){
+  var by=pqItemsBy(),trs={};trList().forEach(function(t){trs[t.id]=t;});
+  return {tecs:sp.tecs,T:sp.T,out:(sp.out||[]).map(function(p){return by[p];}).filter(function(it){return it&&it.realizado!=="Sim";}),
+    slots:sp.slots.map(function(s,i){
+      var stops=[];s.pats.forEach(function(p){var it=by[p.pat];if(it) stops.push({it:it,fixed:p.fixed,city:fmtCidade(it.cidadeEstado)||"Sem cidade"});});
+      var tr=(s.trIds||[]).map(function(id){return trs[id];}).filter(function(t){return t&&t.st!=="cx";});
+      return {idx:i,k:s.k,t:s.t,used:s.used,city:s.city,bk:s.bk,trip:s.trip,extra:s.extra,stops:stops,n:stops.length,trein:tr.length?tr:null,st:s.st||"",why:s.why||"",moved:s.moved||[]};
+    })};
+}
+function pqCurR(code,P,I,C){var sp=pqSaved();return sp?pqSavedR(sp):pqPlan(code,P,I,C);}
+function pqSnap(it){return {pat:it.patrimonio,prev:it.previsaoSemanal||"",tec:it.tecnico||"",ag:it.dataAgendada||""};}
+function pqWrite(it,s,day){if(isNR(it)) return;it.previsaoSemanal=weekLabel(dOf(s.k));it.tecnico=lvTecFull(s.t);if(day) it.dataAgendada=toAg(fmtDM(dOf(s.k)));fin(it);}
+function pqCommit(msg){DB.editedAt=Date.now();var ok=saveDB();savePQ();renderAll();toast(ok?msg:"Não foi possível guardar neste aparelho.");}
+function pqPushUndo(sp,u){sp.undo=(sp.undo||[]).concat([u]).slice(-10);}
+function pqPlanSave(){
+  if(ui.ctx==="bk"){roBlock();return;}
+  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqPlan(code,P,I,C);
+  PQ.saved=PQ.saved||{};PQ.saved[pqRevKey()]=pqSaveFromR(R);savePQ();pqRefresh();
+  toast("Plano salvo. Agora ele fica fixo: confirme as visitas, marque \"Não deu\" ou aplique por semana ou cliente.");
+}
+function pqPlanRedo(){
+  plAsk("Refazer o plano com a proposta atual? As visitas já confirmadas continuam agendadas nos equipamentos (e entram na nova proposta como agendadas).","Refazer",function(){
+    var old=pqSaved(),code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),n=pqSaveFromR(pqPlan(code,P,I,C));
+    n.undo=old&&old.undo?old.undo:[];PQ.saved[pqRevKey()]=n;savePQ();pqRefresh();toast("Plano refeito.");
+  },false);
+}
+function pqPlanDrop(){
+  plAsk("Descartar o plano salvo? O que já foi aplicado ou confirmado nos equipamentos continua como está.","Descartar",function(){delete PQ.saved[pqRevKey()];savePQ();pqRefresh();toast("Plano descartado. A proposta voltou a ser automática.");},true);
+}
+function pqConfirm(si){
+  var sp=pqSaved(),s=sp&&sp.slots[si],by=pqItemsBy(),snap=[];if(!s) return;
+  s.pats.forEach(function(p){var it=by[p.pat];if(!it||it.realizado==="Sim") return;snap.push(pqSnap(it));pqWrite(it,s,true);});
+  pqPushUndo(sp,{ts:Date.now(),label:"confirmação de "+pqDayLbl(s.k)+" ("+s.t+")",snap:snap,si:si,prevSt:s.st||""});
+  s.st="ok";s.why="";
+  pqCommit("Visita confirmada: "+snap.length+(snap.length===1?" máquina agendada":" máquinas agendadas")+" em "+fmtDM(dOf(s.k))+" com "+s.t+".");
+}
+/* "Não deu": só essa visita sai e é reencaixada no próximo dia de campo que couber; o resto do plano fica como está */
+function pqNoGo(si,why){
+  var sp=pqSaved(),s=sp&&sp.slots[si],by=pqItemsBy();if(!s) return;
+  var before={slots:JSON.parse(JSON.stringify(sp.slots)),out:(sp.out||[]).slice()};
+  var pend=s.pats.filter(function(p){var it=by[p.pat];return it&&it.realizado!=="Sim";});
+  s.pats=s.pats.filter(function(p){return pend.indexOf(p)<0;});
+  s.st="nd";s.why=why;s.moved=[];
+  var groups={},ord=[],cap=PQ.prem.cap,after=s.k>todayK()?s.k:todayK(),moved=0,lost=0,dated=0;
+  pend.forEach(function(p){var it=by[p.pat],c=fmtCidade(it.cidadeEstado)||"Sem cidade",key=pqLocal(it)+"|"+c;if(it.dataAgendada) dated++;if(!groups[key]){groups[key]={c:c,ps:[]};ord.push(key);}groups[key].ps.push({pat:p.pat,fixed:false});});
+  ord.forEach(function(key){
+    var g=groups[key],cb=pqCityBk(g.c),far=pqFar(cb.bk),per=far?Math.max(1,cap.far):Math.max(1,Math.floor(pqRate(cb.bk,g.ps.length>=2)));
+    for(var i=0;i<g.ps.length;i+=per){
+      var chunk=g.ps.slice(i,i+per),cost=far?1:chunk.length/pqRate(cb.bk,g.ps.length>=2);
+      var o=sp.slots.filter(function(x,xi){
+        if(xi===si||x.k<=after||x.st==="nd"||x.used+cost>1+1e-9) return false;
+        if(far) return !x.city&&!sp.slots.some(function(y){return y!==x&&y.k===x.k&&y.city===g.c;});
+        if(!x.city) return true;
+        if(pqFar(x.bk)) return false;
+        return x.city===g.c||(x.bk==="a"&&cb.bk==="a");
+      }).sort(function(a,b){return a.k<b.k?-1:a.k>b.k?1:0;})[0];
+      if(o){o.pats=o.pats.concat(chunk);o.used+=cost;if(!o.city){o.city=g.c;o.bk=cb.bk;o.trip=cb.trip;}s.moved.push({pats:chunk.map(function(p){return p.pat;}),k:o.k,t:o.t});moved+=chunk.length;}
+      else{sp.out=(sp.out||[]).concat(chunk.map(function(p){return p.pat;}));s.moved.push({pats:chunk.map(function(p){return p.pat;}),k:"",t:""});lost+=chunk.length;}
+    }
+  });
+  pqPushUndo(sp,{ts:Date.now(),label:"\"não deu\" de "+pqDayLbl(s.k)+" ("+s.t+")",snap:[],nd:before});
+  ui.pqNd=null;savePQ();pqRefresh();
+  toast((moved?moved+(moved===1?" máquina remarcada":" máquinas remarcadas")+" no plano":"")+(lost?(moved?"; ":"")+lost+" sem vaga no mês":"")+(dated?". As que já tinham data nos equipamentos continuam com a data antiga até você confirmar o novo dia.":"."));
+}
+function pqApply(kind,arg){
+  var sp=pqSaved(),by=pqItemsBy(),snap=[],day=!!ui.pqDay;if(!sp) return;
+  var a=kind==="c"?String(arg).split("|"):null;
+  sp.slots.forEach(function(s,si){
+    if(s.st==="nd") return;
+    if(kind==="w"&&weekOfMonth(dOf(s.k))!==+arg) return;
+    if(kind==="c"&&+a[0]!==si) return;
+    s.pats.forEach(function(p){
+      var it=by[p.pat];if(!it||it.realizado==="Sim") return;
+      if(kind==="c"&&norm(it.cliente)!==norm(a.slice(1).join("|"))) return;
+      snap.push(pqSnap(it));pqWrite(it,s,day);
+    });
+  });
+  if(!snap.length){toast("Nada para aplicar.");return;}
+  var label=kind==="w"?arg+"ª semana":kind==="c"?a.slice(1).join("|"):"todo o plano";
+  pqPushUndo(sp,{ts:Date.now(),label:"aplicação: "+label,snap:snap});
+  pqCommit("Aplicado ("+label+"): "+snap.length+(snap.length===1?" máquina":" máquinas")+" com semana e técnico"+(day?" e dia":"")+". Use Desfazer se precisar.");
+}
+function pqUndo(){
+  var sp=pqSaved();if(!sp||!sp.undo||!sp.undo.length) return;
+  var u=sp.undo.pop(),by=pqItemsBy();
+  (u.snap||[]).forEach(function(x){var it=by[x.pat];if(!it) return;it.previsaoSemanal=x.prev;it.tecnico=x.tec;it.dataAgendada=x.ag;fin(it);});
+  if(u.si!=null&&sp.slots[u.si]) sp.slots[u.si].st=u.prevSt||"";
+  if(u.nd){sp.slots=u.nd.slots;sp.out=u.nd.out;}
+  pqCommit("Desfeito: "+u.label+".");
+}
+/* controles da visita no plano salvo */
+function pqSlotCtl(s){
+  var si=s.idx,h='<div class="pqs-ctl">';
+  if(s.st==="ok") h+='<span class="pqs-st ok">✓ Confirmado</span>';
+  if(s.st==="nd") h+='<span class="pqs-st nd">✗ Não deu · '+esc(s.why)+'</span>';
+  if(s.st!=="nd"&&s.n){
+    if(s.st!=="ok") h+='<button type="button" class="btn sm" data-pq-ok="'+si+'">Confirmar</button>';
+    h+='<button type="button" class="btn sm" data-pq-nd="'+si+'">Não deu</button>';
+  }
+  h+='</div>';
+  if(ui.pqNd===si) h+='<div class="pqs-nd"><select id="pqNdWhy" aria-label="Motivo">'+PQ_ND.map(function(m){return '<option>'+m+'</option>';}).join("")+'</select><button type="button" class="btn sm primary" data-pq-ndgo="'+si+'">Remarcar no plano</button><button type="button" class="btn sm" data-pq-ndx="1">Cancelar</button></div>';
+  if(s.st==="nd"&&s.moved&&s.moved.length) h+='<div class="pqs-mv">'+s.moved.map(function(m){return '<span>'+esc(m.pats.join(", "))+' → '+(m.k?'<b>'+pqDayLbl(m.k)+'</b> ('+esc(m.t)+')':'<b class="pq-red">sem vaga no mês</b>')+'</span>';}).join("")+'</div>';
+  return h;
+}
+function pqStopsSaved(s,by){
+  var g={},ord=[];
+  s.stops.forEach(function(x){var c=x.it.cliente||"(sem cliente)";if(!g[c]){g[c]=[];ord.push(c);}g[c].push(x);});
+  return ord.map(function(c){
+    var L=g[c],pend=L.some(function(x){return x.it.realizado!=="Sim";});
+    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(s.st!=="nd"&&pend?'<button type="button" class="pqs-apc" data-pq-apc="'+s.idx+'|'+esc(c)+'">Aplicar</button>':'')+'<span class="pqp-ms">'+L.map(function(x){
+      var it=x.it,tag=it.realizado==="Sim"?'<i class="pqs-tg ok">realizada</i>':it.dataAgendada?'<i class="pqs-tg ag">agendada '+esc(it.dataAgendada)+'</i>':pqBl(it)?'<i class="pq-blt">backlog</i>':'';
+      return '<span>• '+esc(pqMach(it))+tag+'</span>';
+    }).join("")+'</span></span>';
+  }).join("");
+}
+/* planejado × realizado (aderência ao plano) */
+function pqAdhHTML(sp){
+  var by=pqItemsBy(),wk={},tot={p:0,a:0,r:0,ok:0,nd:0};
+  sp.slots.forEach(function(s){
+    var w=weekOfMonth(dOf(s.k)),W=wk[w]=wk[w]||{p:0,a:0,r:0,ok:0,nd:0};
+    if(s.st==="ok"){W.ok++;tot.ok++;}if(s.st==="nd"){W.nd++;tot.nd++;}
+    s.pats.forEach(function(p){var it=by[p.pat];if(!it) return;W.p++;tot.p++;if(it.realizado==="Sim"){W.r++;tot.r++;}else if(it.dataAgendada){W.a++;tot.a++;}});
+  });
+  var pc=tot.p?Math.round(tot.r/tot.p*100):0;
+  return '<div class="pq-card"><h3>Planejado × realizado</h3><p class="pq-sub">Aderência ao plano salvo: '+tot.r+' de '+tot.p+' máquinas realizadas ('+pc+'%) · '+tot.a+' agendadas · '+tot.ok+(tot.ok===1?" visita confirmada":" visitas confirmadas")+(tot.nd?' · '+tot.nd+' "não deu"':'')+'.</p>'+
+    Object.keys(wk).map(Number).sort(function(a,b){return a-b;}).map(function(w){
+      var W=wk[w],pr=W.p?W.r/W.p*100:0,pa=W.p?W.a/W.p*100:0;
+      return '<div class="pq-wk"><span><b>'+w+'ª semana</b><small>'+W.p+' planejadas'+(W.ok?' · '+W.ok+' confirmadas':'')+(W.nd?' · '+W.nd+' não deu':'')+'</small></span>'+
+        '<span><small>'+W.r+' realizadas · '+W.a+' agendadas · '+(W.p-W.r-W.a)+' a agendar</small><span class="pq-bar pq-bar2"><i class="rz" style="width:'+pr.toFixed(1)+'%"></i><i class="ag" style="width:'+pa.toFixed(1)+'%"></i></span></span>'+
+        '<span class="pq-sal"><span class="'+(pr>=99.5?"ok":"")+'">'+Math.round(pr)+'%</span><small>realizado</small></span></div>';
+    }).join("")+'<p class="pq-note"><span class="pq-lg"><i class="rz"></i>realizadas</span><span class="pq-lg"><i class="ag"></i>agendadas</span></p></div>';
+}
+document.addEventListener("click",function(e){
+  var t=e.target,b;if(!t.closest||!t.closest(".pq")) return;
+  if(ui.ctx==="bk"&&t.closest("[data-pq-psave],[data-pq-ok],[data-pq-nd],[data-pq-ndgo],[data-pq-apw],[data-pq-apc],[data-pq-apall],[data-pq-undo],[data-pq-predo],[data-pq-pdrop]")){roBlock();return;}
+  if(t.closest("[data-pq-psave]")){pqPlanSave();return;}
+  if(t.closest("[data-pq-predo]")){pqPlanRedo();return;}
+  if(t.closest("[data-pq-pdrop]")){pqPlanDrop();return;}
+  if(t.closest("[data-pq-undo]")){pqUndo();return;}
+  if((b=t.closest("[data-pq-ok]"))){pqConfirm(+b.getAttribute("data-pq-ok"));return;}
+  if((b=t.closest("[data-pq-nd]"))){ui.pqNd=+b.getAttribute("data-pq-nd");pqRefresh();return;}
+  if(t.closest("[data-pq-ndx]")){ui.pqNd=null;pqRefresh();return;}
+  if((b=t.closest("[data-pq-ndgo]"))){var w=$("pqNdWhy");pqNoGo(+b.getAttribute("data-pq-ndgo"),w?w.value:PQ_ND[0]);return;}
+  if((b=t.closest("[data-pq-apw]"))){pqApply("w",b.getAttribute("data-pq-apw"));return;}
+  if((b=t.closest("[data-pq-apc]"))){pqApply("c",b.getAttribute("data-pq-apc"));return;}
+  if(t.closest("[data-pq-apall]")){plAsk("Aplicar o plano inteiro nos equipamentos deste planejamento (semana e técnico"+(ui.pqDay?" e dia":"")+")? Dá para desfazer.","Aplicar",function(){pqApply("all");},false);return;}
+});
+document.addEventListener("change",function(e){if(e.target&&e.target.id==="pqDay") ui.pqDay=!!e.target.checked;});
+
 /* ---------- Planejar: exportar leitura e proposta (PNG e PDF A4) ---------- */
 function copyImg(blob){
   function fail(){toast("Não consegui copiar a imagem neste navegador. Use Baixar.");}
@@ -7956,7 +8170,7 @@ function pqWrapRich(tok,maxW,m){
 }
 /* o que vai no arquivo: resumo, leitura e proposta */
 function pqDoc(what){
-  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),D=pqCost(I.plan),R=pqPlan(code,P,I,C),ins=pqInsights(code,P,I,C,R),V=pqVerdict(C,D);
+  var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),D=pqCost(I.plan),R0=pqPlan(code,P,I,C),ins=pqInsights(code,P,I,C,R0),V=pqVerdict(C,D),R=pqSaved()?pqSavedR(pqSaved()):R0;
   var cli={},cid={},now=new Date();
   I.plan.forEach(function(it){cli[norm(it.cliente)]=1;cid[fmtCidade(it.cidadeEstado)]=1;});
   var used=R.slots.filter(function(s){return s.n||s.trein;}),wk={},ord=[];
