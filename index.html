@@ -1479,6 +1479,13 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .pqi li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:var(--bg);font-size:13.5px;line-height:1.45;border-left:4px solid #3B82F6}
 .pqi li.pqi-ok{border-left-color:#2EA043}.pqi li.pqi-warn{border-left-color:#E0A100}.pqi li.pqi-bad{border-left-color:#E5484D}
 .pqi-ic{flex:none;font-size:16px;line-height:1.3}
+.pqi-sub{margin:6px 0 2px;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+.pqi .pqi-sub li{display:list-item;padding:0;background:none;border:0;border-radius:0;font-size:13px;line-height:1.45;color:var(--muted);list-style:disc}
+.pqi-sub li b{color:var(--ink)}
+.pqp-ms{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px 12px;margin-top:2px}
+.pqp-ms>span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pq-blt{font-style:normal;font-size:10.5px;font-weight:700;padding:0 6px;border-radius:99px;background:#FCE3C8;color:#8A4A0B;margin-left:5px}
+:root[data-theme="dark"] .pq-blt{background:#5A3510;color:#FFC98F}
 .pqi-lg{display:flex;flex-wrap:wrap;gap:4px 14px}
 .px-opt{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 .px-opt label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-weight:600;font-size:14px;cursor:pointer}
@@ -7598,20 +7605,22 @@ function pqPlan(code,P,I,C){
   return {T:T,tecs:tecs,days:days,slots:slots,out:out,fixedN:fixedN,stale:stale,late:late,cityInfo:cityInfo,loads:loads,A:A};
 }
 function pqDayLbl(k){var d=dOf(k);return PQ_WD[d.getDay()]+" "+fmtDM(d);}
+/* "TPTA0026 · Genie GS-1932 · vence 09/11" (backlog leva etiqueta à parte) */
+function pqMach(it){return it.patrimonio+" · "+(it.modelo||"modelo não informado")+(!pqBl(it)&&it.dataPrevista?" · vence "+fmtDM(dOf(it.dataPrevista)):"");}
 function pqStopsTxt(stops,html){
   var by={},ord=[];
   stops.forEach(function(x){var c=x.it.cliente||"(sem cliente)";if(!by[c]){by[c]=[];ord.push(c);}by[c].push(x);});
   return ord.map(function(c){
     var L=by[c],fx=L.some(function(x){return x.fixed;});
-    var pats=L.map(function(x){return x.it.patrimonio+(pqBl(x.it)?"*":"");}).join(", ");
-    return html?'<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+'<small>'+esc(pats)+'</small></span>':c+" ("+L.length+"): "+pats;
+    if(!html) return c+" ("+L.length+"): "+L.map(function(x){return x.it.patrimonio+(x.it.modelo?" "+x.it.modelo:"")+(pqBl(x.it)?" (backlog)":x.it.dataPrevista?" (vence "+fmtDM(dOf(x.it.dataPrevista))+")":"");}).join(", ");
+    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+'<span class="pqp-ms">'+L.map(function(x){return '<span>• '+esc(pqMach(x.it))+(pqBl(x.it)?'<i class="pq-blt">backlog</i>':'')+'</span>';}).join("")+'</span></span>';
   }).join(html?"":" · ");
 }
 function pqInsights(code,P,I,C,R){
   var out=[],used=R.slots.filter(function(s){return s.n;}),nPl=0,blN=0,blLast="",lastK="";
   used.forEach(function(s){nPl+=s.n;if(s.k>lastK) lastK=s.k;s.stops.forEach(function(x){if(pqBl(x.it)){blN++;if(s.k>blLast) blLast=s.k;}});});
   var fieldDays=R.slots.length,freeDays=R.slots.filter(function(s){return !s.n;}).length;
-  function add(tone,txt){out.push({tone:tone,txt:txt});}
+  function add(tone,txt,items){out.push({tone:tone,txt:txt,items:items||[]});}
   if(!I.plan.length) add("ok","Nenhuma máquina pendente para planejar nesta filial.");
   else if(R.out.length) add("bad","<b>"+R.out.length+(R.out.length===1?" máquina não cabe":" máquinas não cabem")+"</b> "+(fieldDays===1?"no único dia de campo":"nos "+fieldDays+" dias de campo")+" do período. Ficaram de fora as de menor prioridade (veja no fim da proposta). Reveja ausências, a margem ou o % da equipe.");
   else add("ok","<b>Todas as "+nPl+" máquinas cabem</b> em "+used.length+" de "+fieldDays+" dias de campo, até <b>"+pqDayLbl(lastK)+"</b>. Sobram "+freeDays+(freeDays===1?" dia de campo livre":" dias de campo livres")+" para desvios e novas prioridades.");
@@ -7621,8 +7630,8 @@ function pqInsights(code,P,I,C,R){
     add(allBl?"ok":"bad",allBl?"Backlog atacado aos poucos (mais antigo primeiro, sem deixar nascer backlog novo): "+(blTot===1?"a <b>única máquina em backlog</b> fica programada":"as <b>"+blTot+" máquinas em backlog</b> ficam programadas")+" até <b>"+pqDayLbl(blLast)+"</b>.":"<b>"+(blTot-blN)+" de "+blTot+" máquinas em backlog</b> não couberam na proposta.");
   }
   if(R.late.length){
-    var ls=R.late.slice(0,6).map(function(x){return esc(x.it.patrimonio)+" ("+esc(x.it.cliente)+", vence "+fmtDM(dOf(x.it.dataPrevista))+", visita "+fmtDM(dOf(x.k))+")";});
-    add("warn","<b>"+R.late.length+(R.late.length===1?" máquina vai vencer":" máquinas vão vencer")+" antes da visita</b> e entram em backlog: "+ls.join("; ")+(R.late.length>6?"…":"")+". Se der, antecipe ou troque com outro dia.");
+    add("warn","<b>"+R.late.length+(R.late.length===1?" máquina vai vencer":" máquinas vão vencer")+" antes da visita</b> e entram em backlog. Se der, antecipe ou troque com outro dia.",
+      R.late.map(function(x){return "<b>"+esc(x.it.patrimonio)+"</b> · "+esc(x.it.modelo||"modelo não informado")+" · "+esc(x.it.cliente)+" · vence "+fmtDM(dOf(x.it.dataPrevista))+", visita "+fmtDM(dOf(x.k));}));
   }
   if(P.cur){
     var st=metaState(code);
@@ -7634,26 +7643,29 @@ function pqInsights(code,P,I,C,R){
   var trips={};
   used.forEach(function(s){if(pqFar(s.bk)){var t=trips[s.city]=trips[s.city]||{n:0,m:0,one:0,trip:s.trip,tecs:{}};t.n++;t.m+=s.n;if(s.n===1) t.one++;t.tecs[s.t]=1;}});
   var tk=Object.keys(trips).sort(function(a,b){return trips[b].m-trips[a].m;});
-  if(tk.length) add("info","<b>Viagens</b>: "+tk.map(function(c){var t=trips[c];return esc(c)+" · "+t.m+(t.m===1?" máquina":" máquinas")+" em "+t.n+(t.n===1?" viagem":" viagens")+(t.trip!=null?" de "+pqHrs(t.trip)+" (ida)":"");}).join("; ")+". Vale combinar cada viagem com corretivas da mesma região.");
+  if(tk.length) add("info","<b>Viagens</b> da proposta. Vale combinar cada viagem com corretivas da mesma região.",
+    tk.map(function(c){var t=trips[c];return "<b>"+esc(c)+"</b> · "+t.m+(t.m===1?" máquina":" máquinas")+" em "+t.n+(t.n===1?" viagem":" viagens")+(t.trip!=null?" · "+pqHrs(t.trip)+" de ida":"");}));
   var ones=tk.filter(function(c){return trips[c].one;});
-  if(ones.length) add("warn","Viagem para <b>1 máquina só</b> em "+ones.map(esc).join(", ")+": confira se dá para juntar com outra demanda na região ou com a próxima visita.");
-  var cl=pqClients(I.plan).filter(function(c){return c.n>=3;}).sort(function(a,b){return b.n-a.n;}).slice(0,4);
-  if(cl.length) add("info","<b>Clientes com mais máquinas</b>: "+cl.map(function(c){return esc(c.name)+" ("+c.n+")";}).join(", ")+". Visitas em bloco rendem mais: confirme com o cliente o acesso a todas as máquinas no mesmo dia.");
+  if(ones.length) add("warn","Viagem para <b>1 máquina só</b>: confira se dá para juntar com outra demanda na região ou com a próxima visita.",ones.map(function(c){return "<b>"+esc(c)+"</b>";}));
+  var cl=pqClients(I.plan).filter(function(c){return c.n>=3;}).sort(function(a,b){return b.n-a.n;}).slice(0,6);
+  if(cl.length) add("info","<b>Clientes com mais máquinas</b>. Visitas em bloco rendem mais: confirme com o cliente o acesso a todas as máquinas no mesmo dia.",
+    cl.map(function(c){return "<b>"+esc(c.name)+"</b> · "+c.n+" máquinas · "+esc(c.cityName)+(c.bl?" · "+c.bl+" em backlog":"");}));
   if(I.blk.length){
-    var b2=I.blk.filter(function(i){return i.status==="Backlog";}).length,bc=pqClients(I.blk).map(function(c){return esc(c.name);});
-    add("warn","<b>"+I.blk.length+(I.blk.length===1?" máquina parada":" máquinas paradas")+" por integração</b>"+(b2?" ("+b2+" em backlog)":"")+": "+bc.join(", ")+". Cobre o time de integração para liberar ainda neste mês.");
+    var b2=I.blk.filter(function(i){return i.status==="Backlog";}).length;
+    add("warn","<b>"+I.blk.length+(I.blk.length===1?" máquina parada":" máquinas paradas")+" por integração</b>"+(b2?" ("+b2+" em backlog)":"")+". Cobre o time de integração para liberar ainda neste mês.",
+      pqClients(I.blk).sort(function(a,b){return b.n-a.n;}).map(function(c){var o=inOf(c.name,code)||{};return "<b>"+esc(c.name)+"</b> · "+c.n+(c.n===1?" máquina":" máquinas")+" · "+esc(c.cityName)+(o.obs?" · "+esc(o.obs):"");}));
   }
   if(R.fixedN) add("info",R.fixedN+(R.fixedN===1?" máquina já agendada foi mantida":" máquinas já agendadas foram mantidas")+" na data marcada.");
   if(R.stale) add("warn",R.stale+(R.stale===1?" máquina agendada em data que já passou (e não realizada) voltou":" máquinas agendadas em datas que já passaram (e não realizadas) voltaram")+" para a proposta.");
   var nc=Object.keys(R.cityInfo).filter(function(c){return R.cityInfo[c].km==null;});
-  if(nc.length) add("info","Sem coordenada (tratadas como até 70 km): "+nc.map(esc).join(", ")+".");
+  if(nc.length) add("info","Cidades <b>sem coordenada</b> (tratadas como até 70 km).",nc.map(esc));
   var ab=R.tecs.filter(function(t){return R.T[t].av<R.days.length;});
-  if(ab.length) add("info","Ausências consideradas: "+ab.map(function(t){return esc(t)+" fora "+(R.days.length-R.T[t].av)+(R.days.length-R.T[t].av===1?" dia útil":" dias úteis");}).join(", ")+".");
+  if(ab.length) add("info","<b>Ausências</b> consideradas na capacidade.",ab.map(function(t){var n=R.days.length-R.T[t].av;return "<b>"+esc(t)+"</b> · fora "+n+(n===1?" dia útil":" dias úteis");}));
   return out;
 }
 function pqPropHTML(code,P,I,C,R){
   var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n;});
-  var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>Proposta do mês</h3><p class="pq-sub">Sugestão automática a partir das premissas. É só uma sugestão: nada é gravado nos equipamentos. * = backlog.</p></div>'+
+  var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>Proposta do mês</h3><p class="pq-sub">Sugestão automática a partir das premissas. É só uma sugestão: nada é gravado nos equipamentos.</p></div>'+
     '<div class="pqp-act"><div class="seg" role="group" aria-label="Ver a proposta"><button type="button" data-pq-view="dia" aria-pressed="'+(view==="dia")+'">Por dia</button><button type="button" data-pq-view="tec" aria-pressed="'+(view==="tec")+'">Por técnico</button></div><button type="button" class="btn sm" data-pq-cp="1">Copiar texto</button><button type="button" class="btn sm" data-pq-exp="prop">Exportar</button></div></div>';
   var tl='<div class="pqp-team">'+R.tecs.map(function(t){
     var x=R.T[t],ss=R.slots.filter(function(s){return s.t===t&&s.n;}),m=0;ss.forEach(function(s){m+=s.n;});
@@ -7695,7 +7707,7 @@ var PQ_CAT_ORD=["bad","warn","ok","info"];
 function pqInsHTML(list){
   return '<div class="pq-card"><div class="pqp-h"><div><h3>Leitura do planejador</h3><p class="pq-sub">O que chama atenção nesta proposta. Atualiza sozinha a cada mudança nos dados.</p></div><div class="pqp-act"><button type="button" class="btn sm" data-pq-exp="ins">Exportar</button></div></div>'+
     '<p class="pq-note pqi-lg">'+PQ_CAT_ORD.map(function(k){return '<span>'+PQ_CAT[k].ic+' '+PQ_CAT[k].nm+'</span>';}).join("")+'</p>'+
-    '<ul class="pqi">'+list.map(function(x){return '<li class="pqi-'+x.tone+'"><span class="pqi-ic" aria-label="'+PQ_CAT[x.tone].nm+'">'+PQ_CAT[x.tone].ic+'</span><span>'+x.txt+'</span></li>';}).join("")+'</ul></div>';
+    '<ul class="pqi">'+list.map(function(x){return '<li class="pqi-'+x.tone+'"><span class="pqi-ic" aria-label="'+PQ_CAT[x.tone].nm+'">'+PQ_CAT[x.tone].ic+'</span><span>'+x.txt+(x.items&&x.items.length?'<ul class="pqi-sub">'+x.items.map(function(s){return '<li>'+s+'</li>';}).join("")+'</ul>':'')+'</span></li>';}).join("")+'</ul></div>';
 }
 function pqCopyPlan(){
   var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqPlan(code,P,I,C);
@@ -7747,10 +7759,11 @@ function pqDoc(what){
     var W=wk[w];W.n+=s.n;if(!W.days[s.k]){W.days[s.k]=[];W.ord.push(s.k);}
     var cs=[],by={},bo=[];
     s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);var c=x.it.cliente||"(sem cliente)";if(!by[c]){by[c]=[];bo.push(c);}by[c].push(x);});
-    var far=pqFar(s.bk);
-    W.days[s.k].push({t:s.t,col:AGTC[s.t]||"#8A96AB",head:s.t+" · "+cs.join(" + "),
-      right:(far?"viagem"+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+" · ":"")+s.n+" máq."+(far?"":" · "+Math.min(100,Math.round(s.used*100))+"% do dia")+(s.extra?" · fora dos dias de campo":""),
-      lines:bo.map(function(c){var L=by[c];return "<b>"+esc(c)+"</b> ("+L.length+"): "+esc(L.map(function(x){return x.it.patrimonio+(pqBl(x.it)?"*":"");}).join(", "))+(L.some(function(x){return x.fixed;})?" · agendada":"");})});
+    var far=pqFar(s.bk),tags=[s.n+(s.n===1?" máquina":" máquinas")];
+    if(far) tags.unshift("viagem"+(s.trip!=null?" · "+pqHrs(s.trip)+" de ida":""));else tags.push(Math.min(100,Math.round(s.used*100))+"% do dia");
+    if(s.extra) tags.push("fora dos dias de campo");
+    W.days[s.k].push({t:s.t,col:AGTC[s.t]||"#8A96AB",head:s.t+" · "+cs.join(" + "),tags:tags,
+      clients:bo.map(function(c){var L=by[c];return {name:c,n:L.length,fixed:L.some(function(x){return x.fixed;}),ms:L.map(function(x){return {txt:pqMach(x.it),bl:pqBl(x.it)};})};})});
   });
   ord.sort(function(a,b){return a-b;});
   var team=R.tecs.map(function(t){var m=0;R.slots.forEach(function(s){if(s.t===t) m+=s.n;});return {t:t,col:AGTC[t]||"#8A96AB",txt:R.T[t].n+(R.T[t].n===1?" dia de campo":" dias de campo")+" · "+m+(m===1?" máquina":" máquinas")};});
@@ -7771,18 +7784,26 @@ function pqFileName(doc,ext){return "planejamento-"+doc.code+"-"+doc.ym+"-"+(doc
 function pqPng(doc){
   var W=1080,pad=44,CW=W-2*pad,F=(getComputedStyle(document.body).fontFamily||"Segoe UI, Arial, sans-serif"),EM='"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji"';
   var acc=(getComputedStyle($("app")).getPropertyValue("--f")||"").trim()||"#2F6FD6";
-  var K={bg:"#EEF3FB",card:"#FFFFFF",ink:"#14233B",mut:"#5B6B83",line:"rgba(0,31,67,.12)",navy:"#001F43"};
+  var K={bg:"#EEF3FB",card:"#FFFFFF",ink:"#14233B",mut:"#5B6B83",line:"rgba(0,31,67,.12)",navy:"#001F43",blBg:"#FCE3C8",blInk:"#8A4A0B"};
   function font(sz,b){return (b?"700 ":"500 ")+sz+"px "+F+", "+EM;}
   function run(c,draw){
     var y=0;
     function m(s,b,sz){c.font=font(sz,b);return c.measureText(s).width;}
     function rr(x,y0,w,h,r,fill){if(!draw) return;c.beginPath();c.moveTo(x+r,y0);c.arcTo(x+w,y0,x+w,y0+h,r);c.arcTo(x+w,y0+h,x,y0+h,r);c.arcTo(x,y0+h,x,y0,r);c.arcTo(x,y0,x+w,y0,r);c.closePath();c.fillStyle=fill;c.fill();}
+    function top(x,y0,w,h,r,fill){if(!draw) return;c.beginPath();c.moveTo(x,y0+h);c.lineTo(x,y0+r);c.arcTo(x,y0,x+r,y0,r);c.lineTo(x+w-r,y0);c.arcTo(x+w,y0,x+w,y0+r,r);c.lineTo(x+w,y0+h);c.closePath();c.fillStyle=fill;c.fill();}
     function box(x,y0,w,h,fill){if(draw){c.fillStyle=fill;c.fillRect(x,y0,w,h);}}
     function tx(s,x,y0,sz,b,col,al){if(!draw) return;c.font=font(sz,b);c.fillStyle=col;c.textAlign=al||"left";c.fillText(s,x,y0);c.textAlign="left";}
     function fit(s,maxW,sz,b){if(m(s,b,sz)<=maxW) return s;while(s.length>1&&m(s+"…",b,sz)>maxW) s=s.slice(0,-1);return s+"…";}
     function lines(html,maxW,sz){return pqWrapRich(pqRich(html),maxW,function(s,b){return m(s,b,sz);});}
     function rich(html,x,y0,maxW,sz,col,lh){var L=lines(html,maxW,sz);if(draw) L.forEach(function(ln,i){ln.forEach(function(t){tx(t.w,x+t.x,y0+sz+i*lh,sz,t.b,col);});});return L.length*lh;}
     function hgt(html,maxW,sz,lh){return lines(html,maxW,sz).length*lh;}
+    function pill(s,x,y0,sz,bg,col){var w=m(s,true,sz)+20;rr(x,y0,w,sz+12,(sz+12)/2,bg);tx(s,x+10,y0+sz+3,sz,true,col);return w;}
+    /* seção colorida: faixa de título + corpo branco */
+    function section(title,col,bodyH,drawBody){
+      var hs=56;rr(pad,y,CW,hs+bodyH,18,K.card);top(pad,y,CW,hs,18,pqA(col,.16));box(pad,y+hs-2,CW,2,pqA(col,.35));
+      tx(title,pad+22,y+37,24,true,col);
+      drawBody(y+hs);y+=hs+bodyH+18;
+    }
     box(0,0,W,draw?c.canvas.height:0,K.bg);
     box(0,0,W,176,K.navy);box(0,168,W,8,acc);
     tx(doc.title,pad,70,40,true,"#FFFFFF");
@@ -7791,7 +7812,7 @@ function pqPng(doc){
     y=204;
     if(doc.what!=="prop"){
       var g=14,kw=(CW-3*g)/4,kh=0;
-      doc.kpis.forEach(function(k){kh=Math.max(kh,100+hgt(esc(k.s),kw-32,17,22)+18);});
+      doc.kpis.forEach(function(k){kh=Math.max(kh,100+hgt(esc(k.s),kw-36,17,22)+18);});
       doc.kpis.forEach(function(k,i){
         var x=pad+i*(kw+g);rr(x,y,kw,kh,18,K.card);
         tx(k.l,x+18,y+34,18,true,K.mut);
@@ -7801,66 +7822,96 @@ function pqPng(doc){
       y+=kh+16;
       var vh=hgt(doc.verdict.html,CW-56,21,30)+30;
       rr(pad,y,CW,vh,16,K.card);box(pad,y,8,vh,PQ_CAT[doc.verdict.tone].c);
-      rich(doc.verdict.html,pad+30,y+12,CW-56,21,K.ink,30);y+=vh+30;
+      rich(doc.verdict.html,pad+30,y+12,CW-56,21,K.ink,30);y+=vh+34;
       tx("Leitura do planejador",pad,y+30,30,true,K.ink);y+=46;
-      var lx=pad;PQ_CAT_ORD.forEach(function(k){var s=PQ_CAT[k].ic+" "+PQ_CAT[k].nm;tx(s,lx,y+22,19,false,K.mut);lx+=m(s,false,19)+30;});y+=42;
+      var lx=pad;PQ_CAT_ORD.forEach(function(k){var s=PQ_CAT[k].ic+" "+PQ_CAT[k].nm;tx(s,lx,y+22,19,false,K.mut);lx+=m(s,false,19)+30;});y+=44;
       PQ_CAT_ORD.forEach(function(k){
         var L=doc.ins.filter(function(x){return x.tone===k;});if(!L.length) return;
-        var cat=PQ_CAT[k],hs=58,ih=L.map(function(x){return hgt(x.txt,CW-104,20,29)+22;}),bh=hs+ih.reduce(function(a,b){return a+b;},0)+8;
-        rr(pad,y,CW,bh,18,K.card);rr(pad,y,CW,hs,18,pqA(cat.c,.13));box(pad,y+hs-18,CW,18,pqA(cat.c,.13));box(pad,y,CW,0,K.card);
-        tx(cat.ic+"  "+cat.nm+" · "+L.length,pad+22,y+38,24,true,cat.c);
-        var yy=y+hs+8;
-        L.forEach(function(x,i){
-          tx(cat.ic,pad+22,yy+25,20,false,K.ink);
-          rich(x.txt,pad+70,yy+2,CW-104,20,K.ink,29);
-          yy+=ih[i];
-          if(i<L.length-1) box(pad+70,yy-9,CW-104,1.5,K.line);
+        var cat=PQ_CAT[k],TW=CW-110,SW=CW-140;
+        var hs=L.map(function(x){return 18+hgt(x.txt,TW,21,30)+(x.items||[]).reduce(function(a,s){return a+hgt(s,SW,19,27)+4;},x.items&&x.items.length?8:0)+18;});
+        section(cat.ic+"  "+cat.nm+" · "+L.length,cat.c,hs.reduce(function(a,b){return a+b;},0)+6,function(y0){
+          var yy=y0+4;
+          L.forEach(function(x,i){
+            tx(cat.ic,pad+24,yy+18+24,22,false,K.ink);
+            yy+=18;yy+=rich(x.txt,pad+70,yy,TW,21,K.ink,30);
+            if(x.items&&x.items.length){
+              yy+=8;
+              x.items.forEach(function(s){
+                if(draw){c.fillStyle=cat.c;c.beginPath();c.arc(pad+82,yy+15,4,0,Math.PI*2);c.fill();}
+                yy+=rich(s,pad+98,yy,SW,19,"#3A4A63",27)+4;
+              });
+            }
+            yy+=18;
+            if(i<L.length-1) box(pad+70,yy-2,CW-100,1.5,K.line);
+          });
         });
-        y+=bh+16;
       });
     }
     if(doc.what!=="ins"){
       if(doc.what==="all") y+=16;
       tx("Proposta do mês",pad,y+30,30,true,K.ink);y+=44;
-      y+=rich("Sugestão automática a partir das premissas: nada foi gravado nos equipamentos. <b>*</b> = backlog.",pad,y,CW,18,K.mut,26)+14;
-      var cx=pad,cy=y;
-      doc.team.forEach(function(t){
-        var w=m(t.t,true,18)+m(t.txt,false,18)+70;
-        if(cx>pad&&cx+w>pad+CW){cx=pad;cy+=52;}
-        rr(cx,cy,w,42,21,K.card);
-        if(draw){c.fillStyle=t.col;c.beginPath();c.arc(cx+22,cy+21,8,0,Math.PI*2);c.fill();}
-        tx(t.t,cx+40,cy+28,18,true,K.ink);tx(t.txt,cx+48+m(t.t,true,18),cy+28,18,false,K.mut);
-        cx+=w+10;
-      });
-      y=cy+66;
-      if(!doc.weeks.length){tx("Nada para propor.",pad,y+24,20,false,K.mut);y+=44;}
-      doc.weeks.forEach(function(wk){
-        tx(wk.label,pad,y+26,23,true,acc);y+=42;
-        wk.days.forEach(function(dd){
-          var DX=pad+150,DW=CW-150-14;
-          var sh=dd.slots.map(function(s){return 46+s.lines.reduce(function(a,l){return a+hgt(l,DW-44,18,26);},0)+14;});
-          var bh=sh.reduce(function(a,b){return a+b;},0)+(dd.slots.length-1)*10+24;
-          rr(pad,y,CW,bh,16,K.card);
-          tx(dd.lbl,pad+20,y+40,21,true,K.ink);
-          var yy=y+12;
-          dd.slots.forEach(function(s,i){
-            rr(DX,yy,DW,sh[i],12,pqA(s.col,.10));box(DX,yy+4,6,sh[i]-8,s.col);
-            var rw=m(s.right,false,17);
-            tx(fit(s.head,DW-rw-60,19,true),DX+22,yy+30,19,true,K.ink);
-            tx(s.right,DX+DW-18,yy+30,17,false,K.mut,"right");
-            var ly=yy+42;s.lines.forEach(function(l){ly+=rich(l,DX+22,ly,DW-44,18,K.ink,26);});
-            yy+=sh[i]+10;
-          });
-          y+=bh+12;
+      y+=rich("Sugestão automática a partir das premissas: nada foi gravado nos equipamentos.",pad,y,CW,18,K.mut,26)+16;
+      var th=0,cx0=pad+22,rows=1,cxx=cx0;
+      doc.team.forEach(function(t){var w=m(t.t,true,18)+m(t.txt,false,18)+70;if(cxx>cx0&&cxx+w>pad+CW-22){cxx=cx0;rows++;}cxx+=w+10;});
+      th=rows*52+12;
+      section("👷  Equipe do período",acc,th,function(y0){
+        var cx=cx0,cy=y0+14;
+        doc.team.forEach(function(t){
+          var w=m(t.t,true,18)+m(t.txt,false,18)+70;
+          if(cx>cx0&&cx+w>pad+CW-22){cx=cx0;cy+=52;}
+          rr(cx,cy,w,42,21,pqA(t.col,.14));
+          if(draw){c.fillStyle=t.col;c.beginPath();c.arc(cx+22,cy+21,8,0,Math.PI*2);c.fill();}
+          tx(t.t,cx+40,cy+28,18,true,K.ink);tx(t.txt,cx+48+m(t.t,true,18),cy+28,18,false,K.mut);
+          cx+=w+10;
         });
-        y+=8;
+      });
+      if(!doc.weeks.length){tx("Nada para propor.",pad,y+24,20,false,K.mut);y+=44;}
+      var IX=pad+24,IW=CW-48;
+      function slotH(s,cols,colW){
+        var h=34+40;
+        s.clients.forEach(function(cl){h+=34+Math.ceil(cl.ms.length/cols)*27+10;});
+        return h+8;
+      }
+      doc.weeks.forEach(function(wk){
+        var cols=2,colW=(IW-40-14)/2;
+        var dh=wk.days.map(function(dd){return 44+dd.slots.reduce(function(a,s){return a+slotH(s,cols,colW)+12;},0)+6;});
+        section("📅  "+wk.label,acc,dh.reduce(function(a,b){return a+b;},0)+10,function(y0){
+          var yy=y0+12;
+          wk.days.forEach(function(dd,di){
+            tx(dd.lbl,IX,yy+28,22,true,K.ink);box(IX+m(dd.lbl,true,22)+16,yy+19,IW-m(dd.lbl,true,22)-16,1.5,K.line);
+            yy+=44;
+            dd.slots.forEach(function(s){
+              var sh=slotH(s,cols,colW);
+              rr(IX,yy,IW,sh,14,pqA(s.col,.09));box(IX,yy+6,6,sh-12,s.col);
+              tx(fit(s.head,IW-48,21,true),IX+24,yy+32,21,true,K.ink);
+              var px=IX+24;s.tags.forEach(function(tg){px+=pill(tg,px,yy+44,15,"rgba(255,255,255,.9)",K.mut)+8;});
+              var cy=yy+34+40;
+              s.clients.forEach(function(cl,ci){
+                if(ci) box(IX+24,cy-2,IW-48,1.2,K.line);
+                tx(cl.name+" ("+cl.n+")",IX+24,cy+24,18,true,K.ink);
+                if(cl.fixed) pill("agendada",IX+34+m(cl.name+" ("+cl.n+")",true,18),cy+7,13,pqA(acc,.15),acc);
+                cy+=34;
+                cl.ms.forEach(function(ms,mi){
+                  var col=mi%cols,row=Math.floor(mi/cols),mx=IX+24+col*(colW+14),my=cy+row*27;
+                  var bw=ms.bl?m("backlog",true,13)+26:0;
+                  var mt="• "+fit(ms.txt,colW-bw-14,17,false);
+                  tx(mt,mx,my+19,17,false,K.ink);
+                  if(ms.bl) pill("backlog",mx+m(mt,false,17)+8,my+2,13,K.blBg,K.blInk);
+                });
+                cy+=Math.ceil(cl.ms.length/cols)*27+10;
+              });
+              yy+=sh+12;
+            });
+            yy+=6;
+          });
+        });
       });
       if(doc.out.length){
-        var oh=doc.out.reduce(function(a,l){return a+hgt(l,CW-44,18,26);},0)+66;
-        rr(pad,y,CW,oh,16,K.card);box(pad,y,8,oh,PQ_CAT.bad.c);
-        tx("Não couberam na capacidade do período",pad+28,y+36,21,true,PQ_CAT.bad.c);
-        var oy=y+50;doc.out.forEach(function(l){oy+=rich(l,pad+28,oy,CW-44,18,K.ink,26);});
-        y+=oh+16;
+        var oh=doc.out.reduce(function(a,l){return a+hgt(l,CW-140,18,26)+4;},0)+24;
+        section("🚫  Não couberam na capacidade do período",PQ_CAT.bad.c,oh,function(y0){
+          var oy=y0+12;
+          doc.out.forEach(function(l){if(draw){c.fillStyle=PQ_CAT.bad.c;c.beginPath();c.arc(pad+40,oy+15,4,0,Math.PI*2);c.fill();}oy+=rich(l,pad+56,oy,CW-140,18,K.ink,26)+4;});
+        });
       }
     }
     tx("Gerado pelo site Preventivas da semana · "+doc.when,W/2,y+30,17,false,K.mut,"center");
@@ -7870,7 +7921,7 @@ function pqPng(doc){
   var cv=document.createElement("canvas");cv.width=W;cv.height=H;run(cv.getContext("2d"),true);
   return cv;
 }
-/* PDF A4: mesmo conteúdo, ícones desenhados (a fonte do PDF não tem emoji) */
+/* PDF A4: mesmo conteúdo em seções coloridas; ícones desenhados (a fonte do PDF não tem emoji) */
 function pqPdfTxt(s){return String(s==null?"":s).replace(/[\uD800-\uDFFF]/g,"").replace(/[☀-➿️ℹ]/g,"").replace(/≈/g,"~").replace(/−/g,"-").replace(/≥/g,">=").replace(/≤/g,"<=");}
 function pqPdf(doc){
   var W=595,H=842,M=36,CW=W-2*M,pages=[],cmds,y;
@@ -7878,10 +7929,14 @@ function pqPdf(doc){
   function rgb(hex){var v=parseInt(String(hex).slice(1),16);return f((v>>16)/255)+" "+f(((v>>8)&255)/255)+" "+f((v&255)/255);}
   function tint(hex,a){var v=parseInt(String(hex).slice(1),16),r=v>>16,g=(v>>8)&255,b=v&255;function t(n){return f((255-(255-n)*a)/255);}return t(r)+" "+t(g)+" "+t(b);}
   var acc=(getComputedStyle($("app")).getPropertyValue("--f")||"").trim();if(!/^#[0-9a-f]{6}$/i.test(acc)) acc="#2F6FD6";
+  var INK="0.08 0.14 0.23",MUT="0.36 0.42 0.51",LINE="0.86 0.89 0.93";
   function rect(x,yy,w,h,col){cmds.push(col+" rg "+f(x)+" "+f(H-yy-h)+" "+f(w)+" "+f(h)+" re f");}
-  function txt(x,yy,s,size,bold,col){cmds.push((col||"0.08 0.14 0.23")+" rg BT /"+(bold?"F2":"F1")+" "+size+" Tf "+f(x)+" "+f(H-yy)+" Td ("+pdfEsc(s)+") Tj ET");}
+  function hline(x,yy,w){cmds.push(LINE+" RG 0.5 w "+f(x)+" "+f(H-yy)+" m "+f(x+w)+" "+f(H-yy)+" l S");}
+  function txt(x,yy,s,size,bold,col){cmds.push((col||INK)+" rg BT /"+(bold?"F2":"F1")+" "+size+" Tf "+f(x)+" "+f(H-yy)+" Td ("+pdfEsc(s)+") Tj ET");}
   function cl(s){return pdfClean(pqPdfTxt(s));}
+  function fitT(s,maxW,size,bold){s=cl(s);if(pdfW(s,size,bold)<=maxW) return s;while(s.length>1&&pdfW(s+"...",size,bold)>maxW) s=s.slice(0,-1);return s+"...";}
   function circ(cx,cy,r){var k=0.5523*r;return f(cx+r)+" "+f(cy)+" m "+f(cx+r)+" "+f(cy+k)+" "+f(cx+k)+" "+f(cy+r)+" "+f(cx)+" "+f(cy+r)+" c "+f(cx-k)+" "+f(cy+r)+" "+f(cx-r)+" "+f(cy+k)+" "+f(cx-r)+" "+f(cy)+" c "+f(cx-r)+" "+f(cy-k)+" "+f(cx-k)+" "+f(cy-r)+" "+f(cx)+" "+f(cy-r)+" c "+f(cx+k)+" "+f(cy-r)+" "+f(cx+r)+" "+f(cy-k)+" "+f(cx+r)+" "+f(cy)+" c f";}
+  function dot(x,yy,r,col){cmds.push(col+" rg "+circ(x,H-yy,r));}
   function icon(k,x,yy){
     var Y=H-yy,r=6,col=rgb(PQ_CAT[k].c);
     if(k==="warn"){cmds.push(col+" rg "+f(x)+" "+f(Y+r+0.6)+" m "+f(x+r+1)+" "+f(Y-r+0.6)+" l "+f(x-r-1)+" "+f(Y-r+0.6)+" l h f");txt(x-1.4,yy+4.4,"!",8.5,true,"0.15 0.10 0.00");return;}
@@ -7895,6 +7950,7 @@ function pqPdf(doc){
     return pqWrapRich(tok,maxW,function(s,b){return pdfW(s,size,b);});
   }
   function rich(L,x,yy,size,lh,col){L.forEach(function(ln,i){ln.forEach(function(t){txt(x+t.x,yy+size+i*lh,t.w,size,t.b,col);});});return L.length*lh;}
+  function pill(s,x,yy,size,bg,col){s=cl(s);var w=pdfW(s,size,true)+8;rect(x,yy,w,size+4,bg);txt(x+4,yy+size+0.6,s,size,true,col);return w;}
   function np(first){
     cmds=[];pages.push(cmds);
     if(first){
@@ -7903,10 +7959,15 @@ function pqPdf(doc){
       txt(M,51,cl(doc.sub),10.5,false,"0.86 0.90 0.96");
       txt(M,68,cl(doc.kind+" · "+doc.when),8.5,false,"0.68 0.75 0.85");
       y=104;
-    }else{txt(M,M,cl(doc.title+" · "+doc.sub+" · continuação"),8,false,"0.36 0.42 0.51");y=M+16;}
+    }else{txt(M,M,cl(doc.title+" · "+doc.sub+" · continuação"),8,false,MUT);y=M+16;}
   }
   function need(h){if(y+h>H-M-18) np(false);}
-  var MUT="0.36 0.42 0.51";
+  /* faixa colorida de seção (repete com "continuação" se quebrar a página) */
+  function band(title,col,iconK){
+    need(46);rect(M,y,CW,22,tint(col,0.18));rect(M,y,3,22,rgb(col));
+    if(iconK) icon(iconK,M+14,y+11);
+    txt(M+(iconK?26:12),y+15,cl(title),11,true,rgb(col));y+=30;
+  }
   np(true);
   if(doc.what!=="prop"){
     var g=8,kw=(CW-3*g)/4,kh=0,ks=doc.kpis.map(function(k){return lines(esc(k.s),kw-16,7.5);});
@@ -7920,58 +7981,75 @@ function pqPdf(doc){
     y+=kh+10;
     var VL=lines(doc.verdict.html,CW-22,9.5),vh=VL.length*13+12;
     rect(M,y,CW,vh,"0.97 0.98 0.99");rect(M,y,4,vh,rgb(PQ_CAT[doc.verdict.tone].c));
-    rich(VL,M+14,y+4,9.5,13);y+=vh+16;
+    rich(VL,M+14,y+4,9.5,13);y+=vh+18;
     need(40);txt(M,y+12,"Leitura do planejador",14,true);y+=22;
-    var lx=M;PQ_CAT_ORD.forEach(function(k){icon(k,lx+6,y+6);txt(lx+16,y+9,cl(PQ_CAT[k].nm),8.5,false,MUT);lx+=26+pdfW(cl(PQ_CAT[k].nm),8.5,false);});y+=20;
+    var lx=M;PQ_CAT_ORD.forEach(function(k){icon(k,lx+6,y+6);txt(lx+16,y+9,cl(PQ_CAT[k].nm),8.5,false,MUT);lx+=26+pdfW(cl(PQ_CAT[k].nm),8.5,false);});y+=22;
     PQ_CAT_ORD.forEach(function(k){
       var L=doc.ins.filter(function(x){return x.tone===k;});if(!L.length) return;
       var cat=PQ_CAT[k];
-      need(48);rect(M,y,CW,20,tint(cat.c,0.16));icon(k,M+12,y+10);txt(M+24,y+14,cl(cat.nm+" · "+L.length),10.5,true,rgb(cat.c));y+=26;
-      L.forEach(function(x){
-        var XL=lines(x.txt,CW-30,9.2),h=XL.length*12.6+6;
-        need(h);icon(k,M+10,y+7);rich(XL,M+24,y-1,9.2,12.6);y+=h;
-        cmds.push("0.88 G 0.4 w "+f(M+24)+" "+f(H-y+2)+" m "+f(M+CW)+" "+f(H-y+2)+" l S");
-        y+=3;
+      band(cat.nm+" · "+L.length,cat.c,k);
+      L.forEach(function(x,i){
+        var XL=lines(x.txt,CW-30,9.4);
+        need(XL.length*13+6);rich(XL,M+14,y-1,9.4,13);y+=XL.length*13+3;
+        (x.items||[]).forEach(function(s){
+          var SL=lines(s,CW-44,8.6);need(SL.length*11.6+2);
+          dot(M+22,y+6,1.8,rgb(cat.c));rich(SL,M+30,y-1.5,8.6,11.6,MUT);y+=SL.length*11.6+1.5;
+        });
+        y+=5;if(i<L.length-1){hline(M+14,y-2,CW-14);}y+=4;
       });
       y+=8;
     });
   }
   if(doc.what!=="ins"){
-    if(doc.what==="all"){need(120);y+=6;}
+    if(doc.what==="all"){np(false);}
     need(60);txt(M,y+12,"Proposta do mês",14,true);y+=18;
-    y+=rich(lines("Sugestão automática a partir das premissas: nada foi gravado nos equipamentos. <b>*</b> = backlog.",CW,8.5),M,y,8.5,11,MUT)+6;
-    var tx0=M;
+    y+=rich(lines("Sugestão automática a partir das premissas: nada foi gravado nos equipamentos.",CW,8.5),M,y,8.5,11,MUT)+8;
+    band("Equipe do período",acc,null);
+    var tx0=M+8;
     doc.team.forEach(function(t){
       var s1=cl(t.t),s2=cl(t.txt),w=pdfW(s1,8.5,true)+pdfW(s2,8.5,false)+26;
-      if(tx0>M&&tx0+w>M+CW){tx0=M;y+=16;}
-      cmds.push(rgb(t.col)+" rg "+circ(tx0+5,H-y-5,3.6));
+      if(tx0>M+8&&tx0+w>M+CW){tx0=M+8;y+=16;}
+      dot(tx0+5,y+5,3.6,rgb(t.col));
       txt(tx0+12,y+8,s1,8.5,true);txt(tx0+16+pdfW(s1,8.5,true),y+8,s2,8.5,false,MUT);
-      tx0+=w+8;
+      tx0+=w+10;
     });
-    y+=22;
+    y+=24;
     if(!doc.weeks.length){txt(M,y+10,"Nada para propor.",9,false,MUT);y+=18;}
+    var DX=M+8,DW=CW-16,cols=2,colW=(DW-24-10)/2;
     doc.weeks.forEach(function(wk){
-      need(60);txt(M,y+12,cl(wk.label),11.5,true,rgb(acc));y+=20;
+      band(wk.label,acc,null);
       wk.days.forEach(function(dd){
-        var DX=M+66,DW=CW-66;
-        dd.slots.forEach(function(s,i){
-          var SL=s.lines.map(function(l){return lines(l,DW-18,8.4);}),sh=20+SL.reduce(function(a,L){return a+L.length*11;},0)+6;
-          need(sh+4);
-          if(i===0) txt(M,y+13,cl(dd.lbl),9.5,true);
-          rect(DX,y,DW,sh,tint(s.col,0.12));rect(DX,y,3,sh,rgb(s.col));
-          var rt=cl(s.right),rw=pdfW(rt,8,false),hd=cl(s.head);
-          while(hd.length>4&&pdfW(hd,9.2,true)>DW-rw-24) hd=hd.slice(0,-2);
-          txt(DX+10,y+13,hd,9.2,true);txt(DX+DW-6-rw,y+13,rt,8,false,MUT);
-          var ly=y+16;SL.forEach(function(L){ly+=rich(L,DX+10,ly,8.4,11);});
-          y+=sh+4;
+        need(40);txt(DX,y+11,cl(dd.lbl),10,true);hline(DX+pdfW(cl(dd.lbl),10,true)+8,y+7,DW-pdfW(cl(dd.lbl),10,true)-8);y+=18;
+        dd.slots.forEach(function(s){
+          var sh=34;s.clients.forEach(function(c2){sh+=13+Math.ceil(c2.ms.length/cols)*10.6+4;});sh+=4;
+          need(Math.min(sh,300));
+          var y0=y;
+          rect(DX,y0,DW,sh,tint(s.col,0.10));rect(DX,y0,3,sh,rgb(s.col));
+          txt(DX+12,y0+13,fitT(s.head,DW-24,9.6,true),9.6,true);
+          var px=DX+12;s.tags.forEach(function(tg){px+=pill(tg,px,y0+18,6.8,"1 1 1",MUT)+4;});
+          y=y0+34;
+          s.clients.forEach(function(c2,ci){
+            if(ci) hline(DX+12,y-1,DW-24);
+            var nm=cl(c2.name+" ("+c2.n+")");txt(DX+12,y+9,nm,8.6,true);
+            if(c2.fixed) pill("agendada",DX+18+pdfW(nm,8.6,true),y+1.5,6.6,tint(acc,0.18),rgb(acc));
+            y+=13;
+            c2.ms.forEach(function(ms,mi){
+              var col=mi%cols,row=Math.floor(mi/cols),mx=DX+12+col*(colW+10),my=y+row*10.6;
+              var bw=ms.bl?pdfW("backlog",6.4,true)+12:0,t2=fitT(ms.txt,colW-bw-10,7.6,false);
+              dot(mx+2,my+4.6,1.4,MUT);txt(mx+7,my+7.4,t2,7.6,false,MUT);
+              if(ms.bl) pill("backlog",mx+9+pdfW(t2,7.6,false),my+0.6,6.4,"0.99 0.89 0.78","0.54 0.29 0.04");
+            });
+            y+=Math.ceil(c2.ms.length/cols)*10.6+4;
+          });
+          y=Math.max(y,y0+sh)+5;
         });
         y+=4;
       });
-      y+=4;
+      y+=6;
     });
     if(doc.out.length){
-      need(40);txt(M,y+12,"Não couberam na capacidade do período",11,true,rgb(PQ_CAT.bad.c));y+=18;
-      doc.out.forEach(function(l){var L=lines(l,CW,9);need(L.length*12+2);y+=rich(L,M,y,9,12)+2;});
+      band("Não couberam na capacidade do período",PQ_CAT.bad.c,"bad");
+      doc.out.forEach(function(l){var L=lines(l,CW-30,9);need(L.length*12+2);dot(M+14,y+6,1.8,rgb(PQ_CAT.bad.c));y+=rich(L,M+22,y-1,9,12)+2;});
     }
   }
   var out="%PDF-1.4\n%"+String.fromCharCode(226,227,207,211)+"\n",offs=[],N=pages.length;
