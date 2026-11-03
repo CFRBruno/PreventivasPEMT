@@ -529,6 +529,11 @@ select option{background:var(--surface);color:var(--ink)}
 .mc-main{display:flex;align-items:center;gap:16px;margin:10px 0 12px}
 .mc-pct{font-size:46px;font-weight:800;line-height:1;color:var(--ft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mc-pct span{font-size:24px;margin-left:2px}
+.mc-two{display:flex;align-items:flex-end;gap:22px;flex:none}
+.mc-rate small{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;white-space:nowrap}
+.mc-rate.prj .mc-pct{font-size:34px;color:var(--muted)}
+.mc-rate.prj .mc-pct span{font-size:18px}
+@media (min-width:820px){.mc-rate.prj .mc-pct{font-size:40px}.mc-rate.prj .mc-pct span{font-size:20px}}
 .ok .mc-pct{color:#2EA043}
 .mc-txt{line-height:1.35;min-width:0}
 .mc-txt b{font-size:15.5px;display:block}
@@ -3510,6 +3515,21 @@ function refCount(){
   }
   return {days:days,weeks:weeks,me:me,late:late};
 }
+/* backlog de hoje: a vencer cujo vencimento chegou entra em backlog à 00:00 do próprio dia; feita em backlog reduz */
+function blNow(code,m,mm){
+  var r={venc:0,doneBL:0},f=FILIAIS.find(function(x){return x.code===code;}),d=f&&DB&&DB.filiais[f.key];
+  if(!d) return r;
+  var ym=mm.y+"-"+p2(mm.m+1),today=ui.ctx==="bk"?sbKey(mm.y,mm.m,sbDays(mm.y,mm.m)):isoDate(new Date()),ref=m.refIso||"";
+  if(!ref){var z=String(m.ref||"").split("/");ref=z.length===2?mm.y+"-"+p2(+z[1])+"-"+p2(+z[0]):"";}
+  var ts=+m.ts||(ref?new Date(ref+"T00:00:00").getTime():0);
+  d.items.forEach(function(i){
+    if(i.removido||isRet(i)) return;
+    var dp=String(i.dataPrevista||"");
+    if(i.realizado==="Sim"){if(i.status==="Backlog"&&i.realizadoEm&&i.realizadoEm>=ts) r.doneBL++;return;}
+    if(i.status==="Em dia"&&dp.slice(0,7)===ym&&dp>ref&&dp<=today) r.venc++;
+  });
+  return r;
+}
 function metaState(code){
   var m=META[code];if(!m) return null;
   var L0=Math.round(+m.locados||0);if(L0<=0) return null;
@@ -3521,8 +3541,10 @@ function metaState(code){
   var pend=Math.max(0,base-delta-ra.bl-ra.av),goal=+m.meta||0;
   var aV=Math.max(0,(+m.aVencer||0)-ra.av);
   var pct=(L-pend)/L*100,maxPend=Math.floor(L*(1-goal/100)+1e-9),need=Math.max(0,pend-maxPend);
+  var bn=DB.sample?{venc:0,doneBL:0}:blNow(code,m,metaMonth());
+  var backlog=Math.min(L,Math.max(0,Math.max(0,base-(+m.aVencer||0))-bn.doneBL-ra.bl+bn.venc)),atual=(L-backlog)/L*100;
   var rc=refCount(),me=rc.me,pe=me,days=rc.days,dm=days;
-  return {m:m,L:L,base:base,pend:pend,pct:pct,goal:goal,maxPend:maxPend,need:need,days:days,weeks:rc.weeks,late:rc.late,prazoOk:true,pe:pe,dm:dm,me:me,delta:delta,ret:ret,ra:ra,L0:L0,aV:aV,step:100/L};
+  return {atual:atual,backlog:backlog,venc:bn.venc,m:m,L:L,base:base,pend:pend,pct:pct,goal:goal,maxPend:maxPend,need:need,days:days,weeks:rc.weeks,late:rc.late,prazoOk:true,pe:pe,dm:dm,me:me,delta:delta,ret:ret,ra:ra,L0:L0,aV:aV,step:100/L};
 }
 function metaHTML(){
   var code=curCode(),st=metaState(code);
@@ -3538,9 +3560,10 @@ function metaHTML(){
     else if(st.late) txt+='<small>O último dia útil do mês ('+fmtDM(st.pe)+') já passou.</small>';
   }
   var info='Base do BI'+(m.ref?" de "+esc(m.ref):"")+': '+st.L0+' locados · '+st.base+' a executar'+(m.aVencer?' (inclui '+(+m.aVencer)+' a vencer no mês)':'')+'.';
-  var foot=info+' Agora: '+(st.ret?st.L+' locados, ':'')+st.pend+' a executar'+(function(){var nt=[];if(st.delta) nt.push(st.delta+(st.delta===1?" feita":" feitas")+" aqui desde o BI");if(st.ret) nt.push(st.ret+(st.ret===1?" retorno descontado":" retornos descontados")+" dos locados e da situação da máquina");return nt.length?" ("+nt.join(", ")+")":"";})()+'. Cada preventiva realizada soma +'+nf(st.step,2)+' p.p.';
+  var foot=info+' Agora: '+(st.ret?st.L+' locados, ':'')+st.pend+' a executar'+(function(){var nt=[];if(st.delta) nt.push(st.delta+(st.delta===1?" feita":" feitas")+" aqui desde o BI");if(st.ret) nt.push(st.ret+(st.ret===1?" retorno descontado":" retornos descontados")+" dos locados e da situação da máquina");return nt.length?" ("+nt.join(", ")+")":"";})()+'. Backlog hoje: '+st.backlog+(st.venc?' ('+st.venc+(st.venc===1?" venceu":" venceram")+' desde o BI)':'')+'. A taxa atual conta só o backlog como não realizado; a projeção é a taxa do fim do mês se nada mais for feito. Cada preventiva realizada soma +'+nf(st.step,2)+' p.p. na projeção.';
   return '<div class="meta-card'+(ok?" ok":"")+'"><div class="mc-top"><div><b>Meta de preventivas em dia</b></div><button class="btn sm" type="button" data-meta="1">Atualizar BI</button></div>'+
-    '<div class="mc-main"><div class="mc-pct"><span class="mc-n">'+Math.round(st.pct)+'</span><span>%</span></div><div class="mc-txt">'+txt+'</div></div>'+
+    '<div class="mc-main"><div class="mc-two"><div class="mc-rate"><small>Taxa atual</small><div class="mc-pct"><span class="mc-na">'+Math.round(st.atual)+'</span><span>%</span></div></div>'+
+    '<div class="mc-rate prj"><small>Projeção do mês</small><div class="mc-pct"><span class="mc-n">'+Math.round(st.pct)+'</span><span>%</span></div></div></div><div class="mc-txt">'+txt+'</div></div>'+
     '<div class="mc-bar" role="progressbar" aria-valuenow="'+Math.round(st.pct)+'" aria-valuemin="0" aria-valuemax="100" aria-label="Preventivas em dia"><i style="width:'+Math.min(100,st.pct).toFixed(2)+'%"></i><u style="left:'+Math.min(100,st.goal)+'%" data-l="Meta '+nf(st.goal)+'%"></u></div>'+
     '<div class="mc-foot">'+foot+'</div></div>';
 }
@@ -3566,7 +3589,7 @@ function saveMetaForm(){
   if(!(P>=0&&P<=L)){toast("Os equipamentos a executar devem estar entre 0 e "+L+".");return;}
   if(!(G>0&&G<=100)){toast("A meta deve ser um percentual entre 1 e 100.");return;}
   var now=new Date();
-  META[code]={locados:L,pend:P,aVencer:Math.max(0,V),meta:G,ref:fmtDM(now),baseDone:doneCount(code),retBase:retList(code)};
+  META[code]={locados:L,pend:P,aVencer:Math.max(0,V),meta:G,ref:fmtDM(now),refIso:isoDate(now),ts:now.getTime(),baseDone:doneCount(code),retBase:retList(code)};
   var ok=saveMeta();closeMeta();renderAll();
   toast(ok?"Meta atualizada.":"Não foi possível guardar neste aparelho.");
 }
@@ -6016,7 +6039,8 @@ function renderFx(){
     seg(fxN(rc.days,"dia útil","dias úteis")+" (sem hoje)");
   }
   if(st){
-    seg("taxa "+Math.round(st.pct)+"%");
+    seg("taxa "+Math.round(st.atual)+"%");
+    seg("projeção "+Math.round(st.pct)+"%");
     seg(st.need>0?"faltam "+st.need+" para a meta":"meta de "+nf(st.goal)+"% atingida");
   }
   done();
@@ -6195,6 +6219,8 @@ function renderRitmo(){
   box.innerHTML=head+pills+rtHero(c,code)+cards+'<div class="rt-sec"><b>Semanas do mês</b><span class="rt-key"><i class="pos"></i>acima <i class="eq"></i>na meta <i class="neg"></i>abaixo</span></div><div class="rt-weeks">'+rtWeeks(c)+'</div>'+rtChart(c)+segs;
 }
 setInterval(function(){if(ui.section==="ritmo"&&!document.hidden) renderRitmo();},60000);
+var LAST_DAY=isoDate(new Date());
+setInterval(function(){var n=isoDate(new Date());if(n!==LAST_DAY){LAST_DAY=n;renderAll();}},60000);
 
 /* ---------- Plantão de sobreaviso (Agenda) ---------- */
 var SB_ORDER=["Rafael","Jairo","Gercelino"];

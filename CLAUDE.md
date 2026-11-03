@@ -64,13 +64,17 @@
 ### 5.2 Meta de preventivas em dia (por filial, `META`)
 - **A meta vale sempre até o último dia útil do mês de referência** (`metaMonth()`: mês atual do site, ou o mês da cópia). **Não há campo de prazo.**
 - Campos do "Atualizar BI": **Locados**, **Equipamentos com planos a executar** (= card do BI com esse mesmo nome; já inclui os a vencer), **A vencer no mês** (já incluído) e **Meta (%)**.
-- taxa = (locados − pendentes) ÷ locados; pendentes = valor do BI − feitas no site desde a atualização (`baseDone`) − retornos ainda não realizados. Máx. de pendentes = `floor(L×(1−meta))`. Mostra "faltam N" e "≈ X por dia útil até dd/mm (N dias úteis, sem contar hoje)".
+- **Duas taxas lado a lado** no bloco da meta (`metaState`: `atual` e `pct`):
+  - **Projeção do mês** (`pct`, vai na barra) = (locados − a executar) ÷ locados = taxa do fim do mês **se nada mais for feito**. "Faltam N", Ritmo e corrida usam a projeção.
+  - **Taxa atual** (`atual`, como o BI) = (locados − **backlog de hoje**) ÷ locados. Só backlog conta como não realizado. Backlog de hoje = (a executar do BI − a vencer do BI) − feitas em backlog desde o BI (`realizadoEm` ≥ `META.ts`) − retornos em backlog + a vencer cuja **data prevista ≤ hoje** e > data do BI (`refIso`), não realizadas (`blNow`). Máquina que vence no dia D entra em backlog à 00:00 do dia D, não antes. Feita "a vencer" não mexe na taxa atual. Atualiza sozinha na virada do dia (timer de 60 s `LAST_DAY` → `renderAll`). Em cópias de segurança a data de referência é o fim do mês.
+  - Ao salvar o BI grava `refIso` e `ts`; dados antigos usam `ref` (dd/mm) do mês de referência.
+- Projeção: taxa = (locados − pendentes) ÷ locados; pendentes = valor do BI − feitas no site desde a atualização (`baseDone`) − retornos que reduzem o a executar (ver 5.1). Máx. de pendentes = `floor(L×(1−meta))`. Mostra "faltam N" e "≈ X por dia útil até dd/mm (N dias úteis, sem contar hoje)".
 - **`refCount()`:** dias úteis restantes **só do mês de referência, sem contar hoje** (antes do mês: a partir do dia 1) e semanas restantes (segunda a sexta) **do mês, contando a atual**. Novembro/2026 tem 19 dias úteis (Finados 2/11 e Consciência Negra 20/11 são feriados).
 - **Dias úteis (regra rígida, contra hora extra):** segunda a sexta **menos feriado nacional**. Pontos facultativos contam como dia útil. Sábado/domingo/feriado: o site avisa mas deixa salvar e não preenche a semana. Feriados por ano (Páscoa).
 - **Semana do mês (1ª–5ª):** conta se tiver ao menos um dia útil; `weekOfMonth(d)`.
 
 ### 5.3 Faixa de resumo (`renderFx`, texto curto)
-- **Mês atual:** `BA - SSF · 63 previstas · 04 realizadas, 59 pendentes · 5 semanas (com a atual) · 19 dias úteis (sem hoje) · taxa 56% · faltam 49 para a meta`.
+- **Mês atual:** `BA - SSF · 63 previstas · 04 realizadas, 59 pendentes · 5 semanas (com a atual) · 19 dias úteis (sem hoje) · taxa 86% · projeção 54% · faltam 49 para a meta` (taxa = atual).
 - **Planejamento:** `BA - SSF · 63 previstas · 44 clientes, 14 cidades · 1,7 equip. por técnico / dia` (fórmula: total ÷ dias úteis do mês ÷ técnicos da filial).
 - **Cópia:** `BA - SSF · 63 no total · 3 pendentes no mês · taxa alcançada 88%`.
 
