@@ -727,6 +727,8 @@ svg.cxi.s{width:16px;height:16px}
 .ch-day.sel{background:transparent;font-weight:700}
 .ch-mk{display:flex;gap:1px;margin-top:3px;height:12px;align-items:center}
 .ch-mk svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ch-mkn{font-style:normal;font-size:9.5px;font-weight:700;color:var(--muted);margin-left:1px;line-height:1}
+.ch-more{position:absolute;top:4px;right:6px;font-style:normal;font-size:9.5px;font-weight:700;color:var(--muted);line-height:1}
 .ch-bars{position:absolute;inset:0;pointer-events:none}
 .ch-bar{position:absolute;height:5px}
 .ch-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0;font-size:12px;color:var(--muted)}
@@ -4272,11 +4274,18 @@ function chSegs(wk,td){
     if(e<wk[0]||s>wk[6]) return;
     segs.push({t:t,c0:s<=wk[0]?0:wk.indexOf(s),c1:e>=wk[6]?6:wk.indexOf(e),starts:s>=wk[0],ends:e<=wk[6],openEnd:chIsOpen(t)&&e<=wk[6]});
   });
-  segs.sort(function(a,b){return a.c0-b.c0||a.t.id-b.t.id;});
-  var ends=[];
+  /* abertos primeiro (o mais antigo ganha a 1ª linha), depois os resolvidos por início */
+  segs.sort(function(a,b){
+    var oa=chIsOpen(a.t)?0:1,ob=chIsOpen(b.t)?0:1;
+    if(oa!==ob) return oa-ob;
+    if(!oa&&a.t.open!==b.t.open) return a.t.open<b.t.open?-1:1;
+    return a.c0-b.c0||a.t.id-b.t.id;
+  });
+  var lanes=[];
   segs.forEach(function(s){
-    var lane=0;while(ends[lane]!==undefined&&ends[lane]>=s.c0) lane++;
-    ends[lane]=s.c1;s.lane=lane;
+    var lane=0;
+    while(lanes[lane]&&lanes[lane].some(function(r){return !(r[1]<s.c0||r[0]>s.c1);})) lane++;
+    (lanes[lane]=lanes[lane]||[]).push([s.c0,s.c1]);s.lane=lane;
   });
   return segs;
 }
@@ -4316,7 +4325,8 @@ function chCalHTML(y,m,td,anim,dir){
   for(var r=0;r<wn;r++){
     var wk=[],i;
     for(i=0;i<7;i++) wk.push(kOf(new Date(st.getFullYear(),st.getMonth(),st.getDate()+r*7+i)));
-    var days="",bars="";
+    var days="",bars="",segs=chSegs(wk,td),hid=[0,0,0,0,0,0,0];
+    segs.forEach(function(s){if(s.lane>2) for(var c=s.c0;c<=s.c1;c++) hid[c]++;});
     wk.forEach(function(k,ci){
       var d=dOf(k),H=holidayOn(k),cls="ch-day",wd=d.getDay();
       if(d.getMonth()!==m) cls+=" out";
@@ -4324,10 +4334,18 @@ function chCalHTML(y,m,td,anim,dir){
       if(wd===0||wd===6) cls+=" we";
       if(k===td) cls+=" today";
       if(k===ui.chsel) cls+=" sel";
-      var evs=chEvents(k).slice(0,3);
-      days+='<button type="button" class="'+cls+'" data-chday="'+k+'" style="--n:'+(r*7+ci)+'" aria-label="'+esc(longDay(k)+(H?", "+H.name:"")+(evs.length?", "+evs.length+(evs.length===1?" evento":" eventos"):""))+'">'+d.getDate()+'<span class="ch-mk">'+evs.map(chMk).join("")+'</span></button>';
+      var all=chEvents(k),evs=all,more=0;
+      if(all.length>3){
+        /* aberturas sempre visíveis; 2 ícones + "+N" */
+        evs=all.filter(function(e){return e.kind==="open";}).concat(all.filter(function(e){return e.kind!=="open";})).slice(0,2);
+        more=all.length-2;
+      }
+      var hx=hid[ci];
+      days+='<button type="button" class="'+cls+'" data-chday="'+k+'" style="--n:'+(r*7+ci)+'" aria-label="'+esc(longDay(k)+(H?", "+H.name:"")+(all.length?", "+all.length+(all.length===1?" evento":" eventos"):"")+(hx?", mais "+hx+(hx===1?" chamado em andamento":" chamados em andamento"):""))+'">'+d.getDate()+
+        (hx?'<i class="ch-more" title="'+hx+(hx===1?' chamado em andamento não cabe na linha':' chamados em andamento não cabem nas linhas')+'">+'+hx+'</i>':'')+
+        '<span class="ch-mk">'+evs.map(chMk).join("")+(more?'<em class="ch-mkn">+'+more+'</em>':'')+'</span></button>';
     });
-    chSegs(wk,td).forEach(function(s){
+    segs.forEach(function(s){
       if(s.lane>2) return;
       var c=chColor(s.t),rad=(s.starts?"3px":"0")+" "+(s.ends?"3px":"0")+" "+(s.ends?"3px":"0")+" "+(s.starts?"3px":"0");
       bars+='<div class="ch-bar" style="--ad:'+(260+r*70+s.c0*35)+'ms;left:calc('+(s.c0/7*100)+'% + 3px);width:calc('+((s.c1-s.c0+1)/7*100)+'% - 6px);top:'+(36+s.lane*6)+'px;border-radius:'+rad+';background:'+(s.openEnd?'linear-gradient(90deg,'+c+' 55%,transparent)':c)+'"></div>';

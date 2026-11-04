@@ -122,6 +122,7 @@
 SVG embutido (`GEO`, 1.038 municípios, regiões consolidadas). Só cidades com máquinas ganham cor (mais escuro = mais). **Clusters** por zoom (<2,4 regiões; acima cidades; nomes a partir de 4). Filtros: Todos, Agendamento pendente, Agendadas, Realizadas, Em dia, Backlog. **Território LDM** = Extremo Oeste Baiano, Vale São-Franciscano, PI e TO; SSF = resto (**suposição**). Aliases de município em `MPALIAS`.
 
 ### 5.10 Chamados (corretivas)
+**Calendário:** até **3 linhas** de chamado por semana e **3 ícones** por dia. Chamados **abertos** ficam com as primeiras linhas (o mais antigo na 1ª), depois os resolvidos; o que não cabe vira "+N" no canto do dia. Dia com mais de 3 eventos mostra 2 ícones (aberturas primeiro) + "+N" (corrigido em 04/11/2026: chamado aberto sumia quando era o 4º da semana).
 Campos: N° do chamado, **N° da OM (6 números)**, abertura/resolução com horário, causa, **TAG `TPTA0`+4 números (obrigatória)**, modelo, cliente, responsável, telefone `(00) 90000-0000`, contato alternativo, consultor(a), **cidade**, UF (BA, PE, PI, SE, TO; padrão SE), **filial obrigatória (SSF/LDM/NSS)**, distância, peça substituída (+ doadora), cobrança, observações. Visitas com 5 resultados. "dias" de chamado = **dias corridos**. Relatório com filtros, 15 estatísticas, PDF/Excel/CSV (`;` + BOM).
 - **Cidade (e Modelo/Técnico) com autocomplete novo:** cartão com ícones, trecho digitado em negrito na cor da filial, setas+Enter, linha **"Usar 'texto'"** (cidade fora da lista é sempre permitida), abre para cima se faltar espaço. **A lista de cidades dos chamados é fixa** (`CIDADES_FIXAS`, 25 cidades da carteira: Alagoinhas, Barreiras, Camaçari, Conceição do Jacuípe, Cruz das Almas, Feira de Santana, Guanambi, Ibirapitanga, Iraquara, Irecê, Itagibá, Itapetinga, Lauro de Freitas, Luís Eduardo Magalhães, Maracás, Salvador, São Desidério, São Francisco do Conde, Simões Filho, Vera Cruz, Vitória da Conquista, Santa Filomena-PI, Urucuí-PI, Almas-TO, Arraias-TO). Se surgir cidade nova, acrescentar em `CIDADES_FIXAS` e em `CID_XY`.
 
@@ -175,6 +176,8 @@ Ajuda a montar um plano **factível, só em dias úteis, com folga**, para bater
 - **Aba Planejar, fase 3** e **bloqueio do turno pelo treinamento** (03/11/2026, testados no navegador do app; subiram): ver 5.6 e 5.11.
 
 - **Sincronização à prova de aparelho velho + cópias diárias com Restaurar** e **proposta com o dia de hoje** (04/11/2026; sincronização testada com nuvem simulada e dois aparelhos, **ainda não com o Firebase real**): ver seção 3 e 5.11.
+
+- **Calendário de Chamados:** abertos com prioridade nas linhas e "+N" quando não cabe (04/11/2026, testado no navegador do app): ver 5.10.
 
 **Fila pendente:** vazia.
 
