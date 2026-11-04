@@ -1491,6 +1491,14 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .pq-q{width:100%;min-height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 12px;font-size:15px;margin:6px 0 4px}
 .pq-blk{border:1px solid var(--line);border-left:5px solid #E5484D;border-radius:12px;padding:8px 10px;margin-top:8px;background:var(--bg)}
 .pq-blk-h{display:flex;align-items:center;gap:8px}
+.pq-blk.ok{border-left-color:#2EA043}
+.pq-inchip.ok{background:var(--ok-bg);color:var(--ok-ink)}
+.pq-itecs{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
+.pq-itec{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13.5px}
+.pq-itec label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.pq-itec .pq-imes{font-size:12.5px;color:var(--muted)}
+.pq-itec small{font-size:12px;color:var(--muted)}
+.pq-tag.pq-inew{border-color:transparent;background:var(--ok-bg);color:var(--ok-ink)}
 .pq-blk-h .pq-rt{flex:1;min-width:0}
 .pq-blk-h .pq-rt b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pq-blk-h .pq-rt small{display:block;color:var(--muted);font-size:12.5px}
@@ -2626,6 +2634,7 @@ function saveEdit(){
   var ok=saveDB();
   closeEdit();renderAll();
   var tw=it.dataAgendada?trWarnTxt(it.tecnico,(parseAg(it.dataAgendada)?kOf(parseAg(it.dataAgendada)):"")):"";
+  var iw=it.realizado!=="Sim"?inWarnTxt(it):"";if(iw) tw=(tw?tw+" ":"")+iw;
   toast(ok?"Alterações salvas."+(tw?" "+tw:""):"Não foi possível guardar neste aparelho.");
 }
 function copiar(){
@@ -3182,6 +3191,8 @@ function applyBulk(){
     if(ch){fin(it);n++;}
     var pdw=parseAg(it.dataAgendada),tw=pdw?trWarnTxt(it.tecnico,kOf(pdw)):"";
     if(tw&&trW.indexOf(tw)<0) trW.push(tw);
+    var iw=ch&&tec&&it.realizado!=="Sim"?inWarnTxt(it):"";
+    if(iw&&trW.indexOf(iw)<0) trW.push(iw);
   });
   var cli=BK.cli,sp=lkSpread(prev,tec);
   nbN+=sp.nb;
@@ -4155,7 +4166,7 @@ function tfSave(){
   var any=false;
   AGTEC.forEach(function(n){var d=TF.draft[n];if(String(d.m||"").trim()||String(d.t||"").trim()||d.mi.length||d.ti.length) any=true;});
   if(!any&&!Object.keys(TF.loaded).length){toast("Preencha o que pelo menos um técnico fez.");return;}
-  var k=TF.date,nTec=0;AG.tech[k]=AG.tech[k]||{};
+  var k=TF.date,nTec=0;AG.tech[k]=AG.tech[k]||{};LV_INW=[];
   AGTEC.forEach(function(n){
     var d=TF.draft[n],m=String(d.m||"").trim(),t=String(d.t||"").trim();
     if(m||t||d.mi.length||d.ti.length){
@@ -4172,7 +4183,7 @@ function tfSave(){
   closeTech();if(!$("dayModal").hidden) closeDay();
   if(ui.section!=="agenda"){ui.section="agenda";syncToolbar();}
   renderBody();
-  toast("Salvo em "+shortDM(k)+". Os pontos coloridos já aparecem no calendário.");
+  toast("Salvo em "+shortDM(k)+". Os pontos coloridos já aparecem no calendário."+(LV_INW.length?" "+LV_INW.join(" "):""));
 }
 function delTech(n){
   var k=DAYK;if(AG.tech[k]){delete AG.tech[k][n];if(!Object.keys(AG.tech[k]).length) delete AG.tech[k];}
@@ -7037,6 +7048,7 @@ function lkSpreadTxt(per){
   if(!parts.length) return "";
   return "Aplicado também a "+(parts.length>1?parts.slice(0,-1).join(", ")+" e "+parts[parts.length-1]:parts[0]);
 }
+var LV_INW=[];
 function lvApplyTec(n,d){
   var c=0;
   [d.mi,d.ti].forEach(function(arr){
@@ -7044,7 +7056,7 @@ function lvApplyTec(n,d){
       if(l.k!=="p"||!l.fresh) return;
       delete l.fresh;
       if(!l.st||ui.ctx==="bk") return;
-      l.pats.forEach(function(p){var it=findItemAny(p);if(it){it.tecnico=lvTecFull(n);fin(it);c++;}});
+      l.pats.forEach(function(p){var it=findItemAny(p);if(it){it.tecnico=lvTecFull(n);fin(it);c++;var w=inWarnTxt(it);if(w&&LV_INW.indexOf(w)<0) LV_INW.push(w);}});
     });
   });
   return c;
@@ -7230,15 +7242,67 @@ function pqRefresh(){if(ui.section==="planejar") renderBody();}
 
 /* integração: cliente bloqueado para o planejamento até liberar o acesso */
 function inKey(code,cli){return code+"|"+norm(cli);}
-function inOf(cli,code){return PQ.integ[inKey(code||curCode(),cli)]||null;}
-function inChip(cli){return inOf(cli)?'<span class="pq-inchip" title="'+esc((inOf(cli).obs||"Aguardando integração do técnico"))+'">INTEGRAÇÃO</span>':"";}
+/* a integração vale para o link inteiro: cliente linkado herda a marcação de qualquer cliente do grupo */
+function inGroup(cli,code){code=code||curCode();return lkGroupOf(code===curCode()?ui.filial:"BA - "+code,cli);}
+function inOwn(cli,code){return PQ.integ[inKey(code||curCode(),cli)]||null;}
+function inOf(cli,code){
+  code=code||curCode();
+  var o=inOwn(cli,code);if(o) return o;
+  var g=inGroup(cli,code);
+  if(g) for(var i=0;i<g.clients.length;i++){o=inOwn(g.clients[i],code);if(o) return o;}
+  return null;
+}
+/* técnicos integrados (da equipe da filial): só eles fazem as preventivas do cliente; null = nenhum */
+function inTecs(cli,code){
+  code=code||curCode();
+  var o=inOf(cli,code),eq=PQ_TEC[code]||[];
+  var a=o&&o.tecs?Object.keys(o.tecs).filter(function(t){return eq.indexOf(t)>=0;}):[];
+  return a.length?a:null;
+}
+function inTagHTML(c){
+  if(!inOf(c)) return "";
+  var tt=inTecs(c);
+  return tt?'<span class="pq-tag" title="Só '+esc(tt.join(", "))+' pode(m) fazer as preventivas deste cliente">integrado: '+esc(tt.join(", "))+'</span>':'<span class="pq-tag">integração: exceção</span>';
+}
+function inNowYm(){return kOf(new Date()).slice(0,7);}
+function inYmTxt(ym){return ym?MES_PT[+ym.slice(5,7)-1].slice(0,3).toLowerCase()+"/"+ym.slice(0,4):"";}
+function inTecTxt(o,t){var x=o&&o.tecs&&o.tecs[t];return t+(x&&x.ym?" (integração feita em "+inYmTxt(x.ym)+")":"");}
+function inChip(cli){
+  var o=inOf(cli);if(!o) return "";
+  var tt=inTecs(cli);
+  if(tt) return '<span class="pq-inchip ok" title="'+esc("Só "+tt.map(function(t){return inTecTxt(o,t);}).join(", ")+" pode(m) fazer as preventivas deste cliente"+(o.obs?" · "+o.obs:""))+'">INTEGRADO · '+esc(tt.join(", "))+'</span>';
+  return '<span class="pq-inchip" title="'+esc((o.obs||"Aguardando integração do técnico"))+'">INTEGRAÇÃO</span>';
+}
+/* aviso (não impede) quando a preventiva fica com técnico não integrado no cliente */
+function inWarnTxt(it){
+  if(!it||!it.tecnico) return "";
+  var tt=inTecs(it.cliente),t=pqTecShort(it.tecnico);if(!tt||!t||tt.indexOf(t)>=0) return "";
+  return "Atenção: "+t+" não é integrado em "+it.cliente+" (integrados: "+tt.join(", ")+").";
+}
 function inToggle(cli){
   if(ui.ctx==="bk"){roBlock();return;}
-  var k=inKey(curCode(),cli);
-  if(PQ.integ[k]) delete PQ.integ[k];
-  else PQ.integ[k]={cli:cli,obs:"",ts:Date.now()};
+  var code=curCode(),o=inOf(cli,code),g=inGroup(cli,code);
+  if(o){
+    delete PQ.integ[inKey(code,cli)];
+    if(g) g.clients.forEach(function(c){delete PQ.integ[inKey(code,c)];});
+    Object.keys(PQ.integ).forEach(function(k){if(PQ.integ[k]===o) delete PQ.integ[k];});
+  }else PQ.integ[inKey(code,cli)]={cli:cli,obs:"",ts:Date.now(),tecs:{}};
   savePQ();renderAll();
-  toast(PQ.integ[k]?cli+": marcado como INTEGRAÇÃO (fora do planejamento).":cli+": liberado para o planejamento.");
+  var gt=g&&g.clients.length>1?" (vale para o link "+g.name+")":"";
+  toast(!o?cli+": marcado como INTEGRAÇÃO"+gt+". Marque os técnicos integrados para ele voltar ao planejamento.":cli+": liberado para o planejamento"+gt+".");
+}
+function inSetTec(cli,t,on){
+  if(ui.ctx==="bk"){roBlock();return;}
+  var o=inOf(cli);if(!o) return;
+  o.tecs=o.tecs&&typeof o.tecs==="object"?o.tecs:{};
+  if(on) o.tecs[t]=o.tecs[t]||{ym:""};else delete o.tecs[t];
+  savePQ();renderAll();
+}
+function inSetYm(cli,t,on){
+  if(ui.ctx==="bk"){roBlock();return;}
+  var o=inOf(cli);if(!o||!o.tecs||!o.tecs[t]) return;
+  o.tecs[t].ym=on?inNowYm():"";
+  savePQ();renderAll();
 }
 
 /* ausências dos técnicos (ficam na Agenda: AG.aus) */
@@ -7372,8 +7436,8 @@ function pqItems(){
     if(it.realizado==="Sim"){out.done++;return;}
     if(isRet(it)){out.ret++;return;}
     if(isNR(it)){out.nr++;return;}
-    /* cliente em integração: máquina agendada é exceção liberada (entra no plano) */
-    if(inOf(it.cliente,code)&&!parseAg(it.dataAgendada)) out.blk.push(it); else out.plan.push(it);
+    /* cliente em integração: sem técnico integrado fica fora; máquina agendada é exceção liberada (entra no plano) */
+    if(inOf(it.cliente,code)&&!inTecs(it.cliente,code)&&!parseAg(it.dataAgendada)) out.blk.push(it); else out.plan.push(it);
   });
   return out;
 }
@@ -7471,17 +7535,33 @@ function pqInListHTML(all,q){
   }).join(""):'<p class="pq-none">Nenhum cliente encontrado.</p>';
 }
 function pqInHTML(all){
-  var code=curCode(),fl=all.filter(function(c){return inOf(c.name);}),nm=0;
-  fl.forEach(function(c){nm+=c.n;});
-  var h='<p class="pq-note">Clientes que exigem <b>integração do técnico</b> para liberar o acesso ficam fora do planejamento até você liberar. Use a observação para lembrar o que cobrar do time de integração.</p>';
-  if(fl.length){
-    h+='<div class="pq-h4">Aguardando integração · '+fl.length+(fl.length===1?" cliente":" clientes")+' · '+nm+(nm===1?" máquina":" máquinas")+'</div>';
-    h+=fl.sort(function(a,b){return b.n-a.n||coll.compare(a.name,b.name);}).map(function(c){
-      var o=inOf(c.name,code);
-      return '<div class="pq-blk"><div class="pq-blk-h"><span class="pq-rt"><b>'+esc(c.name)+'</b><small>'+esc(c.cityName)+' · '+c.n+(c.n===1?" máquina pendente":" máquinas pendentes")+(c.bl?' ('+c.bl+' em backlog)':'')+' · desde '+fmtDM(new Date(o.ts||Date.now()))+'</small></span><button type="button" class="btn sm" data-pq-in="'+esc(c.name)+'">Liberar</button></div>'+
-        '<input class="pq-obs" type="text" maxlength="160" data-pq-obs="'+esc(c.name)+'" value="'+esc(o.obs||"")+'" placeholder="Observação: com quem cobrar, prazo, documentos…" aria-label="Observação da integração de '+esc(c.name)+'"></div>';
+  var code=curCode(),fl=all.filter(function(c){return inOf(c.name);}),eq=PQ_TEC[code]||[],now=inNowYm();
+  /* um bloco por marcação (o link inteiro fica junto) */
+  var B=[];
+  fl.forEach(function(c){
+    var o=inOf(c.name,code),b=B.filter(function(x){return x.o===o;})[0];
+    if(!b){b={o:o,cs:[],n:0,bl:0};B.push(b);}
+    b.cs.push(c);b.n+=c.n;b.bl+=c.bl||0;
+  });
+  var wait=B.filter(function(b){return !inTecs(b.o.cli,code);}),nm=0;wait.forEach(function(b){nm+=b.n;});
+  var h='<p class="pq-note">Clientes que exigem <b>integração do técnico</b>. Sem técnico integrado, ficam fora do planejamento. Marque quem é <b>integrado</b>: o cliente volta ao planejamento e <b>só esses técnicos</b> recebem as preventivas dele. A marcação vale para o link inteiro.</p>';
+  function blk(b){
+    var o=b.o,tt=inTecs(o.cli,code),g=inGroup(o.cli,code);
+    var head=g&&g.clients.length>1?'Link '+esc(g.name):esc(o.cli);
+    var sub=b.cs.map(function(c){return (b.cs.length>1?esc(c.name)+": ":"")+c.n+(c.n===1?" máquina":" máquinas")+(c.bl?' ('+c.bl+' em backlog)':'');}).join(" · ")+' · '+esc(b.cs[0].cityName)+' · desde '+fmtDM(new Date(o.ts||Date.now()));
+    var tecs=eq.map(function(t){
+      var x=o.tecs&&o.tecs[t],on=!!x,old=on&&x.ym&&x.ym!==now;
+      return '<span class="pq-itec"><label><input type="checkbox" data-pq-itec="'+esc(o.cli)+'|'+esc(t)+'"'+(on?" checked":"")+'><i class="pq-dot" style="--pc:'+(AGTC[t]||"#8A96AB")+'"></i>'+esc(t)+' integrado</label>'+
+        (on?'<label class="pq-imes"><input type="checkbox" data-pq-imes="'+esc(o.cli)+'|'+esc(t)+'"'+(x.ym===now?" checked":"")+'>feita neste mês</label>'+(x.ym===now?'<span class="pq-tag pq-inew">integração feita em '+inYmTxt(now)+'</span>':old?'<small>feita em '+inYmTxt(x.ym)+'</small>':''):'')+'</span>';
     }).join("");
-    h+='<div class="pq-foot" style="justify-content:flex-start"><button type="button" class="btn sm" data-pq-copy="1">Copiar lista para cobrança</button></div>';
+    return '<div class="pq-blk'+(tt?" ok":"")+'"><div class="pq-blk-h"><span class="pq-rt"><b>'+head+(tt?'<span class="pq-inchip ok">INTEGRADO · '+esc(tt.join(", "))+'</span>':'<span class="pq-inchip">AGUARDANDO</span>')+'</b><small>'+sub+'</small></span><button type="button" class="btn sm" data-pq-in="'+esc(o.cli)+'">Tirar integração</button></div>'+
+      '<div class="pq-itecs">'+tecs+'</div>'+
+      '<input class="pq-obs" type="text" maxlength="160" data-pq-obs="'+esc(o.cli)+'" value="'+esc(o.obs||"")+'" placeholder="Observação: com quem cobrar, prazo, documentos…" aria-label="Observação da integração de '+esc(o.cli)+'"></div>';
+  }
+  if(B.length){
+    h+='<div class="pq-h4">Clientes com integração · '+B.length+(wait.length?' · '+wait.length+' aguardando ('+nm+(nm===1?" máquina fora do plano":" máquinas fora do plano")+')':'')+'</div>';
+    h+=B.sort(function(a,b){return (!!inTecs(a.o.cli,code))-(!!inTecs(b.o.cli,code))||b.n-a.n;}).map(blk).join("");
+    if(wait.length) h+='<div class="pq-foot" style="justify-content:flex-start"><button type="button" class="btn sm" data-pq-copy="1">Copiar lista para cobrança</button></div>';
   }else h+='<p class="pq-none">Nenhum cliente marcado como INTEGRAÇÃO nesta filial.</p>';
   h+='<details class="pq-more"'+(ui.pqInQ?" open":"")+'><summary>Marcar cliente como INTEGRAÇÃO</summary><input class="pq-q" id="pqInQ" type="search" placeholder="Buscar cliente ou cidade" value="'+esc(ui.pqInQ||"")+'" autocomplete="off" aria-label="Buscar cliente"><div id="pqInList">'+pqInListHTML(all,ui.pqInQ)+'</div></details>';
   return h;
@@ -7570,11 +7650,11 @@ function renderPlanejar(){
   var gN=LK.groups.filter(function(g){return g.filial===ui.filial;}).length;
   var aA=kOf(P.first),aB=kOf(P.last),aL=auList().filter(function(p){return p.to>=aA&&p.from<=aB;}),aD=0;
   aL.forEach(function(p){aD+=auBiz(p.from>aA?p.from:aA,p.to<aB?p.to:aB);});
-  var inN=all.filter(function(c){return inOf(c.name);}).length;
+  var inN=all.filter(function(c){return inOf(c.name)&&!inTecs(c.name);}).length,inK=all.filter(function(c){return inTecs(c.name);}).length;
   var steps='<div class="pq-h4" style="margin-top:4px">Antes de planejar · '+revN+' de 4 revisados</div>'+
     pqStep("lk",1,"Links de clientes",gN+(gN===1?" grupo":" grupos")+" nesta filial · "+all.length+" clientes com pendências",pqLinksHTML(all))+
     pqStep("au",2,"Ausências",aL.length?aL.length+(aL.length===1?" período":" períodos")+" · "+aD+(aD===1?" dia útil":" dias úteis")+" de ausência em "+ymName(P.ym).toLowerCase():"Nenhuma ausência em "+ymName(P.ym).toLowerCase(),pqAusHTML(P,C,code))+
-    pqStep("in",3,"Integração",inN?inN+(inN===1?" cliente bloqueado":" clientes bloqueados")+" · "+I.blk.length+(I.blk.length===1?" máquina fora do plano":" máquinas fora do plano"):"Nenhum cliente bloqueado",pqInHTML(all))+
+    pqStep("in",3,"Integração",(inN?inN+(inN===1?" cliente bloqueado":" clientes bloqueados")+" · "+I.blk.length+(I.blk.length===1?" máquina fora do plano":" máquinas fora do plano"):"Nenhum cliente bloqueado")+(inK?" · "+inK+(inK===1?" cliente só com técnico integrado":" clientes só com técnico integrado"):""),pqInHTML(all))+
     pqStep("pr",4,"Premissas","Equipe, corretivas ("+(PQ.prem.corr[code]||0)+"/mês), margem de "+nf(PQ.prem.marg,0)+"%, produtividade e deslocamento",pqPremHTML(code,C));
   var R=pqPlan(code,P,I,C),sp=pqSaved(),Rv=sp?pqSavedR(sp):R;
   var prop=(revN<4?'<p class="pq-note" style="margin:4px 2px 10px">Revisados '+revN+' de 4 passos. A proposta já usa o que está acima; revise tudo para ela ficar confiável.</p>':'')+pqInsHTML(pqInsights(code,P,I,C,R))+(sp?pqAdhHTML(sp):'')+pqPropHTML(code,P,I,C,Rv,sp);
@@ -7624,6 +7704,8 @@ document.addEventListener("click",function(e){
 document.addEventListener("change",function(e){
   var t=e.target;if(!t.closest||!t.closest(".pq")) return;
   if(t.hasAttribute("data-pq-p")){if(ui.ctx==="bk"){roBlock();return;}pqSetP(t.getAttribute("data-pq-p"),t.value);return;}
+  if(t.hasAttribute("data-pq-itec")){var a=t.getAttribute("data-pq-itec").split("|");inSetTec(a.slice(0,-1).join("|"),a[a.length-1],t.checked);return;}
+  if(t.hasAttribute("data-pq-imes")){var a2=t.getAttribute("data-pq-imes").split("|");inSetYm(a2.slice(0,-1).join("|"),a2[a2.length-1],t.checked);return;}
   if(t.hasAttribute("data-pq-obs")){
     var o=inOf(t.getAttribute("data-pq-obs"));if(!o) return;
     o.obs=t.value.trim().slice(0,160);savePQ();toast("Observação salva.");
@@ -7848,7 +7930,7 @@ function pqPlan(code,P,I,C){
   trs.forEach(function(o){
     if(o.tr.local==="fil") return;
     var g=lkGroupOf(ui.filial,o.tr.cli),far=pqFar(o.s.bk),n=0,maxN=far?Math.max(0,cap.far-1):99;
-    var cand=free.filter(function(it){return city(it)===o.city&&(norm(it.cliente)===norm(o.tr.cli)||(g&&lkGroupOf(ui.filial,it.cliente)===g));}).sort(pqItemCmp);
+    var cand=free.filter(function(it){var al=inTecs(it.cliente,code);return city(it)===o.city&&(!al||al.indexOf(o.tr.tec)>=0)&&(norm(it.cliente)===norm(o.tr.cli)||(g&&lkGroupOf(ui.filial,it.cliente)===g));}).sort(pqItemCmp);
     cand.forEach(function(it){
       if(n>=maxN) return;
       var c=far?0:1/rate(info(city(it)).bk,cand.length>=2);
@@ -7863,7 +7945,7 @@ function pqPlan(code,P,I,C){
   function tw(it){var w=A.tgt[it.patrimonio];return w==null?99:w;}
   var LM={};
   free.forEach(function(it){
-    var c=city(it),key=pqLocal(it)+"|"+c,o=LM[key]=LM[key]||{key:key,city:c,items:[],bk:info(c).bk};
+    var c=city(it),key=pqLocal(it)+"|"+c,o=LM[key]=LM[key]||{key:key,city:c,items:[],bk:info(c).bk,allow:inTecs(it.cliente,code)};
     o.items.push(it);
   });
   var locals=Object.keys(LM).map(function(k){var o=LM[k];o.same=o.items.length>=2;return o;});
@@ -7872,6 +7954,7 @@ function pqPlan(code,P,I,C){
   var out=[],loads=0;
   function place(ld){
     function fits(s){
+      if(ld.allow&&ld.allow.indexOf(s.t)<0) return false;
       if(s.used+ld.cost>1+1e-9) return false;
       if(pqFar(ld.bk)&&slots.some(function(o){return o!==s&&o.k===s.k&&o.city===ld.city;})) return false;
       if(!s.city) return true;
@@ -7892,14 +7975,18 @@ function pqPlan(code,P,I,C){
     cand.sort(function(a,b){var x=key(a),y=key(b);return (y.due-x.due)||(x.due?(x.dp<y.dp?-1:x.dp>y.dp?1:0):((y.n-x.n)||(x.dp<y.dp?-1:x.dp>y.dp?1:0)))||coll.compare(a.city,b.city);});
     cand.forEach(function(l0){
       while(its(l0).length){
-        var c0=l0.city,bk=l0.bk,far=pqFar(bk),ld={city:c0,bk:bk,trip:info(c0).trip,items:[],cost:0},touched=[];
+        var c0=l0.city,bk=l0.bk,far=pqFar(bk),ld={city:c0,bk:bk,trip:info(c0).trip,items:[],cost:0,allow:null},touched=[];
         function take(l,onlyW){
+          /* técnicos integrados: só junta locais que algum técnico possa atender inteiro */
+          var na=ld.allow;
+          if(l.allow) na=na?na.filter(function(t){return l.allow.indexOf(t)>=0;}):l.allow.slice();
+          if(na&&!na.length) return;
           l.items.sort(function(a,b){return (tw(a)-tw(b))||pqItemCmp(a,b);});
           for(var j=0;j<l.items.length;){
             var it=l.items[j];if(onlyW&&tw(it)!==w){j++;continue;}
             var c=far?1/Math.max(1,cap.far):1/rate(l.bk,l.same);
             if(ld.items.length&&ld.cost+c>1+1e-9) return;
-            ld.items.push(it);ld.cost+=c;l.items.splice(j,1);
+            ld.items.push(it);ld.cost+=c;l.items.splice(j,1);ld.allow=na;
             if(touched.indexOf(l)<0) touched.push(l);
           }
         }
@@ -7929,7 +8016,7 @@ function pqStopsTxt(stops,html){
   return ord.map(function(c){
     var L=by[c],fx=L.some(function(x){return x.fixed;});
     if(!html) return c+" ("+L.length+"): "+L.map(function(x){return x.it.patrimonio+(x.it.modelo?" "+x.it.modelo:"")+(pqBl(x.it)?" (backlog)":x.it.dataPrevista?" (vence "+fmtDM(dOf(x.it.dataPrevista))+")":"");}).join(", ");
-    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+(inOf(c,curCode())?'<span class="pq-tag">integração: exceção</span>':'')+'<span class="pqp-ms">'+L.map(function(x){return '<span>• '+esc(pqMach(x.it))+(pqBl(x.it)?'<i class="pq-blt">backlog</i>':'')+'</span>';}).join("")+'</span></span>';
+    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+inTagHTML(c)+'<span class="pqp-ms">'+L.map(function(x){return '<span>• '+esc(pqMach(x.it))+(pqBl(x.it)?'<i class="pq-blt">backlog</i>':'')+'</span>';}).join("")+'</span></span>';
   }).join(html?"":" · ");
 }
 function pqInsights(code,P,I,C,R){
@@ -7971,6 +8058,21 @@ function pqInsights(code,P,I,C,R){
     add("warn","<b>"+I.blk.length+(I.blk.length===1?" máquina parada":" máquinas paradas")+" por integração</b>"+(b2?" ("+b2+" em backlog)":"")+". Cobre o time de integração para liberar ainda neste mês.",
       pqClients(I.blk).sort(function(a,b){return b.n-a.n;}).map(function(c){var o=inOf(c.name,code)||{};return "<b>"+esc(c.name)+"</b> · "+c.n+(c.n===1?" máquina":" máquinas")+" · "+esc(c.cityName)+(o.obs?" · "+esc(o.obs):"");}));
   }
+  /* técnicos integrados: clientes que só eles atendem, o que não coube e integrações feitas no mês */
+  var inCl=pqClients(I.plan).filter(function(c){return inTecs(c.name,code);});
+  if(inCl.length){
+    var inOut=R.out.filter(function(it){return inTecs(it.cliente,code);});
+    if(inOut.length) add("warn","<b>"+inOut.length+(inOut.length===1?" máquina de cliente com integração não coube":" máquinas de clientes com integração não couberam")+"</b> nos dias dos técnicos integrados. Integre mais um técnico ou abra uma exceção com o cliente.",
+      pqClients(inOut).map(function(c){return "<b>"+esc(c.name)+"</b> · "+c.n+(c.n===1?" máquina":" máquinas")+" · só "+esc(inTecs(c.name,code).join(", "));}));
+    add("info","<b>"+inCl.length+(inCl.length===1?" cliente só com técnico integrado":" clientes só com técnico integrado")+"</b>: as preventivas deles vão só para quem é integrado.",
+      inCl.sort(function(a,b){return b.n-a.n;}).map(function(c){var o=inOf(c.name,code);return "<b>"+esc(c.name)+"</b> · "+c.n+(c.n===1?" máquina":" máquinas")+" · "+esc(inTecs(c.name,code).map(function(t){return inTecTxt(o,t);}).join(", "));}));
+  }
+  var nowYm=inNowYm(),inNew=[];
+  Object.keys(PQ.integ).forEach(function(k){
+    if(k.indexOf(code+"|")!==0) return;var o=PQ.integ[k];
+    Object.keys(o.tecs||{}).forEach(function(t){if(o.tecs[t].ym===nowYm) inNew.push("<b>"+esc(t)+"</b> · "+esc(o.cli));});
+  });
+  if(inNew.length) add("info","<b>"+inNew.length+(inNew.length===1?" integração feita":" integrações feitas")+" em "+inYmTxt(nowYm)+"</b>.",inNew);
   if(R.fixedN) add("info",R.fixedN+(R.fixedN===1?" máquina já agendada foi mantida":" máquinas já agendadas foram mantidas")+" na data marcada.");
   if(R.stale) add("warn",R.stale+(R.stale===1?" máquina agendada em data que já passou (e não realizada) voltou":" máquinas agendadas em datas que já passaram (e não realizadas) voltaram")+" para a proposta.");
   if(R.trs&&R.trs.length){
@@ -8105,13 +8207,14 @@ function pqNoGo(si,why){
   s.pats=s.pats.filter(function(p){return pend.indexOf(p)<0;});
   s.st="nd";s.why=why;s.moved=[];
   var groups={},ord=[],cap=PQ.prem.cap,after=s.k>todayK()?s.k:todayK(),moved=0,lost=0,dated=0;
-  pend.forEach(function(p){var it=by[p.pat],c=fmtCidade(it.cidadeEstado)||"Sem cidade",key=pqLocal(it)+"|"+c;if(it.dataAgendada) dated++;if(!groups[key]){groups[key]={c:c,ps:[]};ord.push(key);}groups[key].ps.push({pat:p.pat,fixed:false});});
+  pend.forEach(function(p){var it=by[p.pat],c=fmtCidade(it.cidadeEstado)||"Sem cidade",key=pqLocal(it)+"|"+c;if(it.dataAgendada) dated++;if(!groups[key]){groups[key]={c:c,ps:[],allow:inTecs(it.cliente)};ord.push(key);}groups[key].ps.push({pat:p.pat,fixed:false});});
   ord.forEach(function(key){
     var g=groups[key],cb=pqCityBk(g.c),far=pqFar(cb.bk),per=far?Math.max(1,cap.far):Math.max(1,Math.floor(pqRate(cb.bk,g.ps.length>=2)));
     for(var i=0;i<g.ps.length;i+=per){
       var chunk=g.ps.slice(i,i+per),cost=far?1:chunk.length/pqRate(cb.bk,g.ps.length>=2);
       var o=sp.slots.filter(function(x,xi){
         if(xi===si||x.k<=after||x.st==="nd"||x.used+cost>1+1e-9) return false;
+        if(g.allow&&g.allow.indexOf(x.t)<0) return false;
         if(far) return !x.city&&!sp.slots.some(function(y){return y!==x&&y.k===x.k&&y.city===g.c;});
         if(!x.city) return true;
         if(pqFar(x.bk)) return false;
@@ -8170,7 +8273,7 @@ function pqStopsSaved(s,by){
   s.stops.forEach(function(x){var c=x.it.cliente||"(sem cliente)";if(!g[c]){g[c]=[];ord.push(c);}g[c].push(x);});
   return ord.map(function(c){
     var L=g[c],pend=L.some(function(x){return x.it.realizado!=="Sim";});
-    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(inOf(c,curCode())?'<span class="pq-tag">integração: exceção</span>':'')+(s.st!=="nd"&&pend?'<button type="button" class="pqs-apc" data-pq-apc="'+s.idx+'|'+esc(c)+'">Aplicar</button>':'')+'<span class="pqp-ms">'+L.map(function(x){
+    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+inTagHTML(c)+(s.st!=="nd"&&pend?'<button type="button" class="pqs-apc" data-pq-apc="'+s.idx+'|'+esc(c)+'">Aplicar</button>':'')+'<span class="pqp-ms">'+L.map(function(x){
       var it=x.it,tag=it.realizado==="Sim"?'<i class="pqs-tg ok">realizada</i>':it.dataAgendada?'<i class="pqs-tg ag">agendada '+esc(it.dataAgendada)+'</i>':pqBl(it)?'<i class="pq-blt">backlog</i>':'';
       return '<span>• '+esc(pqMach(it))+tag+'</span>';
     }).join("")+'</span></span>';
