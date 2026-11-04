@@ -7351,9 +7351,12 @@ function pqCap(code,P){
   var corrM=(pr.corr[code]||0)*pr.corrDia,keep=1-Math.min(90,Math.max(0,pr.marg))/100;
   tot.trein=0;tot.trN=0;
   pqTrList(code,P).forEach(function(t){var W=wk[weekOfMonth(dOf(t.date))],c=pqTrCost(t);tot.trein+=c;tot.trN++;if(W) W.trein=(W.trein||0)+c;});
-  Object.keys(wk).forEach(function(w){var W=wk[w];W.corr=monthBiz?corrM*W.days/monthBiz:0;W.net=Math.max(0,(W.raw-W.corr-(W.trein||0))*keep);});
-  tot.corr=monthBiz?corrM*days.length/monthBiz:0;
-  tot.free=Math.max(0,tot.raw-tot.corr-tot.trein);tot.net=tot.free*keep;tot.corrM=corrM;
+  /* corretivas vinculadas na Agenda ocupam o dia do técnico e saem da reserva média (não contam duas vezes) */
+  tot.corV=0;tot.corN=0;var corW={};
+  pqCorList(code,P).forEach(function(c){var w=weekOfMonth(dOf(c.k)),W=wk[w];tot.corV+=c.cost;tot.corN++;corW[w]=(corW[w]||0)+1;if(W) W.corV=(W.corV||0)+c.cost;});
+  Object.keys(wk).forEach(function(w){var W=wk[w];W.corr=Math.max(0,(monthBiz?corrM*W.days/monthBiz:0)-(corW[w]||0)*pr.corrDia);W.net=Math.max(0,(W.raw-W.corr-(W.trein||0)-(W.corV||0))*keep);});
+  tot.corr=Math.max(0,(monthBiz?corrM*days.length/monthBiz:0)-tot.corN*pr.corrDia);
+  tot.free=Math.max(0,tot.raw-tot.corr-tot.trein-tot.corV);tot.net=tot.free*keep;tot.corrM=corrM;
   return {tot:tot,wk:wk,monthBiz:monthBiz};
 }
 function pqBand(km){
@@ -7369,7 +7372,8 @@ function pqItems(){
     if(it.realizado==="Sim"){out.done++;return;}
     if(isRet(it)){out.ret++;return;}
     if(isNR(it)){out.nr++;return;}
-    if(inOf(it.cliente,code)) out.blk.push(it); else out.plan.push(it);
+    /* cliente em integração: máquina agendada é exceção liberada (entra no plano) */
+    if(inOf(it.cliente,code)&&!parseAg(it.dataAgendada)) out.blk.push(it); else out.plan.push(it);
   });
   return out;
 }
@@ -7558,7 +7562,7 @@ function renderPlanejar(){
   var head='<div class="rt-head"><div><h2>Planejar</h2><p>'+(P.cur?'Mês atual · <b>'+esc(ymLabel(P.ym))+'</b> · a partir de hoje, '+fmtDM(P.from)+(P.cut?' (depois das 12h, hoje só o que já está agendado)':P.frac<1?' (hoje com '+Math.round(P.frac*100)+'% da jornada)':''):'Planejamento de <b>'+esc(ymLabel(P.ym))+'</b>')+' · '+C.tot.days+(C.tot.days===1?" dia útil":" dias úteis")+' · '+esc(ui.filial)+'</p></div></div>';
   var hero='<div class="pq-hero">'+
     '<div class="pq-st"><small>A planejar</small><b>'+I.plan.length+'</b><span>'+Object.keys(cli).length+' clientes · '+Object.keys(cid).length+' cidades'+(I.blk.length?' · <b style="display:inline;font-size:inherit;color:var(--nr-ink)">'+I.blk.length+' em integração</b>':'')+(I.nr?' · '+I.nr+' NÃO REALIZAR':'')+'</span></div>'+
-    '<div class="pq-st"><small>Capacidade líquida</small><b>'+nf(net,1)+'</b><span>dias-técnico · '+nf(C.tot.raw,1)+' brutos − '+nf(C.tot.corr,1)+' corretivas'+(C.tot.trN?' − '+nf(C.tot.trein,1)+' em '+C.tot.trN+(C.tot.trN===1?' treinamento':' treinamentos'):'')+' − '+nf(PQ.prem.marg,0)+'% de margem</span></div>'+
+    '<div class="pq-st"><small>Capacidade líquida</small><b>'+nf(net,1)+'</b><span>dias-técnico · '+nf(C.tot.raw,1)+' brutos − '+nf(C.tot.corr,1)+' corretivas'+(C.tot.corN?' − '+nf(C.tot.corV,1)+' em '+C.tot.corN+(C.tot.corN===1?' corretiva vinculada':' corretivas vinculadas'):'')+(C.tot.trN?' − '+nf(C.tot.trein,1)+' em '+C.tot.trN+(C.tot.trN===1?' treinamento':' treinamentos'):'')+' − '+nf(PQ.prem.marg,0)+'% de margem</span></div>'+
     '<div class="pq-st"><small>Carga estimada</small><b>'+nf(D.days,1)+'</b><span>dias-técnico · ≈ '+nf(perDay,1)+' máquinas por dia útil</span></div>'+
     '<div class="pq-st '+tone+'"><small>Ocupação</small><b>'+(net?Math.round(occ*100)+"%":"—")+'</b><span>da capacidade líquida</span></div></div>';
   var V=pqVerdict(C,D),say='<div class="pq-say '+V.tone+'">'+V.html+'</div>';
@@ -7660,7 +7664,7 @@ function pqTechDays(code,P,C,days){
     var net=Math.max(0,(b.cap-(sum?C.tot.corr*b.cap/sum:0))*keep),n=Math.min(av.length,Math.round(net)),pick=[];
     for(var i=0;i<n;i++) pick.push(av[Math.floor(i*av.length/n)]);
     /* o dia do treinamento vira dia de campo (troca pelo dia de campo mais próximo) */
-    var trd=[];pqTrList(code,P).forEach(function(x){if(x.tec===t&&av.indexOf(x.date)>=0&&trd.indexOf(x.date)<0) trd.push(x.date);});
+    var trd=[];pqTrList(code,P).forEach(function(x){if(x.tec===t&&av.indexOf(x.date)>=0&&trd.indexOf(x.date)<0) trd.push(x.date);});pqCorList(code,P).forEach(function(x){if(x.tec===t&&av.indexOf(x.k)>=0&&trd.indexOf(x.k)<0) trd.push(x.k);});
     trd.forEach(function(k){
       if(pick.indexOf(k)>=0||!pick.length) return;
       var best=-1,bd=1e15,tk=dOf(k).getTime();
@@ -7683,6 +7687,31 @@ function pqTrCost(t){
   var b=pqBand(cityKm(trCity(t))),bk=b?b[1]:"b";
   return bk==="a"?0.5:bk==="b"?0.65:1;
 }
+/* corretivas vinculadas na Agenda (técnico e turno definidos): meio turno + deslocamento no dia do técnico */
+function pqCorCity(t){return t&&t.city?fmtCidade(t.city+(t.uf?" - "+t.uf:"")):"";}
+function pqCorCost(c){var b=pqBand(cityKm(c)),bk=b?b[1]:"b",d=PQ.prem.corrDia;return bk==="a"?d:bk==="b"?Math.min(1,d+0.15):1;}
+function pqCorList(code,P){
+  var a=kOf(P.from),b=kOf(P.last),tecs=PQ_TEC[code]||[],out=[],seen={};
+  Object.keys(AG.tech||{}).sort().forEach(function(k){
+    if(k<a||k>b) return;
+    var r=AG.tech[k]||{};
+    Object.keys(r).forEach(function(n){
+      if(tecs.indexOf(n)<0||!r[n]) return;
+      [["m",r[n].mi],["t",r[n].ti]].forEach(function(p){
+        (p[1]||[]).forEach(function(l){
+          if(!l||l.k!=="c") return;
+          var t=lvTicket(l.id);if(!t||t.branch!==code) return;
+          if(t.res&&t.res<k) return;
+          var key=k+"|"+n+"|"+t.id;if(seen[key]) return;seen[key]=1;
+          var c=pqCorCity(t);
+          out.push({k:k,tec:n,turno:p[0],id:t.id,num:t.number||l.num||"",cli:t.client||l.cli||"",city:c,cost:pqCorCost(c)});
+        });
+      });
+    });
+  });
+  return out;
+}
+function pqCorTag(c){return "🔧 corretiva "+(c.turno==="m"?"manhã":"tarde")+" · "+c.cli+(c.num?" (nº "+c.num+")":"");}
 /* regra B por semana: vencem na semana primeiro (para não nascer backlog novo); o backlog fica com pelo menos 30% da semana
    e com toda a sobra, do mais antigo para o mais novo; o que não cabe na semana em que vence vira backlog e entra na fila */
 var PQ_BLFLOOR=0.3;
@@ -7794,6 +7823,12 @@ function pqPlan(code,P,I,C){
     if(!s.city){s.city=c;s.bk=tr.local==="fil"?"a":ci.bk;s.trip=tr.local==="fil"?null:ci.trip;}
     return {tr:tr,s:s,city:c,n:0};
   });
+  /* corretivas vinculadas na Agenda ocupam o dia do técnico (meio turno + deslocamento) */
+  pqCorList(code,P).forEach(function(o){
+    var s=slot(o.k,o.tec,!byKey[o.k+"|"+o.tec]);
+    s.used+=o.cost;s.corr=(s.corr||[]).concat([o]);
+    if(!s.city&&o.city){var ci=info(o.city);s.city=o.city;s.bk=ci.bk;s.trip=ci.trip;}
+  });
   /* agendadas no período ficam na data (com o técnico informado, se for da equipe) */
   var free=[],fixedN=0,stale=0;
   I.plan.forEach(function(it){
@@ -7894,13 +7929,13 @@ function pqStopsTxt(stops,html){
   return ord.map(function(c){
     var L=by[c],fx=L.some(function(x){return x.fixed;});
     if(!html) return c+" ("+L.length+"): "+L.map(function(x){return x.it.patrimonio+(x.it.modelo?" "+x.it.modelo:"")+(pqBl(x.it)?" (backlog)":x.it.dataPrevista?" (vence "+fmtDM(dOf(x.it.dataPrevista))+")":"");}).join(", ");
-    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+'<span class="pqp-ms">'+L.map(function(x){return '<span>• '+esc(pqMach(x.it))+(pqBl(x.it)?'<i class="pq-blt">backlog</i>':'')+'</span>';}).join("")+'</span></span>';
+    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(fx?'<span class="pq-tag">agendada</span>':'')+(inOf(c,curCode())?'<span class="pq-tag">integração: exceção</span>':'')+'<span class="pqp-ms">'+L.map(function(x){return '<span>• '+esc(pqMach(x.it))+(pqBl(x.it)?'<i class="pq-blt">backlog</i>':'')+'</span>';}).join("")+'</span></span>';
   }).join(html?"":" · ");
 }
 function pqInsights(code,P,I,C,R){
   var out=[],used=R.slots.filter(function(s){return s.n;}),nPl=0,blN=0,blLast="",lastK="";
   used.forEach(function(s){nPl+=s.n;if(s.k>lastK) lastK=s.k;s.stops.forEach(function(x){if(pqBl(x.it)){blN++;if(s.k>blLast) blLast=s.k;}});});
-  var fieldDays=R.slots.length,freeDays=R.slots.filter(function(s){return !s.n&&!s.trein&&s.used<0.99;}).length;
+  var fieldDays=R.slots.length,freeDays=R.slots.filter(function(s){return !s.n&&!s.trein&&!s.corr&&s.used<0.99;}).length;
   function add(tone,txt,items){out.push({tone:tone,txt:txt,items:items||[]});}
   if(!I.plan.length) add("ok","Nenhuma máquina pendente para planejar nesta filial.");
   else if(R.out.length) add("bad","<b>"+R.out.length+(R.out.length===1?" máquina não cabe":" máquinas não cabem")+"</b> "+(fieldDays===1?"no único dia de campo":"nos "+fieldDays+" dias de campo")+" do período. Ficaram de fora as de menor prioridade (veja no fim da proposta). Reveja ausências, a margem ou o % da equipe.");
@@ -7950,7 +7985,7 @@ function pqInsights(code,P,I,C,R){
   return out;
 }
 function pqPropHTML(code,P,I,C,R,sp){
-  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n||s.trein||(sp&&s.st);}),by=sp?pqItemsBy():null;
+  var view=ui.pqView==="tec"?"tec":"dia",used=R.slots.filter(function(s){return s.n||s.trein||s.corr||(sp&&s.st);}),by=sp?pqItemsBy():null;
   var undo=sp&&sp.undo&&sp.undo.length?sp.undo[sp.undo.length-1]:null,dt=sp?new Date(sp.ts):null;
   var h='<div class="pq-card pqp"><div class="pqp-h"><div><h3>'+(sp?"Plano do mês":"Proposta do mês")+'</h3><p class="pq-sub">'+(sp?'Plano salvo em '+fmtDM(dt)+' às '+p2(dt.getHours())+'h'+p2(dt.getMinutes())+'. Fica <b>fixo</b>: só muda quando você confirma, marca "Não deu" ou refaz.':'Sugestão automática a partir das premissas. Nada é gravado nos equipamentos. <b>Salve como plano</b> para fixar, confirmar visitas e aplicar.')+'</p></div>'+
     '<div class="pqp-act"><div class="seg" role="group" aria-label="Ver a proposta"><button type="button" data-pq-view="dia" aria-pressed="'+(view==="dia")+'">Por dia</button><button type="button" data-pq-view="tec" aria-pressed="'+(view==="tec")+'">Por técnico</button></div><button type="button" class="btn sm" data-pq-cp="1">Copiar texto</button><button type="button" class="btn sm" data-pq-exp="prop">Exportar</button>'+
@@ -7970,9 +8005,9 @@ function pqPropHTML(code,P,I,C,R,sp){
     var far=pqFar(s.bk),pct=Math.min(100,Math.round(s.used*100)),cs=[];
     s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});
     if(!cs.length&&s.city) cs.push(s.city);
-    var trT=(s.trein||[]).map(function(tr){return '<span class="pq-tag pq-trt">🎓 treinamento '+(tr.turno==="m"?"manhã":"tarde")+' · '+esc(tr.cli)+(tr.local==="fil"?" (na filial)":"")+'</span>';}).join("");
+    var trT=(s.trein||[]).map(function(tr){return '<span class="pq-tag pq-trt">🎓 treinamento '+(tr.turno==="m"?"manhã":"tarde")+' · '+esc(tr.cli)+(tr.local==="fil"?" (na filial)":"")+'</span>';}).join("")+(s.corr||[]).map(function(c){return '<span class="pq-tag pq-trt">'+esc(pqCorTag(c))+'</span>';}).join("");
     return '<div class="pqp-slot" style="--pc:'+(AGTC[s.t]||"#8A96AB")+'"><div class="pqp-sh">'+(showT?'<b class="pqp-t">'+esc(s.t)+'</b>':'<b class="pqp-t">'+pqDayLbl(s.k)+'</b>')+
-      '<span class="pqp-c">'+esc(cs.join(" + "))+(far?'<span class="pq-tag">viagem'+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+'</span>':'')+(s.extra?'<span class="pq-tag">'+(s.trein?"dia do treinamento":"fora dos dias de campo")+'</span>':'')+'</span>'+
+      '<span class="pqp-c">'+esc(cs.join(" + "))+(far?'<span class="pq-tag">viagem'+(s.trip!=null?" "+pqHrs(s.trip)+" ida":"")+'</span>':'')+(s.extra?'<span class="pq-tag">'+(s.trein?"dia do treinamento":s.corr?"dia da corretiva":"fora dos dias de campo")+'</span>':'')+'</span>'+
       '<small>'+s.n+(s.n===1?" máq.":" máq.")+(far?"":" · "+pct+"% do dia")+'</small></div>'+(trT?'<div class="pqp-trs">'+trT+'</div>':'')+
       (sp?pqSlotCtl(s)+'<div class="pqp-stops">'+pqStopsSaved(s,by)+'</div>':'<div class="pqp-stops">'+pqStopsTxt(s.stops,true)+'</div>')+'</div>';
   }
@@ -8009,7 +8044,7 @@ function pqInsHTML(list){
 function pqCopyPlan(){
   var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),R=pqCurR(code,P,I,C);
   var t=(pqSaved()?"Plano":"Proposta")+" de preventivas · "+ui.filial+" · "+ymLabel(P.ym)+"\n";
-  R.slots.filter(function(s){return s.n||s.trein;}).forEach(function(s){var cs=[];s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});if(!cs.length&&s.city) cs.push(s.city);t+="\n"+pqDayLbl(s.k)+" · "+s.t+" · "+cs.join(" + ")+" · "+s.n+(s.n===1?" máquina":" máquinas");(s.trein||[]).forEach(function(tr){t+="\n  Treinamento "+(tr.turno==="m"?"manhã (8h-12h)":"tarde (14h-18h)")+": "+tr.cli+(tr.local==="fil"?" (na filial)":"");});if(s.n) t+="\n  "+pqStopsTxt(s.stops,false);});
+  R.slots.filter(function(s){return s.n||s.trein||s.corr;}).forEach(function(s){var cs=[];s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);});if(!cs.length&&s.city) cs.push(s.city);t+="\n"+pqDayLbl(s.k)+" · "+s.t+" · "+cs.join(" + ")+" · "+s.n+(s.n===1?" máquina":" máquinas");(s.trein||[]).forEach(function(tr){t+="\n  Treinamento "+(tr.turno==="m"?"manhã (8h-12h)":"tarde (14h-18h)")+": "+tr.cli+(tr.local==="fil"?" (na filial)":"");});(s.corr||[]).forEach(function(c){t+="\n  Corretiva "+(c.turno==="m"?"manhã":"tarde")+": "+c.cli+(c.num?" (chamado nº "+c.num+")":"");});if(s.n) t+="\n  "+pqStopsTxt(s.stops,false);});
   if(R.out.length) t+="\n\nNão couberam: "+R.out.map(function(i){return i.patrimonio+" ("+i.cliente+")";}).join(", ");
   ui.copyTxt=t;copiar();
 }
@@ -8022,7 +8057,7 @@ function pqCityBk(c){var km=cityKm(c),b=pqBand(km);return {bk:b?b[1]:"b",trip:km
 function pqSaveFromR(R){
   var T={};R.tecs.forEach(function(t){T[t]={n:R.T[t].n};});
   return {ts:Date.now(),tecs:R.tecs.slice(),T:T,undo:[],out:R.out.map(function(i){return i.patrimonio;}),
-    slots:R.slots.map(function(s){return {k:s.k,t:s.t,used:s.used,city:s.city,bk:s.bk,trip:s.trip,extra:!!s.extra,trIds:(s.trein||[]).map(function(x){return x.id;}),
+    slots:R.slots.map(function(s){return {k:s.k,t:s.t,used:s.used,city:s.city,bk:s.bk,trip:s.trip,extra:!!s.extra,trIds:(s.trein||[]).map(function(x){return x.id;}),cor:(s.corr||[]).map(function(c){return {k:c.k,tec:c.tec,turno:c.turno,id:c.id,num:c.num,cli:c.cli,city:c.city,cost:c.cost};}),
       pats:s.stops.map(function(x){return {pat:x.it.patrimonio,fixed:!!x.fixed};}),st:"",why:"",moved:[]};})};
 }
 /* plano salvo no formato da proposta (para a tela, a carga, o texto e a exportação) */
@@ -8032,7 +8067,7 @@ function pqSavedR(sp){
     slots:sp.slots.map(function(s,i){
       var stops=[];s.pats.forEach(function(p){var it=by[p.pat];if(it) stops.push({it:it,fixed:p.fixed,city:fmtCidade(it.cidadeEstado)||"Sem cidade"});});
       var tr=(s.trIds||[]).map(function(id){return trs[id];}).filter(function(t){return t&&t.st!=="cx";});
-      return {idx:i,k:s.k,t:s.t,used:s.used,city:s.city,bk:s.bk,trip:s.trip,extra:s.extra,stops:stops,n:stops.length,trein:tr.length?tr:null,st:s.st||"",why:s.why||"",moved:s.moved||[]};
+      return {idx:i,k:s.k,t:s.t,used:s.used,city:s.city,bk:s.bk,trip:s.trip,extra:s.extra,stops:stops,n:stops.length,trein:tr.length?tr:null,corr:s.cor&&s.cor.length?s.cor:null,st:s.st||"",why:s.why||"",moved:s.moved||[]};
     })};
 }
 function pqCurR(code,P,I,C){var sp=pqSaved();return sp?pqSavedR(sp):pqPlan(code,P,I,C);}
@@ -8135,7 +8170,7 @@ function pqStopsSaved(s,by){
   s.stops.forEach(function(x){var c=x.it.cliente||"(sem cliente)";if(!g[c]){g[c]=[];ord.push(c);}g[c].push(x);});
   return ord.map(function(c){
     var L=g[c],pend=L.some(function(x){return x.it.realizado!=="Sim";});
-    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(s.st!=="nd"&&pend?'<button type="button" class="pqs-apc" data-pq-apc="'+s.idx+'|'+esc(c)+'">Aplicar</button>':'')+'<span class="pqp-ms">'+L.map(function(x){
+    return '<span class="pqp-stop"><b>'+esc(c)+'</b> ('+L.length+')'+lkI(c,true)+(inOf(c,curCode())?'<span class="pq-tag">integração: exceção</span>':'')+(s.st!=="nd"&&pend?'<button type="button" class="pqs-apc" data-pq-apc="'+s.idx+'|'+esc(c)+'">Aplicar</button>':'')+'<span class="pqp-ms">'+L.map(function(x){
       var it=x.it,tag=it.realizado==="Sim"?'<i class="pqs-tg ok">realizada</i>':it.dataAgendada?'<i class="pqs-tg ag">agendada '+esc(it.dataAgendada)+'</i>':pqBl(it)?'<i class="pq-blt">backlog</i>':'';
       return '<span>• '+esc(pqMach(it))+tag+'</span>';
     }).join("")+'</span></span>';
@@ -8212,7 +8247,7 @@ function pqDoc(what){
   var code=curCode(),P=pqPeriod(),I=pqItems(),C=pqCap(code,P),D=pqCost(I.plan),R0=pqPlan(code,P,I,C),ins=pqInsights(code,P,I,C,R0),V=pqVerdict(C,D),R=pqSaved()?pqSavedR(pqSaved()):R0;
   var cli={},cid={},now=new Date();
   I.plan.forEach(function(it){cli[norm(it.cliente)]=1;cid[fmtCidade(it.cidadeEstado)]=1;});
-  var used=R.slots.filter(function(s){return s.n||s.trein;}),wk={},ord=[];
+  var used=R.slots.filter(function(s){return s.n||s.trein||s.corr;}),wk={},ord=[];
   used.forEach(function(s){
     var w=weekOfMonth(dOf(s.k));if(!wk[w]){wk[w]={w:w,n:0,days:{},ord:[]};ord.push(w);}
     var W=wk[w];W.n+=s.n;if(!W.days[s.k]){W.days[s.k]=[];W.ord.push(s.k);}
@@ -8220,7 +8255,8 @@ function pqDoc(what){
     s.stops.forEach(function(x){if(cs.indexOf(x.city)<0) cs.push(x.city);var c=x.it.cliente||"(sem cliente)";if(!by[c]){by[c]=[];bo.push(c);}by[c].push(x);});
     var far=pqFar(s.bk),tags=[s.n+(s.n===1?" máquina":" máquinas")];
     if(far) tags.unshift("viagem"+(s.trip!=null?" · "+pqHrs(s.trip)+" de ida":""));else tags.push(Math.min(100,Math.round(s.used*100))+"% do dia");
-    if(s.extra) tags.push(s.trein?"dia do treinamento":"fora dos dias de campo");
+    if(s.extra) tags.push(s.trein?"dia do treinamento":s.corr?"dia da corretiva":"fora dos dias de campo");
+    (s.corr||[]).forEach(function(c){tags.unshift(pqCorTag(c));});
     (s.trein||[]).forEach(function(tr){tags.unshift("🎓 treinamento "+(tr.turno==="m"?"manhã":"tarde")+" · "+tr.cli+(tr.local==="fil"?" (na filial)":""));});
     if(!cs.length&&s.city) cs.push(s.city);
     W.days[s.k].push({t:s.t,col:AGTC[s.t]||"#8A96AB",head:s.t+" · "+cs.join(" + "),tags:tags,

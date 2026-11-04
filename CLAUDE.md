@@ -131,10 +131,11 @@ Ajuda a montar um plano **factível, só em dias úteis, com folga**, para bater
 - **Entregue (fase 1):** resumo (A planejar · Capacidade líquida · Carga estimada · Ocupação, com veredito "Cabe com folga / Apertado / Não cabe"), 4 passos com "Marcar como revisado" (`PQ.rev[ym|filial]`), **Carga por semana** (pela previsão semanal atual; "Sem semana" inclui semana já encerrada) e **Carga por cidade**.
   1. **Links:** grupos da filial (Editar), **possíveis links** (mesma cidade + 1ª palavra significativa igual, `PQ_STOP`), lista de todos os clientes com Linkar. Cliente linkado = **mesmo local**.
   2. **Ausências** (`AG.aus=[{id,tec,from,to,why}]`, dentro do `prev_ag_v1`): janela igual à do plantão, com "+ Adicionar período", datas pelo seletor próprio, **pode atravessar meses**, justificativa **Férias / Folga / Atestado / Não justificado**, sobreposição do mesmo técnico **bloqueada**. A Agenda mostra "Ausente" no resumo do dia.
-  3. **Integração** (`PQ.integ["SSF|cliente normalizado"]={cli,obs,ts}`): cliente marcado como **INTEGRAÇÃO** sai do planejamento, vai para o bloco "Aguardando integração" com **observação** e "Copiar lista para cobrança". Selo vermelho "INTEGRAÇÃO" também na aba Clientes.
+  3. **Integração** (`PQ.integ["SSF|cliente normalizado"]={cli,obs,ts}`): cliente marcado como **INTEGRAÇÃO** sai do planejamento (**exceção, 04/11/2026:** máquina dele que tiver **data agendada** é considerada apta e entra na proposta, com a etiqueta "integração: exceção"; as sem data continuam fora — não é regra, é o Bruno que decide ao agendar), vai para o bloco "Aguardando integração" com **observação** e "Copiar lista para cobrança". Selo vermelho "INTEGRAÇÃO" também na aba Clientes.
   4. **Premissas** (`PQ.prem`, editáveis, "Restaurar padrões"):
      - Equipe (`PQ_TEC`): SSF = **Jairo 80%, Rafael 80%, Gercelino 25%**; LDM = **Éder 75%**. O % é só o tempo fora das atividades internas.
      - **Corretivas** (média dos últimos 4 meses do BI, não do histórico do site): **SSF 23/mês, LDM 4/mês**, cada uma = **meio turno = 0,5 dia-técnico**; proporcional aos dias úteis do período.
+     - **Corretivas vinculadas na Agenda** (04/11/2026, `pqCorList/pqCorCost/pqCorTag`): chamado da filial vinculado a um técnico da equipe num dia do período (não resolvido antes do dia) ocupa o dia dele — meio turno perto, +0,15 até 70 km, dia inteiro acima — e a cidade do chamado vira a cidade do dia; o dia vira dia de campo (como treinamento). Cada vinculada **sai da reserva média** (não conta duas vezes). Etiqueta "🔧 corretiva manhã · CLIENTE (nº N)"; resumo mostra "− X em N corretivas vinculadas". **Texto livre do turno não bloqueia** (decidido pelo Bruno).
      - **Margem de segurança 15%** (sobre a capacidade depois das corretivas).
      - Jornada **8h–18h, almoço 12h–13h12 = 8h48/dia**; 1 h por preventiva; nada passa das 18h.
      - Produtividade por dia: perto (≤35 km de estrada) **5 mesmo local / 4 clientes diferentes**; até 70 km **4 / 3**; acima de 70 km **2 por dia de viagem** (70–150 meio turno de viagem, 150–250 quase um dia, >250 dia inteiro).
@@ -178,6 +179,8 @@ Ajuda a montar um plano **factível, só em dias úteis, com folga**, para bater
 - **Sincronização à prova de aparelho velho + cópias diárias com Restaurar** e **proposta com o dia de hoje** (04/11/2026; sincronização testada com nuvem simulada e dois aparelhos, **ainda não com o Firebase real**): ver seção 3 e 5.11.
 
 - **Calendário de Chamados:** abertos com prioridade nas linhas e "+N" quando não cabe (04/11/2026, testado no navegador do app): ver 5.10.
+
+- **Planejar:** agendada de cliente em integração entra como exceção; corretiva vinculada na Agenda ocupa o dia do técnico (04/11/2026, testado no navegador do app): ver 5.11.
 
 **Fila pendente:** vazia.
 
