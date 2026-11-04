@@ -1390,6 +1390,13 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
 .pl-tip.on{opacity:1}
 @media (prefers-reduced-motion: no-preference){.pl-tip{transition:opacity .15s}}
 
+/* ---------- cópias da nuvem (janela aberta pelo indicador de sincronização) ---------- */
+.sync{cursor:pointer}
+.hs-row{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-top:8px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.hs-row>span{flex:1;min-width:0;display:flex;flex-direction:column}
+.hs-row b{font-size:14px}
+.hs-row small{color:var(--muted);font-size:12.5px}
+
 /* ---------- treinamentos operacionais (Agenda) ---------- */
 .cx-tr{position:absolute;top:3px;left:5px;font-size:11px;line-height:1}
 .tr-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 12px;margin-top:8px;border:1px solid var(--line);border-left:6px solid var(--pc);border-radius:14px;background:var(--bg);color:var(--ink)}
@@ -1663,7 +1670,7 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
         <div class="per" id="periodo">&nbsp;</div>
       </div></div>
       <div class="top-actions">
-        <span class="sync" id="sync" data-s="local" title="Somente neste aparelho"><i></i><span>Local</span></span>
+        <span class="sync" id="sync" data-s="local" title="Somente neste aparelho" role="button" tabindex="0" aria-label="Sincronização e cópias da nuvem"><i></i><span>Local</span></span>
         <button class="icon-btn" id="btnLogout" type="button" aria-label="Sair" hidden>
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
         </button>
@@ -1795,6 +1802,14 @@ body.pm-bk [data-done],body.pm-bk [data-bulk],body.pm-bk [data-meta],body.pm-bk 
     <p class="sb-warn au-warn" id="auWarn" role="status"></p>
     <div class="sb-btns"><button type="button" class="btn" id="auAdd">+ Adicionar período</button></div>
     <div class="sheet-actions"><button type="button" class="btn primary" id="auClose">Concluir</button></div>
+  </div>
+</div>
+<div class="modal" id="hsModal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="hsTitle">
+    <h2 id="hsTitle">Cópias salvas na nuvem</h2>
+    <p class="ed-sub">Uma cópia automática por dia (as 8 mais recentes) e uma antes de cada restauração. Restaurar volta todos os dados do site para aquele momento.</p>
+    <div id="hsList"></div>
+    <div class="sheet-actions"><button type="button" class="btn primary" id="hsClose">Fechar</button></div>
   </div>
 </div>
 <div class="modal" id="trModal" hidden>
@@ -7291,9 +7306,15 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("auModal
 /* período, capacidade e carga */
 function pqPeriod(){
   var ym=ui.ctx==="plan"?((planById(ui.ctxId)||{}).ym||PL.curYm):PL.curYm;
-  var y=+ym.slice(0,4),m=+ym.slice(5,7)-1,first=new Date(y,m,1),last=new Date(y,m+1,0),today=startOfDay(new Date()),from=first;
-  if(ui.ctx!=="plan"&&today>=first) from=addDays(today,1);
-  return {ym:ym,y:y,m:m,first:first,last:last,from:from,cur:ui.ctx!=="plan"};
+  var y=+ym.slice(0,4),m=+ym.slice(5,7)-1,first=new Date(y,m,1),last=new Date(y,m+1,0),now=new Date(),today=startOfDay(now),from=first,frac=1,todayK="";
+  /* mês atual: começa hoje; até as 12h hoje recebe máquinas novas, com a capacidade que resta da jornada (8h–12h e 13h12–18h); depois, só o que já está agendado */
+  if(ui.ctx!=="plan"&&today>=first){
+    from=today;todayK=kOf(today);
+    var mi=now.getHours()*60+now.getMinutes();
+    frac=mi>=720?0:Math.min(1,((720-Math.max(mi,480))+288)/528);
+  }
+  var blKey=ui.ctx!=="plan"&&today>=first?kOf(addDays(today,1)):kOf(first);
+  return {ym:ym,y:y,m:m,first:first,last:last,from:from,cur:ui.ctx!=="plan",todayK:todayK,frac:frac,cut:!!todayK&&frac===0,blKey:blKey};
 }
 function pqCap(code,P){
   var pr=PQ.prem,tecs=PQ_TEC[code]||[],days=[],wk={},d;
@@ -7304,7 +7325,7 @@ function pqCap(code,P){
     var k=kOf(x),w=weekOfMonth(x),W=wk[w]=wk[w]||{w:w,days:0,raw:0,aus:{}};
     W.days++;
     tecs.forEach(function(t){
-      var f=(pr.tec[t]||0)/100;
+      var f=(pr.tec[t]||0)/100*(k===P.todayK?P.frac:1);
       if(auOn(t,k)){tot.byTec[t].aus++;W.aus[t]=(W.aus[t]||0)+1;return;}
       tot.byTec[t].days++;tot.byTec[t].cap+=f;W.raw+=f;tot.raw+=f;
     });
@@ -7516,7 +7537,7 @@ function renderPlanejar(){
   var cli={},cid={};I.plan.forEach(function(it){cli[norm(it.cliente)]=1;cid[fmtCidade(it.cidadeEstado)]=1;});
   var net=C.tot.net,occ=net?D.days/net:(D.days?9:0),tone=occ<=1?"ok":(D.days<=C.tot.free?"warn":"bad");
   var perDay=C.tot.days?I.plan.length/C.tot.days:0;
-  var head='<div class="rt-head"><div><h2>Planejar</h2><p>'+(P.cur?'Mês atual · <b>'+esc(ymLabel(P.ym))+'</b> · a partir de '+fmtDM(P.from):'Planejamento de <b>'+esc(ymLabel(P.ym))+'</b>')+' · '+C.tot.days+(C.tot.days===1?" dia útil":" dias úteis")+' · '+esc(ui.filial)+'</p></div></div>';
+  var head='<div class="rt-head"><div><h2>Planejar</h2><p>'+(P.cur?'Mês atual · <b>'+esc(ymLabel(P.ym))+'</b> · a partir de hoje, '+fmtDM(P.from)+(P.cut?' (depois das 12h, hoje só o que já está agendado)':P.frac<1?' (hoje com '+Math.round(P.frac*100)+'% da jornada)':''):'Planejamento de <b>'+esc(ymLabel(P.ym))+'</b>')+' · '+C.tot.days+(C.tot.days===1?" dia útil":" dias úteis")+' · '+esc(ui.filial)+'</p></div></div>';
   var hero='<div class="pq-hero">'+
     '<div class="pq-st"><small>A planejar</small><b>'+I.plan.length+'</b><span>'+Object.keys(cli).length+' clientes · '+Object.keys(cid).length+' cidades'+(I.blk.length?' · <b style="display:inline;font-size:inherit;color:var(--nr-ink)">'+I.blk.length+' em integração</b>':'')+(I.nr?' · '+I.nr+' NÃO REALIZAR':'')+'</span></div>'+
     '<div class="pq-st"><small>Capacidade líquida</small><b>'+nf(net,1)+'</b><span>dias-técnico · '+nf(C.tot.raw,1)+' brutos − '+nf(C.tot.corr,1)+' corretivas'+(C.tot.trN?' − '+nf(C.tot.trein,1)+' em '+C.tot.trN+(C.tot.trN===1?' treinamento':' treinamentos'):'')+' − '+nf(PQ.prem.marg,0)+'% de margem</span></div>'+
@@ -7732,7 +7753,7 @@ document.addEventListener("click",function(e){
 function pqPlan(code,P,I,C){
   var pr=PQ.prem,cap=pr.cap,tecs=(PQ_TEC[code]||[]).slice(),days=[],d,cityInfo={};
   for(d=new Date(P.from);d<=P.last;d=addDays(d,1)) if(isBizDay(d)) days.push(kOf(d));
-  var kA=kOf(P.from),kB=kOf(P.last);PQ_KA=kA;
+  var kA=kOf(P.from),kB=kOf(P.last);PQ_KA=P.blKey;
   function city(it){return fmtCidade(it.cidadeEstado)||"Sem cidade";}
   function info(c){
     if(!cityInfo[c]){var km=cityKm(c),b=pqBand(km);cityInfo[c]={km:km,band:b,bk:b?b[1]:"b",trip:km==null?null:km*pr.fat/Math.max(1,pr.vel)};}
@@ -7744,7 +7765,7 @@ function pqPlan(code,P,I,C){
   var slots=[],byKey={};
   function slot(k,t,extra){
     var key=k+"|"+t;if(byKey[key]) return byKey[key];
-    var s={k:k,t:t,used:0,city:null,bk:null,stops:[],n:0,extra:!!extra,trip:null};
+    var s={k:k,t:t,used:k===P.todayK?1-P.frac:0,city:null,bk:null,stops:[],n:0,extra:!!extra,trip:null};
     byKey[key]=s;slots.push(s);return s;
   }
   tecs.forEach(function(t){T[t].days.forEach(function(k){slot(k,t);});});
@@ -7861,7 +7882,7 @@ function pqStopsTxt(stops,html){
 function pqInsights(code,P,I,C,R){
   var out=[],used=R.slots.filter(function(s){return s.n;}),nPl=0,blN=0,blLast="",lastK="";
   used.forEach(function(s){nPl+=s.n;if(s.k>lastK) lastK=s.k;s.stops.forEach(function(x){if(pqBl(x.it)){blN++;if(s.k>blLast) blLast=s.k;}});});
-  var fieldDays=R.slots.length,freeDays=R.slots.filter(function(s){return !s.n;}).length;
+  var fieldDays=R.slots.length,freeDays=R.slots.filter(function(s){return !s.n&&!s.trein&&s.used<0.99;}).length;
   function add(tone,txt,items){out.push({tone:tone,txt:txt,items:items||[]});}
   if(!I.plan.length) add("ok","Nenhuma máquina pendente para planejar nesta filial.");
   else if(R.out.length) add("bad","<b>"+R.out.length+(R.out.length===1?" máquina não cabe":" máquinas não cabem")+"</b> "+(fieldDays===1?"no único dia de campo":"nos "+fieldDays+" dias de campo")+" do período. Ficaram de fora as de menor prioridade (veja no fim da proposta). Reveja ausências, a margem ou o % da equipe.");
@@ -8718,6 +8739,7 @@ loadAg();
 loadCh();
 initDP();
 renderAll();
+window.__toast=toast;window.__plAsk=plAsk;
 window.__appReload=function(){loadRefs();TEC_MIGRATED=false;loadPlans();loadRace();loadLinks();loadPQ();ctxValidate();DB=loadDB();persistMigration();loadMeta();loadAg();loadCh();renderAll();};
 })();
 </script>
@@ -8755,12 +8777,19 @@ async function main(){
   ]);
   const app = initializeApp(firebaseConfig);
   const auth = A.getAuth(app);
-  const db = F.initializeFirestore(app, {
-    localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() })
-  });
+  /* cache só na memória: o aparelho nunca abre com uma cópia velha da nuvem */
+  const db = F.initializeFirestore(app, { localCache: F.memoryLocalCache() });
 
-  let user = null, unsub = null, firstSnap = true;
-  const prevN = {};
+  let user = null, unsub = null;
+  /* versão por chave (só neste aparelho): base = versão da nuvem em que o dado local se baseia;
+     dirty = alteração local ainda não enviada; pend = carimbo da gravação em andamento */
+  function ld(k){ try{ return JSON.parse(localStorage.getItem(k) || "{}") || {}; }catch(e){ return {}; } }
+  const S = { ready: false, base: ld("prev_syncb"), dirty: ld("prev_syncd"), pend: {}, chain: {}, docs: {} };
+  function saveS(){ try{ localStorage.setItem("prev_syncb", JSON.stringify(S.base)); localStorage.setItem("prev_syncd", JSON.stringify(S.dirty)); }catch(e){} }
+  function okState(){ setSync(navigator.onLine ? "ok" : "off", navigator.onLine ? "Sincronizado" : "Sem conexão"); }
+  function note(msg){ if(window.__toast) window.__toast(msg); }
+  const p2 = n => (n < 10 ? "0" : "") + n;
+  const fmtTs = ts => new Date(ts).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   function chunks(str){
     const out = []; let i = 0;
@@ -8773,58 +8802,109 @@ async function main(){
     return out.length ? out : [""];
   }
   const base = () => F.collection(db, "users", user.uid, "store");
+  /* junta os pedaços de um valor guardado (null = não existe; undefined = incompleto) */
+  function readVal(docs, prefix){
+    const m = docs[prefix + "__meta"]; if(!m) return null;
+    const parts = [];
+    for(let i = 0; i < m.n; i++){ const d = docs[prefix + "__" + i]; if(!d) return undefined; parts.push(d.d); }
+    return parts.join("");
+  }
+  function syncKeys(){
+    const all = new Set(KEYS);
+    for(const id in S.docs){ if(id.endsWith("__meta")){ const k0 = id.slice(0, -6); if(DYN.test(k0)) all.add(k0); } }
+    dynLocal().forEach(k => all.add(k));
+    return all;
+  }
 
-  function push(key, value){
+  /* o site chama a cada gravação; só envia depois de ler a versão atual da nuvem (a nuvem manda na abertura) */
+  function push(key){
     if(!user) return;
-    const b = F.writeBatch(db), col = base(), old = prevN[key] || 0;
-    if(value == null){
-      b.delete(F.doc(col, key + "__meta"));
-      for(let i = 0; i < old; i++) b.delete(F.doc(col, key + "__" + i));
-      prevN[key] = 0;
-    }else{
-      const parts = chunks(value);
-      parts.forEach((p, i) => b.set(F.doc(col, key + "__" + i), { d: p }));
-      b.set(F.doc(col, key + "__meta"), { n: parts.length, ts: Date.now() });
-      for(let i = parts.length; i < old; i++) b.delete(F.doc(col, key + "__" + i));
-      prevN[key] = parts.length;
-    }
-    setSync("busy", "Enviando…");
-    b.commit().then(() => setSync(navigator.onLine ? "ok" : "off", navigator.onLine ? "Sincronizado" : "Sem conexão"))
-              .catch(e => { console.error(e); setSync("err", "Erro ao salvar"); });
+    S.dirty[key] = 1; saveS();
+    if(S.ready) S.chain[key] = (S.chain[key] || Promise.resolve()).then(() => commit(key)).catch(e => console.error(e));
   }
   window.__cloudPush = push;
 
+  /* grava só se a nuvem ainda está na versão em que este aparelho se baseou; senão, a nuvem vence */
+  async function commit(key){
+    if(!user || !S.dirty[key]) return;
+    const value = localStorage.getItem(key), col = base(), mref = F.doc(col, key + "__meta");
+    setSync("busy", "Enviando…");
+    let res;
+    try{
+      res = await F.runTransaction(db, async tx => {
+        const ms = await tx.get(mref), cur = ms.exists() ? ms.data() : null, curTs = cur ? (cur.ts || 0) : 0, old = cur ? (cur.n || 0) : 0;
+        if(curTs !== (S.base[key] || 0)) return { conflict: true };
+        if(value == null){
+          if(cur){ tx.delete(mref); for(let i = 0; i < old; i++) tx.delete(F.doc(col, key + "__" + i)); }
+          return { ts: 0 };
+        }
+        const parts = chunks(value), ts = Math.max(Date.now(), curTs + 1);
+        S.pend[key] = ts;
+        parts.forEach((p, i) => tx.set(F.doc(col, key + "__" + i), { d: p }));
+        tx.set(mref, { n: parts.length, ts: ts });
+        for(let i = parts.length; i < old; i++) tx.delete(F.doc(col, key + "__" + i));
+        return { ts: ts };
+      });
+    }catch(e){
+      console.error(e);
+      if(e && e.code === "permission-denied"){ denied(); return; }
+      setSync(navigator.onLine ? "err" : "off", navigator.onLine ? "Erro ao salvar (vou tentar de novo)" : "Sem conexão");
+      return;
+    }
+    if(res.conflict){
+      delete S.dirty[key]; delete S.pend[key]; saveS();
+      await pullKey(key);
+      note("Outro aparelho alterou estes dados antes: a sua última alteração não foi salva. Confira e refaça, se precisar.");
+      if(window.__appReload) window.__appReload();
+      okState();
+      return;
+    }
+    if(res.ts) S.base[key] = res.ts; else delete S.base[key];
+    delete S.pend[key];
+    if(localStorage.getItem(key) === value) delete S.dirty[key];
+    saveS(); okState();
+  }
+  /* lê do servidor a versão atual de uma chave e aplica neste aparelho */
+  async function pullKey(key){
+    const col = base(), ms = await F.getDoc(F.doc(col, key + "__meta"));
+    if(!ms.exists()){ localStorage.removeItem(key); delete S.base[key]; saveS(); return; }
+    const m = ms.data(), parts = [];
+    for(let i = 0; i < m.n; i++){ const d = await F.getDoc(F.doc(col, key + "__" + i)); if(!d.exists()) return; parts.push(d.data().d); }
+    try{ localStorage.setItem(key, parts.join("")); }catch(e){ console.error(e); }
+    S.base[key] = m.ts; saveS();
+  }
+
   function start(){
-    firstSnap = true;
-    unsub = F.onSnapshot(base(), { includeMetadataChanges: true }, snap => {
-      const fromCache = snap.metadata.fromCache;
-      if(snap.metadata.hasPendingWrites) return;
-      const docs = {}; snap.forEach(d => docs[d.id] = d.data());
-      let changed = false;
-      const all = new Set(KEYS);
-      for(const id in docs){ if(id.endsWith("__meta")){ const k0 = id.slice(0, -6); if(DYN.test(k0)) all.add(k0); } }
-      dynLocal().forEach(k => all.add(k));
-      for(const key of all){
-        const m = docs[key + "__meta"];
+    S.ready = false;
+    unsub = F.onSnapshot(base(), snap => {
+      if(snap.metadata.fromCache) return;
+      const docs = {}; snap.forEach(d => docs[d.id] = d.data()); S.docs = docs;
+      const first = !S.ready; let changed = false, lost = 0;
+      for(const key of syncKeys()){
+        const m = docs[key + "__meta"], local = localStorage.getItem(key);
         if(!m){
-          prevN[key] = 0;
-          const local = localStorage.getItem(key);
-          if(firstSnap && !fromCache){ if(local) push(key, local); }
-          else if(!firstSnap && local){ localStorage.removeItem(key); changed = true; }
+          if(local == null){ delete S.base[key]; continue; }
+          if(S.base[key]){                               /* existia na nuvem e foi apagado em outro aparelho */
+            if(S.dirty[key]){ delete S.dirty[key]; lost++; }
+            localStorage.removeItem(key); delete S.base[key]; changed = true;
+          }else if(first) S.dirty[key] = 1;               /* dado novo deste aparelho: sobe */
           continue;
         }
-        const parts = [];
-        for(let i = 0; i < m.n; i++){ const d = docs[key + "__" + i]; if(!d){ parts.length = 0; break; } parts.push(d.d); }
-        if(!parts.length && m.n) continue;
-        prevN[key] = m.n;
-        const str = parts.join("");
-        if(str !== localStorage.getItem(key)){ try{ localStorage.setItem(key, str); changed = true; }catch(e){ console.error(e); } }
+        if(S.pend[key] && m.ts === S.pend[key]){ S.base[key] = m.ts; continue; }
+        if(S.dirty[key]){
+          if(m.ts === (S.base[key] || 0)) continue;       /* a nuvem não mudou: a alteração local será enviada */
+          delete S.dirty[key]; lost++;                     /* a nuvem mudou em outro aparelho: a nuvem vence */
+        }
+        const str = readVal(docs, key); if(str === undefined) continue;
+        S.base[key] = m.ts;
+        if(str !== local){ try{ localStorage.setItem(key, str); changed = true; }catch(e){ console.error(e); } }
       }
-      if(!fromCache) firstSnap = false;
-      if(!navigator.onLine) setSync("off", "Sem conexão");
-      else if(fromCache) setSync("busy", "Atualizando…");
-      else setSync("ok", "Sincronizado");
+      saveS();
+      if(first){ S.ready = true; Object.keys(S.dirty).forEach(k => push(k)); dailyHist(); }
+      okState();
       if(changed && window.__appReload) window.__appReload();
+      if(lost) note(first ? "Este aparelho tinha alterações antigas sem envio, mas a nuvem já tinha uma versão mais nova: valeu a da nuvem." : "Outro aparelho alterou estes dados antes: a sua última alteração não foi salva. Confira e refaça, se precisar.");
+      if(!$("hsModal").hidden) hsRender();
     }, err => {
       console.error(err);
       if(err && err.code === "permission-denied") denied();
@@ -8832,8 +8912,88 @@ async function main(){
     });
   }
 
+  /* cópias na nuvem: uma automática por dia (guarda as 8 mais recentes) e uma antes de cada restauração */
+  const HMAX = 8;
+  const hstamp = d => d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate());
+  function histList(){
+    return Object.keys(S.docs).filter(id => /^hist_[^_]+__INDEX$/.test(id))
+      .map(id => Object.assign({ id: id.slice(0, -7) }, S.docs[id])).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  }
+  async function writeHist(stamp, label){
+    const col = base(), keys = [];
+    let b = F.writeBatch(db), ops = 0;
+    const flush = async () => { if(ops){ await b.commit(); b = F.writeBatch(db); ops = 0; } };
+    for(const key of syncKeys()){
+      if(!S.docs[key + "__meta"]) continue;
+      const v = readVal(S.docs, key); if(v == null) continue;
+      const pre = "hist_" + stamp + "__" + key, parts = chunks(v);
+      if(ops + parts.length + 1 > 450) await flush();
+      parts.forEach((p, i) => { b.set(F.doc(col, pre + "__" + i), { d: p }); ops++; });
+      b.set(F.doc(col, pre + "__meta"), { n: parts.length, ts: S.docs[key + "__meta"].ts }); ops++;
+      keys.push(key);
+    }
+    b.set(F.doc(col, "hist_" + stamp + "__INDEX"), { ts: Date.now(), label: label, keys: keys }); ops++;
+    await flush();
+  }
+  async function pruneHist(){
+    const drop = histList().slice(HMAX); if(!drop.length) return;
+    const col = base(); let b = F.writeBatch(db), ops = 0;
+    for(const h of drop){
+      for(const id of Object.keys(S.docs)){
+        if(id.indexOf(h.id + "__") !== 0) continue;
+        b.delete(F.doc(col, id)); ops++;
+        if(ops >= 450){ await b.commit(); b = F.writeBatch(db); ops = 0; }
+      }
+    }
+    if(ops) await b.commit();
+  }
+  function dailyHist(){
+    const st = hstamp(new Date());
+    if(S.docs["hist_" + st + "__INDEX"]) return;
+    writeHist(st, "Cópia automática do dia").then(pruneHist).catch(e => console.error(e));
+  }
+  function hsRender(){
+    const L = histList();
+    $("hsList").innerHTML = L.length ? L.map(h =>
+      '<div class="hs-row"><span><b>' + fmtTs(h.ts || 0) + '</b><small>' + (h.label || "") + ' · ' + ((h.keys || []).length) + ' conjuntos de dados</small></span><button type="button" class="btn sm" data-hs="' + h.id + '">Restaurar</button></div>'
+    ).join("") : '<p class="sb-empty">Nenhuma cópia ainda. A primeira é feita automaticamente quando o site abre conectado.</p>';
+  }
+  function hsOpen(){
+    if(!user || !S.ready){ note("Entre com a conta e espere sincronizar para ver as cópias da nuvem."); return; }
+    hsRender(); $("hsModal").hidden = false; document.body.style.overflow = "hidden";
+  }
+  function hsClose(){ $("hsModal").hidden = true; document.body.style.overflow = ""; }
+  async function restoreHist(id){
+    const h = histList().filter(x => x.id === id)[0]; if(!h) return;
+    hsClose(); setSync("busy", "Restaurando…");
+    try{
+      const now = new Date();
+      await writeHist(hstamp(now) + "-" + p2(now.getHours()) + p2(now.getMinutes()) + "r", "Antes de restaurar a cópia de " + fmtTs(h.ts || 0));
+      const keys = (h.keys || []).filter(k => readVal(S.docs, h.id + "__" + k) != null);
+      keys.forEach(k => { try{ localStorage.setItem(k, readVal(S.docs, h.id + "__" + k)); }catch(e){} S.dirty[k] = 1; });
+      saveS();
+      await Promise.all(keys.map(k => (S.chain[k] = (S.chain[k] || Promise.resolve()).then(() => commit(k)))));
+      if(window.__appReload) window.__appReload();
+      note("Cópia de " + fmtTs(h.ts || 0) + " restaurada. O estado anterior foi guardado como uma nova cópia, caso precise voltar.");
+      okState();
+    }catch(e){ console.error(e); setSync("err", "Erro ao restaurar"); note("Não foi possível restaurar a cópia."); }
+  }
+  $("sync").addEventListener("click", hsOpen);
+  $("sync").addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); hsOpen(); } });
+  $("hsModal").addEventListener("click", e => {
+    const t = e.target, b = t.closest && t.closest("[data-hs]");
+    if(t === $("hsModal") || (t.closest && t.closest("#hsClose"))){ hsClose(); return; }
+    if(b){
+      const id = b.getAttribute("data-hs"), h = histList().filter(x => x.id === id)[0];
+      const msg = "Restaurar a cópia de " + fmtTs(h ? h.ts : 0) + "? Todos os dados do site (preventivas, meta, Agenda, chamados, planejamentos…) voltam para como estavam nesse momento. O estado atual é guardado antes, como nova cópia.";
+      if(window.__plAsk) window.__plAsk(msg, "Restaurar", () => restoreHist(id), true);
+      else if(confirm(msg)) restoreHist(id);
+    }
+  });
+
   function wipeLocal(){
-    KEYS.concat(dynLocal()).forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
+    KEYS.concat(dynLocal()).concat(["prev_syncb", "prev_syncd"]).forEach(k => { try{ localStorage.removeItem(k); }catch(e){} });
+    S.base = {}; S.dirty = {}; S.pend = {}; S.ready = false; S.docs = {};
     if(window.__appReload) window.__appReload();
   }
   async function denied(){
@@ -8888,7 +9048,7 @@ async function main(){
     wipeLocal();
   });
 
-  window.addEventListener("online", () => user && setSync("ok", "Sincronizado"));
+  window.addEventListener("online", () => { if(!user) return; setSync("ok", "Sincronizado"); if(S.ready) Object.keys(S.dirty).forEach(k => push(k)); });
   window.addEventListener("offline", () => user && setSync("off", "Sem conexão"));
 }
 
